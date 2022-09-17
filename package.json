@@ -1,0 +1,43 @@
+{
+  "name": "stica-lms",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "turbo run clean --parallel && rimraf node_modules",
+    "clean:cache": "turbo run clean:cache && rimraf node_modules/.cache",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "start": "turbo run start --parallel",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "latest",
+    "rimraf": "^3.0.2",
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "yarn@1.22.19",
+  "lint-staged": {
+    "apps/**/*.{js,ts,jsx,tsx}": [
+      "eslint --fix"
+    ],
+    "packages/ui/**/*.{js,ts,jsx,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{js,ts,tsx,css,md}": [
+      "prettier --write"
+    ]
+  }
+}
