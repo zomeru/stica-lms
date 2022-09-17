@@ -36,6 +36,10 @@ module.exports = {
       },
     ],
     'react/react-in-jsx-scope': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'react/function-component-definition': 'off',
+
+    'arrow-body-style': 'off',
 
     // next
     '@next/next/no-html-link-for-pages': 'off',

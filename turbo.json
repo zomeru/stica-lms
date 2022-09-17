@@ -5,15 +5,15 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
-    "lint": {
-      "outputs": []
+    "build:lms": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
     },
-    "dev": {
-      "cache": false
-    },
-    "clean": {
-      "cache": false
-    }
+    "start": { "outputs": [] },
+    "start:lms": { "outputs": [] },
+    "lint": { "outputs": [] },
+    "dev": { "cache": false },
+    "clean": { "cache": false }
   },
   "globalDependencies": [".env", ".env.*"]
 }
