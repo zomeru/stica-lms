@@ -14,5 +14,6 @@
     "clean": {
       "cache": false
     }
-  }
+  },
+  "globalDependencies": [".env", ".env.*"]
 }
