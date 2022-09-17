@@ -9,6 +9,7 @@
   "scripts": {
     "build": "turbo run build",
     "build:lms": "turbo run build --filter=lms",
+    "build:admin": "turbo run build --filter=admin",
     "clean": "turbo run clean --parallel && rimraf node_modules",
     "clean:cache": "turbo run clean:cache && rimraf node_modules/.cache",
     "dev": "turbo run dev --parallel",
@@ -16,6 +17,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start": "turbo run start --parallel",
     "start:lms": "turbo run start --filter=lms",
+    "start:admin": "turbo run start --filter=admin",
     "prepare": "husky install"
   },
   "devDependencies": {
