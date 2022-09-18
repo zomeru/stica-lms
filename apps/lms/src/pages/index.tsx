@@ -1,11 +1,19 @@
+import React from 'react';
 import type { NextPage } from 'next';
-import { Button } from 'ui';
+import dynamic from 'next/dynamic';
+
+const Profile = dynamic(() => import('@src/components/profile'), {
+  ssr: false,
+});
+const SignButton = dynamic(() => import('@src/components/signButton'), {
+  ssr: false,
+});
 
 const Home: NextPage = () => {
   return (
-    <div className='flex min-h-screen min-w-screen items-center justify-center flex-col space-y-3'>
-      <Button />
-      <div>Student - Stica LMS</div>
+    <div className='bg-neutral-500 flex min-h-screen min-w-screen items-center justify-center flex-col space-y-3'>
+      <Profile />
+      <SignButton />
     </div>
   );
 };

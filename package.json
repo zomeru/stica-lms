@@ -13,6 +13,8 @@
     "clean": "turbo run clean --parallel && rimraf node_modules",
     "clean:cache": "turbo run clean:cache && rimraf node_modules/.cache",
     "dev": "turbo run dev --parallel",
+    "dev:lms": "turbo run dev --filter=lms",
+    "dev:admin": "turbo run dev --filter=admin",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start": "turbo run start --parallel",
