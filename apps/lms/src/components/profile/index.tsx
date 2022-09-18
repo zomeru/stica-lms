@@ -17,7 +17,7 @@ const Profile = () => {
             You are now signed in
           </div>
           <div className='text-white font-medium text-lg'>
-            Name: {`${accounts[0].name}`}
+            Name: {`${accounts[0].name?.replaceAll('(Student)', '')}`}
           </div>
           <div className='text-white font-medium text-lg'>
             Email: {accounts[0].username}
