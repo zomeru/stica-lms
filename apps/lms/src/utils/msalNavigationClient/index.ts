@@ -1,4 +1,4 @@
-import { NavigationClient } from '@azure/msal-browser';
+import { NavigationClient, NavigationOptions } from '@azure/msal-browser';
 import { NextRouter } from 'next/router';
 
 class CustomNavigationClient extends NavigationClient {
@@ -14,9 +14,12 @@ class CustomNavigationClient extends NavigationClient {
    * @param url
    * @param options
    */
-  async navigateInternal(url: any, options: any) {
+  async navigateInternal(
+    url: string,
+    options?: NavigationOptions
+  ): Promise<boolean> {
     const relativePath = url.replace(window.location.origin, '');
-    if (options.noHistory) {
+    if (options?.noHistory) {
       this.router.replace(relativePath);
     } else {
       this.router.push(relativePath);

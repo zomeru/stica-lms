@@ -1,6 +1,11 @@
 import type { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';
-import { EventType, PublicClientApplication } from '@azure/msal-browser';
+import {
+  EventType,
+  PublicClientApplication,
+  EventMessage,
+  AuthenticationResult,
+} from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import NProgress from 'nprogress';
 
@@ -17,12 +22,10 @@ if (accounts.length > 0) {
   msalInstance.setActiveAccount(accounts[0]);
 }
 
-msalInstance.addEventCallback((event: any) => {
-  if (
-    event.eventType === EventType.LOGIN_SUCCESS &&
-    event.payload?.account
-  ) {
-    const {account} = event.payload;
+msalInstance.addEventCallback((event: EventMessage) => {
+  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+    const payload = event.payload as AuthenticationResult;
+    const {account} = payload;
     msalInstance.setActiveAccount(account);
   }
 });
