@@ -7,11 +7,9 @@ const Profile = () => {
   const isAuthenticated = useIsAuthenticated();
   const { photo } = usePhoto();
 
-  console.log('accounts', accounts);
-
   return (
     <div className='flex items-center justify-center flex-col space-y-3'>
-      {isAuthenticated && (
+      {isAuthenticated && accounts.length > 0 && (
         <>
           <div className='text-white font-medium text-3xl'>
             You are now signed in

@@ -22,7 +22,7 @@ const SignButton = () => {
           className='py-1 px-3 bg-white'
           type='button'
           onClick={() => {
-            instance.logoutRedirect({
+            instance.logoutPopup({
               postLogoutRedirectUri: '/',
             });
           }}
