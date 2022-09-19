@@ -1,24 +1,42 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import dynamic from 'next/dynamic';
-import { useUser } from '@src/hooks';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { Layout } from 'ui';
 
-const Profile = dynamic(() => import('@src/components/profile'), {
-  ssr: false,
-});
-const SignButton = dynamic(() => import('@src/components/signButton'), {
-  ssr: false,
-});
+import { usePhoto } from '@src/hooks';
+import {
+  loggedInSidebarItems,
+  loggedOutSidebarItems,
+} from '@src/constants';
+import { loginRequest } from '@src/config';
 
 const Home: NextPage = () => {
-  const { user } = useUser();
-  console.log('user', user);
+  const isAuthenticated = useIsAuthenticated();
+  const { accounts, instance } = useMsal();
+  const { photo } = usePhoto();
+
+  const loggedIn = isAuthenticated && accounts.length > 0;
+
+  const loginHandler = () => {
+    instance.loginRedirect(loginRequest);
+  };
+
+  const logoutHandler = () => {
+    instance.logoutPopup({
+      postLogoutRedirectUri: '/',
+    });
+  };
 
   return (
-    <div className='bg-neutral-500 flex min-h-screen min-w-screen items-center justify-center flex-col space-y-3'>
-      <Profile />
-      <SignButton />
-    </div>
+    <Layout
+      isAuthenticated={isAuthenticated}
+      sidebarItems={
+        loggedIn ? loggedInSidebarItems : loggedOutSidebarItems
+      }
+      authAction={loggedIn ? logoutHandler : loginHandler}
+      username={accounts[0]?.name?.replace(' (Student)', '')}
+      userPhoto={photo || undefined}
+    />
   );
 };
 
