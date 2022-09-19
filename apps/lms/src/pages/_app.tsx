@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { Router, useRouter } from 'next/router';
+import { DefaultSeo } from 'next-seo';
 import {
   EventType,
   PublicClientApplication,
@@ -11,6 +12,7 @@ import NProgress from 'nprogress';
 
 import { msalConfig } from '@src/config';
 import { CustomNavigationClient } from '@src/utils';
+import SEO from '../../next-seo.config';
 
 import 'nprogress/nprogress.css';
 import '../styles/globals.css';
@@ -25,7 +27,7 @@ if (accounts.length > 0) {
 msalInstance.addEventCallback((event: EventMessage) => {
   if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
     const payload = event.payload as AuthenticationResult;
-    const {account} = payload;
+    const { account } = payload;
     msalInstance.setActiveAccount(account);
   }
 });
@@ -44,6 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <MsalProvider instance={msalInstance}>
+      <DefaultSeo {...SEO} />
       <Component {...pageProps} />
     </MsalProvider>
   );
