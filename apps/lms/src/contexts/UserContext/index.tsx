@@ -19,7 +19,8 @@ import {
   getDoc,
 } from 'firebase/firestore';
 import { useIsAuthenticated } from '@azure/msal-react';
-import { msalInstance } from '@src/pages/_app';
+import { PublicClientApplication } from '@azure/msal-browser';
+
 import { loginRequest } from '@src/config';
 import { db } from '@src/utils';
 import { IUser } from '@src/types';
@@ -39,9 +40,13 @@ export function useUser() {
 
 interface UserProviderProps {
   children: ReactNode;
+  msalInstance: PublicClientApplication;
 }
 
-const UserProvider: FC<UserProviderProps> = ({ children }) => {
+const UserProvider: FC<UserProviderProps> = ({
+  children,
+  msalInstance,
+}) => {
   const isAuthenticated = useIsAuthenticated();
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(false);

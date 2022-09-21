@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <MsalProvider instance={msalInstance}>
-      <UserProvider>
+      <UserProvider msalInstance={msalInstance}>
         <DefaultSeo {...SEO} />
         <Component {...pageProps} />
       </UserProvider>
