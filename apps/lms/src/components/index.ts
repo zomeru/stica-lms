@@ -1,2 +1,1 @@
-export { default as Profile } from './profile';
-export { default as SignButton } from './signButton';
+export { default as BookCard } from './BookCard';

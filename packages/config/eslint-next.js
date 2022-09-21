@@ -41,6 +41,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
 
     'arrow-body-style': 'off',
+    'import/prefer-default-export': 'off',
 
     // next
     '@next/next/no-html-link-for-pages': 'off',
