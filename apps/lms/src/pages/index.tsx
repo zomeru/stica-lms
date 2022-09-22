@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
@@ -18,14 +18,42 @@ import {
   History,
   Contact,
 } from '@src/components/Contents';
+import { useSidebar } from '@src/contexts/SidebarContext';
 
 const Home: NextPage = () => {
   const isAuthenticated = useIsAuthenticated();
   const { accounts, instance } = useMsal();
   const { photo } = usePhoto();
+  const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
 
   const loggedIn = isAuthenticated && accounts.length > 0;
+
+  useEffect(() => {
+    const authenticatedPages = [
+      'messages',
+      'currently-issued-books',
+      'pending-requests',
+      'history',
+    ];
+
+    function checkPage() {
+      if (authenticatedPages.includes(router.query.page as string)) {
+        if (!isAuthenticated) {
+          router.push(
+            {
+              pathname: '/',
+              query: { page: 'home' },
+            },
+            undefined,
+            { shallow: true }
+          );
+        }
+      }
+    }
+
+    checkPage();
+  }, [isAuthenticated, router.query]);
 
   const loginHandler = () => {
     instance.loginRedirect(loginRequest);
@@ -39,6 +67,8 @@ const Home: NextPage = () => {
 
   return (
     <Layout
+      sidebarOpen={sidebarOpen}
+      showHideSidebar={showHideSidebar}
       isAuthenticated={isAuthenticated}
       sidebarItems={
         loggedIn ? loggedInSidebarItems : loggedOutSidebarItems
@@ -49,13 +79,17 @@ const Home: NextPage = () => {
     >
       {(router.asPath === '/' ||
         router.asPath.includes('/?page=home') ||
-        router.query.page === 'home') && <HomeComp />}
-      {router.query.page === 'messages' && <Messages />}
-      {router.query.page === 'currently-issued-books' && (
-        <CurrentlyIssuedBooks />
+        router.query.page === 'home' ||
+        !router.query.page) && <HomeComp />}
+      {isAuthenticated && router.query.page === 'messages' && <Messages />}
+      {isAuthenticated &&
+        router.query.page === 'currently-issued-books' && (
+          <CurrentlyIssuedBooks />
+        )}
+      {isAuthenticated && router.query.page === 'pending-requests' && (
+        <PendingRequests />
       )}
-      {router.query.page === 'pending-requests' && <PendingRequests />}
-      {router.query.page === 'history' && <History />}
+      {isAuthenticated && router.query.page === 'history' && <History />}
       {router.query.page === 'contact' && <Contact />}
     </Layout>
   );

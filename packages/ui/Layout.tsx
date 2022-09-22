@@ -20,6 +20,8 @@ interface LayoutProps {
     name: string;
     Icon: IconType;
   }[];
+  sidebarOpen: boolean;
+  showHideSidebar: () => void;
   username?: string;
   userPhoto?: string;
   children?: React.ReactNode;
@@ -32,10 +34,11 @@ export const Layout = ({
   userPhoto,
   children,
   sidebarItems,
+  sidebarOpen = true,
+  showHideSidebar,
 }: LayoutProps) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,12 +75,12 @@ export const Layout = ({
         <div className='h-full w-[1px] bg-cGray-200' />
         <div
           style={{
-            width: sidebarOpen ? '320px' : '0px',
+            maxWidth: sidebarOpen ? '100%' : '0px',
             transform: sidebarOpen
               ? 'translateX(0)'
               : 'translateX(-320px)',
             transition:
-              'width 0.2s ease-in-out, transform 0.3s ease-in-out',
+              'max-width 0.2s ease-in-out, transform 0.3s ease-in-out',
           }}
           className={`h-full`}
         >
@@ -95,7 +98,7 @@ export const Layout = ({
                     objectPosition='center'
                   />
                 </div> */}
-                <h1 className='text-primary font-black text-3xl'>
+                <h1 className='text-primary font-black text-3xl w-[185px] px-[10px]'>
                   STICA LMS
                 </h1>
               </div>
@@ -112,13 +115,14 @@ export const Layout = ({
                   const isHome =
                     router.asPath === '/' ||
                     router.asPath.includes('/?page=home') ||
-                    router.query.page === 'home';
+                    router.query.page === 'home' ||
+                    !router.query.page;
 
                   const isActive =
                     name.toLowerCase() === 'home'
                       ? isHome
-                      : router.query.page ===
-                        name.toLowerCase().replaceAll(' ', '-');
+                      : name.toLowerCase().replace(/ /g, '-') ===
+                        router.query.page;
 
                   return (
                     <button
@@ -143,7 +147,7 @@ export const Layout = ({
                         <p
                           className={`${
                             isActive ? 'text-primary' : ''
-                          } transition-colors duration-300 ease-int-out font-medium text-base`}
+                          } transition-colors duration-300 ease-int-out font-medium text-base truncate`}
                         >
                           {name}
                         </p>
@@ -179,9 +183,9 @@ export const Layout = ({
                 ? 'rotate-0 left-[50%] -translate-x-1/2'
                 : 'rotate-180'
             }`}
-            onClick={() => setSidebarOpen((prev) => !prev)}
+            onClick={showHideSidebar}
           >
-            <AiOutlineLeft className='w-[20px] h-[20px] text-text' />
+            <AiOutlineLeft className='w-[20px] h-[20px] text-blackText' />
           </button>
         </div>
         <div className='h-full w-full'>
@@ -209,7 +213,7 @@ export const Layout = ({
             </form>
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
               <button type='button'>
-                <MdNotificationsNone className='w-[25px] h-[25px] text-text' />
+                <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
               </button>
               {isAuthenticated ? (
                 <div className='flex items-center space-x-2'>
@@ -222,12 +226,14 @@ export const Layout = ({
                       alt='User avatar'
                     />
                   </div>
-                  <div className='text-text font-medium'>{username}</div>
+                  <div className='text-blackText font-medium'>
+                    {username}
+                  </div>
                 </div>
               ) : (
                 <button
                   type='button'
-                  className='text-base font-medium text-text links'
+                  className='text-base font-medium text-blackText links'
                   onClick={authAction}
                 >
                   Log in
@@ -237,7 +243,7 @@ export const Layout = ({
           </div>
           {/* Separator */}
           <div className='w-full h-[1px] bg-cGray-200' />
-          <div className='w-full h-[calc(100%-101px)] p-[40px]'>
+          <div className='w-full h-[calc(100%-101px)] p-[40px] overflow-hidden'>
             {children}
           </div>
         </div>

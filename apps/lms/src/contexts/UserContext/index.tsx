@@ -43,7 +43,7 @@ interface UserProviderProps {
   msalInstance: PublicClientApplication;
 }
 
-const UserProvider: FC<UserProviderProps> = ({
+export const UserProvider: FC<UserProviderProps> = ({
   children,
   msalInstance,
 }) => {
@@ -157,5 +157,3 @@ const UserProvider: FC<UserProviderProps> = ({
     <UserContext.Provider value={value}>{children}</UserContext.Provider>
   );
 };
-
-export default UserProvider;

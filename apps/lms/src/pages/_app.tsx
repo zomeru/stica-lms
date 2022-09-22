@@ -10,7 +10,7 @@ import {
 import { MsalProvider } from '@azure/msal-react';
 import NProgress from 'nprogress';
 
-import { UserProvider } from '@src/contexts';
+import { UserProvider, SidebarProvider } from '@src/contexts';
 import { msalConfig } from '@src/config';
 import { CustomNavigationClient } from '@src/utils';
 import SEO from '../../next-seo.config';
@@ -48,8 +48,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <MsalProvider instance={msalInstance}>
       <UserProvider msalInstance={msalInstance}>
-        <DefaultSeo {...SEO} />
-        <Component {...pageProps} />
+        <SidebarProvider>
+          <DefaultSeo {...SEO} />
+          <Component {...pageProps} />
+        </SidebarProvider>
       </UserProvider>
     </MsalProvider>
   );
