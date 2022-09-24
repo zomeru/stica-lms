@@ -52,6 +52,9 @@ const BookCard = ({
           layout='fill'
           objectFit='cover'
           objectPosition='center'
+          quality={10}
+          blurDataURL={IMAGE_URL}
+          placeholder='blur'
         />
       </div>
       <div className='w-[60%] h-full px-[5px] py-[8px] flex flex-col justify-between'>

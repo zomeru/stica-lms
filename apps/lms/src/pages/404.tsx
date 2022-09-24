@@ -12,7 +12,7 @@ import {
 import { loginRequest } from '@src/config';
 import { useSidebar } from '@src/contexts/SidebarContext';
 
-const Home: NextPage = () => {
+const NotFoundPage: NextPage = () => {
   const isAuthenticated = useIsAuthenticated();
   const { accounts, instance } = useMsal();
   const { photo } = usePhoto();
@@ -76,4 +76,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default NotFoundPage;

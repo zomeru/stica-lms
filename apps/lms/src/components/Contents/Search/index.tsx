@@ -13,10 +13,6 @@ const Search = () => {
   const { sidebarOpen } = useSidebar();
   const router = useRouter();
 
-  console.log({
-    query: router.query,
-  });
-
   const books = useMemo(() => {
     const newBooks: any = [];
 

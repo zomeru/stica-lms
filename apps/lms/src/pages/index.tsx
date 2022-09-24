@@ -22,6 +22,10 @@ import {
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 
+const sidebarItems = loggedInSidebarItems.map((item) =>
+  item.name.toLowerCase()
+);
+
 const Home: NextPage = () => {
   const isAuthenticated = useIsAuthenticated();
   const { accounts, instance } = useMsal();
@@ -34,13 +38,17 @@ const Home: NextPage = () => {
   useEffect(() => {
     const authenticatedPages = [
       'messages',
-      'currently-issued-books',
-      'pending-requests',
+      'currently issued books',
+      'pending requests',
       'history',
     ];
 
     function checkPage() {
-      if (authenticatedPages.includes(router.query.page as string)) {
+      if (
+        authenticatedPages.includes(
+          decodeURIComponent(router.query.page as string)
+        )
+      ) {
         if (!isAuthenticated) {
           router.push(
             {
@@ -68,13 +76,11 @@ const Home: NextPage = () => {
   };
 
   const renderContent = () => {
-    const sidebarItems = loggedInSidebarItems.map((item) =>
-      item.name.toLowerCase().replace(/ /g, '-')
-    );
-
     if (
       router.query.page &&
-      !sidebarItems.includes(router.query.page as string)
+      !sidebarItems.includes(
+        decodeURIComponent(router.query.page as string)
+      )
     ) {
       return (
         <section className='w-full h-full flex justify-center items-center'>
@@ -83,28 +89,25 @@ const Home: NextPage = () => {
       );
     }
 
+    const page = decodeURIComponent(router.query.page as string);
+
     return (
       <>
         {router.query.bookId && <BookDetails />}
         {(router.asPath === '/' ||
           router.asPath.includes('/?page=home') ||
-          router.query.page === 'home' ||
+          page === 'home' ||
           !router.query.page) && <HomeComp />}
-        {router.query.page === 'search' && !router.query.bookId && (
-          <Search />
+        {page === 'search' && !router.query.bookId && <Search />}
+        {isAuthenticated && page === 'messages' && <Messages />}
+        {isAuthenticated && page === 'currently issued books' && (
+          <CurrentlyIssuedBooks />
         )}
-        {isAuthenticated && router.query.page === 'messages' && (
-          <Messages />
-        )}
-        {isAuthenticated &&
-          router.query.page === 'currently-issued-books' && (
-            <CurrentlyIssuedBooks />
-          )}
-        {isAuthenticated && router.query.page === 'pending-requests' && (
+        {isAuthenticated && page === 'pending requests' && (
           <PendingRequests />
         )}
-        {isAuthenticated && router.query.page === 'history' && <History />}
-        {router.query.page === 'contact' && <Contact />}
+        {isAuthenticated && page === 'history' && <History />}
+        {page === 'contact' && <Contact />}
       </>
     );
   };

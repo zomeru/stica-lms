@@ -81,7 +81,7 @@ export const Layout = ({
         pathname: '/',
         query: {
           ...allQueries,
-          page: encodeURIComponent(name.toLowerCase().replace(/ /g, '-')),
+          page: encodeURIComponent(name.toLowerCase()),
         },
       },
       undefined,
@@ -142,10 +142,8 @@ export const Layout = ({
                   const isActive =
                     name.toLowerCase() === 'home'
                       ? isHome
-                      : name.toLowerCase().replace(/ /g, '-') ===
-                        decodeURIComponent(
-                          (router.query.page as string) || ''
-                        );
+                      : name.toLowerCase() ===
+                        decodeURIComponent(router.query.page as string);
 
                   return (
                     <button
@@ -169,12 +167,12 @@ export const Layout = ({
                       <div className='cursor-pointer h-[50px] w-full flex items-center pl-6 space-x-2'>
                         <Icon
                           className={`${
-                            isActive ? 'text-primary' : ''
+                            isActive && 'text-primary'
                           } text-lg transition-colors h-[60px] duration-300 ease-int-out mb-[1px]`}
                         />
                         <p
                           className={`${
-                            isActive ? 'text-primary' : ''
+                            isActive && 'text-primary'
                           } transition-colors duration-300 ease-int-out font-medium text-base truncate`}
                         >
                           {name}
@@ -251,6 +249,7 @@ export const Layout = ({
                       objectFit='cover'
                       objectPosition='center'
                       alt='User avatar'
+                      priority
                     />
                   </div>
                   <div className='text-blackText font-medium'>

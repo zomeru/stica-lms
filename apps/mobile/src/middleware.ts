@@ -11,8 +11,8 @@ export default async function middleware(req: NextRequest) {
     )
   );
 
-  if (isMobile) {
-    return NextResponse.redirect(new URL('https://m.sticalms.com', url));
+  if (!isMobile) {
+    return NextResponse.redirect(new URL('https://sticalms.com', url));
   }
 
   return NextResponse.next();
