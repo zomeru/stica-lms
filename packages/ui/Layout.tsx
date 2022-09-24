@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { FormEvent, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -8,9 +8,11 @@ import {
   AiOutlineSearch,
 } from 'react-icons/ai';
 import { MdNotificationsNone } from 'react-icons/md';
+import { AiOutlineLeft } from 'react-icons/ai';
 import { IconType } from 'react-icons';
+import { toast } from 'react-hot-toast';
 
-const LOGO_URL = '/assets/images/STI_LOGO.png';
+// const LOGO_URL = '/assets/images/STI_LOGO.png';
 
 interface LayoutProps {
   isAuthenticated: boolean;
@@ -19,6 +21,8 @@ interface LayoutProps {
     name: string;
     Icon: IconType;
   }[];
+  sidebarOpen: boolean;
+  showHideSidebar: () => void;
   username?: string;
   userPhoto?: string;
   children?: React.ReactNode;
@@ -31,22 +35,57 @@ export const Layout = ({
   userPhoto,
   children,
   sidebarItems,
+  sidebarOpen = true,
+  showHideSidebar,
 }: LayoutProps) => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (searchQuery.length < 1) return;
+    if (!searchInputRef.current) return;
+    if (!searchInputRef.current.value) {
+      toast.error('Please enter a search term');
+      return;
+    }
+
+    if (router.query.searchKeyword === searchInputRef.current.value)
+      return;
+
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
 
     router.push(
       {
         pathname: '/',
-        query: { page: 'home', search: searchQuery },
+        query: {
+          ...allQueries,
+          page: 'search',
+          searchKeyword: encodeURIComponent(
+            searchInputRef.current?.value.trim()
+          ),
+        },
       },
       undefined,
-      { shallow: true }
+      { shallow: router.pathname === '/404' ? false : true }
+    );
+  };
+
+  const handleSidebarItemClick = (name: string) => {
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
+
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...allQueries,
+          page: encodeURIComponent(name.toLowerCase()),
+        },
+      },
+      undefined,
+      { shallow: router.pathname === '/404' ? false : true }
     );
   };
 
@@ -55,11 +94,23 @@ export const Layout = ({
       <main className='flex w-full h-full'>
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
-        <div className='h-full w-[260px] pr-6'>
-          <div className='h-[100px] w-full pl-6 flex justify-center items-end pb-[5px]'>
+        <div
+          style={{
+            maxWidth: sidebarOpen ? '100%' : '0px',
+            transform: sidebarOpen
+              ? 'translateX(0)'
+              : 'translateX(-320px)',
+            transition:
+              'max-width 0.2s ease-in-out, transform 0.3s ease-in-out',
+          }}
+          className={`h-full`}
+        >
+          <div className='h-[100px] flex justify-center items-center pb-[5px] italic duration-75'>
             <Link href='/'>
-              <div className='cursor-pointer flex flex-col items-center space-y-1'>
-                <div className='h-[40px] w-[70px] relative'>
+              <div
+                className={`cursor-pointer flex flex-col items-center space-y-1`}
+              >
+                {/* <div className='h-[40px] w-[70px] relative'>
                   <Image
                     src={LOGO_URL}
                     layout='fill'
@@ -67,8 +118,8 @@ export const Layout = ({
                     objectFit='cover'
                     objectPosition='center'
                   />
-                </div>
-                <h1 className='text-primary font-bold text-2xl'>
+                </div> */}
+                <h1 className='text-primary font-black text-3xl w-[185px] px-[10px]'>
                   STICA LMS
                 </h1>
               </div>
@@ -83,47 +134,46 @@ export const Layout = ({
               {sidebarItems &&
                 sidebarItems.map(({ name, Icon }) => {
                   const isHome =
-                    router.asPath === '/' || router.query.page === 'home';
+                    router.pathname === '/' &&
+                    (router.asPath.includes('/?page=home') ||
+                      router.query.page === 'home' ||
+                      !router.query.page);
+
                   const isActive =
                     name.toLowerCase() === 'home'
                       ? isHome
-                      : router.query.page ===
-                        name.toLowerCase().replaceAll(' ', '-');
+                      : name.toLowerCase() ===
+                        decodeURIComponent(router.query.page as string);
 
                   return (
                     <button
                       type='button'
-                      className={`h-[60px] before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
+                      className={`h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
                         isActive
                           ? 'before:h-full before:border-l-[6px] before:border-primary'
                           : 'before:h-0'
                       } hover:text-primary text-cGray-300`}
                       key={name}
                       onClick={() => {
-                        router.push(
-                          {
-                            pathname: '/',
-                            query: {
-                              page: name
-                                .toLowerCase()
-                                .replaceAll(' ', '-'),
-                            },
-                          },
-                          undefined,
-                          { shallow: true }
-                        );
+                        if (
+                          isActive &&
+                          router.pathname !== '/404' &&
+                          !router.query.bookId
+                        )
+                          return;
+                        handleSidebarItemClick(name);
                       }}
                     >
                       <div className='cursor-pointer h-[50px] w-full flex items-center pl-6 space-x-2'>
                         <Icon
                           className={`${
-                            isActive ? 'text-primary' : ''
-                          } text-lg transition-all h-[60px] duration-300 ease-int-out mb-[1px]`}
+                            isActive && 'text-primary'
+                          } text-lg transition-colors h-[60px] duration-300 ease-int-out mb-[1px]`}
                         />
                         <p
                           className={`${
-                            isActive ? 'text-primary' : ''
-                          } transition-all duration-300 ease-int-out font-medium text-base`}
+                            isActive && 'text-primary'
+                          } transition-colors duration-300 ease-int-out font-medium text-base truncate`}
                         >
                           {name}
                         </p>
@@ -137,7 +187,7 @@ export const Layout = ({
               className='h-[60px]'
               onClick={authAction}
             >
-              <div className='cursor-pointer w-full flex items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-all duration-300 ease-int-out'>
+              <div className='cursor-pointer w-full flex items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
                 {isAuthenticated ? (
                   <AiOutlineLogout className='text-lg mb-[1px]' />
                 ) : (
@@ -151,21 +201,32 @@ export const Layout = ({
           </div>
         </div>
         {/* Separator */}
-        <div className='h-full w-[1px] bg-cGray-200' />
-        <div className='w-[calc(100%-260px)] h-full'>
-          <div className='w-full h-[100px] flex'>
+        <div className='h-full w-[1px] bg-cGray-200 relative'>
+          <button
+            type='button'
+            className={`bg-cGray-100 rounded-full h-[30px] w-[30px] flex items-center justify-center absolute top-[85px]  transform  duration-300 transition-all ease-in-out ${
+              sidebarOpen
+                ? 'rotate-0 left-[50%] -translate-x-1/2'
+                : 'rotate-180'
+            }`}
+            onClick={showHideSidebar}
+          >
+            <AiOutlineLeft className='w-[20px] h-[20px] text-blackText' />
+          </button>
+        </div>
+        <div className='h-full w-full'>
+          <div className='w-full h-[100px] flex px-[40px]'>
             <form
               onSubmit={handleSearch}
-              className='w-full h-full flex items-center px-[40px] space-x-3'
+              className='w-full h-full flex items-center space-x-3'
             >
-              <div className='w-full flex items-center bg-cGray-100 pl-4 rounded-full'>
+              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
                 <AiOutlineSearch className='text-2xl text-cGray-300' />
                 <input
+                  ref={searchInputRef}
                   placeholder='Search for books'
                   type='text'
-                  className='w-full outline-none bg-cGray-100 py-3 pl-2 pr-4 rounded-full'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value.trim())}
+                  className='w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full'
                 />
               </div>
               {/* <button
@@ -175,9 +236,9 @@ export const Layout = ({
                 Search
               </button> */}
             </form>
-            <div className='w-[calc(400px-40px)] h-full flex items-center space-x-4 justify-end pr-[40px]'>
+            <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
               <button type='button'>
-                <MdNotificationsNone className='w-[25px] h-[25px] text-text' />
+                <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
               </button>
               {isAuthenticated ? (
                 <div className='flex items-center space-x-2'>
@@ -188,14 +249,17 @@ export const Layout = ({
                       objectFit='cover'
                       objectPosition='center'
                       alt='User avatar'
+                      priority
                     />
                   </div>
-                  <div className='text-text font-medium'>{username}</div>
+                  <div className='text-blackText font-medium'>
+                    {username}
+                  </div>
                 </div>
               ) : (
                 <button
                   type='button'
-                  className='text-base font-medium text-text links'
+                  className='text-base font-medium text-blackText links'
                   onClick={authAction}
                 >
                   Log in
@@ -205,7 +269,9 @@ export const Layout = ({
           </div>
           {/* Separator */}
           <div className='w-full h-[1px] bg-cGray-200' />
-          <div className='w-full h-[calc(100%-101px)]'>{children}</div>
+          <div className='w-full h-[calc(100%-101px)] px-[40px] pt-[30px] pb-[40px] overflow-hidden'>
+            {children}
+          </div>
         </div>
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />

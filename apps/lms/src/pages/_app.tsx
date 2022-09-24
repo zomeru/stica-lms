@@ -9,7 +9,9 @@ import {
 } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import NProgress from 'nprogress';
+import { Toaster } from 'react-hot-toast';
 
+import { UserProvider, SidebarProvider } from '@src/contexts';
 import { msalConfig } from '@src/config';
 import { CustomNavigationClient } from '@src/utils';
 import SEO from '../../next-seo.config';
@@ -46,8 +48,18 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <MsalProvider instance={msalInstance}>
-      <DefaultSeo {...SEO} />
-      <Component {...pageProps} />
+      <UserProvider msalInstance={msalInstance}>
+        <SidebarProvider>
+          <DefaultSeo {...SEO} />
+          <Component {...pageProps} />
+          <Toaster
+            position='top-right'
+            toastOptions={{
+              duration: 2000,
+            }}
+          />
+        </SidebarProvider>
+      </UserProvider>
     </MsalProvider>
   );
 }

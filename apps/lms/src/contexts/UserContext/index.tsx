@@ -1,5 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useIsAuthenticated } from '@azure/msal-react';
+import {
+  createContext,
+  FC,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   collection,
   getDocs,
@@ -9,32 +17,36 @@ import {
   addDoc,
   doc,
   getDoc,
-  FieldValue,
 } from 'firebase/firestore';
+import { useIsAuthenticated } from '@azure/msal-react';
+import { PublicClientApplication } from '@azure/msal-browser';
 
-import { msalInstance } from '@src/pages/_app';
 import { loginRequest } from '@src/config';
 import { db } from '@src/utils';
+import { IUser } from '@src/types';
 
-export interface IUser {
-  id: string;
-  displayName: string;
-  givenName: string;
-  surname: string;
-  email: string;
-  username: string;
-  numSuccessBookRequest: number;
-  numFailedBookRequest: number;
-  numSuccessRenewalRequest: number;
-  numFailedRenewalRequest: number;
-  numSuccessBookReturnRequest: number;
-  numFailedBookReturnRequest: number;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
-  photo?: string;
+export interface UserContextProps {
+  user: IUser | null;
+  loading: boolean;
 }
 
-export const useUser = () => {
+export const UserContext = createContext<UserContextProps>(
+  null as unknown as UserContextProps
+);
+
+export function useUser() {
+  return useContext(UserContext);
+}
+
+interface UserProviderProps {
+  children: ReactNode;
+  msalInstance: PublicClientApplication;
+}
+
+export const UserProvider: FC<UserProviderProps> = ({
+  children,
+  msalInstance,
+}) => {
   const isAuthenticated = useIsAuthenticated();
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(false);
@@ -139,8 +151,9 @@ export const useUser = () => {
     if (!isAuthenticated && !loading) setUser(null);
   }, [isAuthenticated]);
 
-  return {
-    user,
-    loading,
-  };
+  const value = useMemo(() => ({ user, loading }), [user, loading]);
+
+  return (
+    <UserContext.Provider value={value}>{children}</UserContext.Provider>
+  );
 };
