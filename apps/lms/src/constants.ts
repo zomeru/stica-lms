@@ -46,8 +46,8 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineHome,
   },
   {
-    name: 'Contact',
-    Icon: MdOutlineContactPage,
+    name: 'Search',
+    Icon: AiOutlineSearch,
   },
 ];
 

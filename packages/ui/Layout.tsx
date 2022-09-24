@@ -50,7 +50,10 @@ export const Layout = ({
       return;
     }
 
-    if (router.query.searchKeyword === searchInputRef.current.value)
+    if (
+      router.query.searchKeyword === searchInputRef.current.value &&
+      router.query.page === 'search'
+    )
       return;
 
     const allQueries = { ...router.query };
