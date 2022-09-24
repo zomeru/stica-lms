@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { FormEvent, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -10,6 +10,7 @@ import {
 import { MdNotificationsNone } from 'react-icons/md';
 import { AiOutlineLeft } from 'react-icons/ai';
 import { IconType } from 'react-icons';
+import { toast } from 'react-hot-toast';
 
 // const LOGO_URL = '/assets/images/STI_LOGO.png';
 
@@ -38,17 +39,24 @@ export const Layout = ({
   showHideSidebar,
 }: LayoutProps) => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (searchQuery.length < 1) return;
+    if (!searchInputRef.current) return;
+    if (!searchInputRef.current.value) {
+      toast.error('Please enter a search term');
+      return;
+    }
 
     router.push(
       {
         pathname: '/',
-        query: { page: 'home', search: searchQuery },
+        query: {
+          page: 'home',
+          search: encodeURIComponent(searchInputRef.current?.value.trim()),
+        },
       },
       undefined,
       { shallow: true }
@@ -60,7 +68,7 @@ export const Layout = ({
       {
         pathname: '/',
         query: {
-          page: name.toLowerCase().replaceAll(' ', '-'),
+          page: name.toLowerCase().replace(/ /g, '-'),
         },
       },
       undefined,
@@ -194,14 +202,13 @@ export const Layout = ({
               onSubmit={handleSearch}
               className='w-full h-full flex items-center space-x-3'
             >
-              <div className='w-full flex items-center bg-cGray-100 pl-4 rounded-full'>
+              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
                 <AiOutlineSearch className='text-2xl text-cGray-300' />
                 <input
+                  ref={searchInputRef}
                   placeholder='Search for books'
                   type='text'
-                  className='w-full outline-none bg-cGray-100 py-3 pl-2 pr-4 rounded-full'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value.trim())}
+                  className='w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full'
                 />
               </div>
               {/* <button
@@ -243,7 +250,7 @@ export const Layout = ({
           </div>
           {/* Separator */}
           <div className='w-full h-[1px] bg-cGray-200' />
-          <div className='w-full h-[calc(100%-101px)] p-[40px] overflow-hidden'>
+          <div className='w-full h-[calc(100%-101px)] px-[40px] pt-[30px] pb-[40px] overflow-hidden'>
             {children}
           </div>
         </div>

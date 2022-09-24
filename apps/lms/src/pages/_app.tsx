@@ -9,6 +9,7 @@ import {
 } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import NProgress from 'nprogress';
+import { Toaster } from 'react-hot-toast';
 
 import { UserProvider, SidebarProvider } from '@src/contexts';
 import { msalConfig } from '@src/config';
@@ -51,6 +52,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <SidebarProvider>
           <DefaultSeo {...SEO} />
           <Component {...pageProps} />
+          <Toaster
+            position='top-right'
+            toastOptions={{
+              duration: 2000,
+            }}
+          />
         </SidebarProvider>
       </UserProvider>
     </MsalProvider>
