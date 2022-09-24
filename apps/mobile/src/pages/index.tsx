@@ -17,7 +17,7 @@ const Home: NextPage = () => {
   };
 
   const logoutHandler = () => {
-    instance.logoutPopup({
+    instance.logoutRedirect({
       postLogoutRedirectUri: '/',
     });
   };

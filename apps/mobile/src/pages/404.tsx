@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import Router from 'next/router';
 
 const NotFoundPage: NextPage = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push('/');
+  useLayoutEffect(() => {
+    Router.push({
+      pathname: '/',
+      query: {
+        page: 'notfound',
+      },
+    });
   }, []);
 
-  return <div />;
+  return null;
 };
 
 export default NotFoundPage;

@@ -68,7 +68,7 @@ export const Layout = ({
         },
       },
       undefined,
-      { shallow: router.pathname === '/404' ? false : true }
+      { shallow: true }
     );
   };
 
@@ -85,7 +85,7 @@ export const Layout = ({
         },
       },
       undefined,
-      { shallow: router.pathname === '/404' ? false : true }
+      { shallow: true }
     );
   };
 
@@ -155,12 +155,7 @@ export const Layout = ({
                       } hover:text-primary text-cGray-300`}
                       key={name}
                       onClick={() => {
-                        if (
-                          isActive &&
-                          router.pathname !== '/404' &&
-                          !router.query.bookId
-                        )
-                          return;
+                        if (isActive && !router.query.bookId) return;
                         handleSidebarItemClick(name);
                       }}
                     >
