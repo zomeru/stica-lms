@@ -50,29 +50,42 @@ export const Layout = ({
       return;
     }
 
+    if (router.query.searchKeyword === searchInputRef.current.value)
+      return;
+
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
+
     router.push(
       {
         pathname: '/',
         query: {
-          page: 'home',
-          search: encodeURIComponent(searchInputRef.current?.value.trim()),
+          ...allQueries,
+          page: 'search',
+          searchKeyword: encodeURIComponent(
+            searchInputRef.current?.value.trim()
+          ),
         },
       },
       undefined,
-      { shallow: true }
+      { shallow: router.pathname === '/404' ? false : true }
     );
   };
 
   const handleSidebarItemClick = (name: string) => {
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
+
     router.push(
       {
         pathname: '/',
         query: {
-          page: name.toLowerCase().replace(/ /g, '-'),
+          ...allQueries,
+          page: encodeURIComponent(name.toLowerCase().replace(/ /g, '-')),
         },
       },
       undefined,
-      { shallow: true }
+      { shallow: router.pathname === '/404' ? false : true }
     );
   };
 
@@ -121,16 +134,18 @@ export const Layout = ({
               {sidebarItems &&
                 sidebarItems.map(({ name, Icon }) => {
                   const isHome =
-                    router.asPath === '/' ||
-                    router.asPath.includes('/?page=home') ||
-                    router.query.page === 'home' ||
-                    !router.query.page;
+                    router.pathname === '/' &&
+                    (router.asPath.includes('/?page=home') ||
+                      router.query.page === 'home' ||
+                      !router.query.page);
 
                   const isActive =
                     name.toLowerCase() === 'home'
                       ? isHome
                       : name.toLowerCase().replace(/ /g, '-') ===
-                        router.query.page;
+                        decodeURIComponent(
+                          (router.query.page as string) || ''
+                        );
 
                   return (
                     <button
@@ -142,7 +157,12 @@ export const Layout = ({
                       } hover:text-primary text-cGray-300`}
                       key={name}
                       onClick={() => {
-                        if (isActive) return;
+                        if (
+                          isActive &&
+                          router.pathname !== '/404' &&
+                          !router.query.bookId
+                        )
+                          return;
                         handleSidebarItemClick(name);
                       }}
                     >

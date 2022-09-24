@@ -2,6 +2,7 @@ import {
   AiOutlineHistory,
   AiOutlineHome,
   AiOutlineMessage,
+  AiOutlineSearch,
 } from 'react-icons/ai';
 import { MdOutlineContactPage, MdPendingActions } from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
@@ -12,6 +13,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
   {
     name: 'Home',
     Icon: AiOutlineHome,
+  },
+  {
+    name: 'Search',
+    Icon: AiOutlineSearch,
   },
   {
     name: 'Messages',
@@ -45,3 +50,5 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
     Icon: MdOutlineContactPage,
   },
 ];
+
+export const sortItems = ['Relevance', 'Latest', 'Popular'];

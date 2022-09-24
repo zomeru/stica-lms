@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { useRouter } from 'next/router';
 
 const IMAGE_URL = 'https://i.imgur.com/01syuMU.jpg';
 
@@ -22,7 +23,22 @@ const BookCard = ({
   available,
   views,
 }: BookCardProps) => {
+  const router = useRouter();
   const [isFavorite, setIsFavorite] = React.useState(false);
+
+  const handleBookDetailClick = (bookId: string) => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...router.query,
+          bookId,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%-2px)] before:top-[1px] before:rounded-2xl before:z-[-1]'>
@@ -57,6 +73,7 @@ const BookCard = ({
           <button
             type='button'
             className='bg-cGray-200 px-2 py-1 rounded-md text-sm text-blackText hover:bg-neutral-400 duration-200 transition-all'
+            onClick={() => handleBookDetailClick(id)}
           >
             Details
           </button>

@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Messages = () => {
+const BookDetails = () => {
   return (
     <section className='w-full h-full flex justify-center items-center'>
-      <h1 className='text-3xl font-medium'>Messages</h1>
+      <h1 className='text-3xl font-medium'>Book Details</h1>
     </section>
   );
 };
 
-export default Messages;
+export default BookDetails;
