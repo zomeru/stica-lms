@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
@@ -84,8 +85,19 @@ const Search = () => {
 
   if (!router.query.searchKeyword) {
     return (
-      <section className='w-full h-full bg-neutral-300 flex justify-center items-center'>
-        Please search for books
+      <section className='w-full h-full flex flex-col justify-center space-y-2'>
+        <div className='w-[70%] h-[70%] 2xl:w-[45%] 2xl:h-[45%] relative mx-auto'>
+          <Image
+            src='/assets/images/person_search_2.jpg'
+            layout='fill'
+            objectPosition='center'
+            objectFit='contain'
+            quality={50}
+          />
+        </div>
+        <div className='text-center text-3xl font-medium text-cGray-300'>
+          Please search for a book
+        </div>
       </section>
     );
   }

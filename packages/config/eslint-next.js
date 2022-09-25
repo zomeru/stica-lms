@@ -42,6 +42,7 @@ module.exports = {
 
     'arrow-body-style': 'off',
     'import/prefer-default-export': 'off',
+    'no-nested-ternary': 'off',
 
     // next
     '@next/next/no-html-link-for-pages': 'off',

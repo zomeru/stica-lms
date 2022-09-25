@@ -46,9 +46,52 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineHome,
   },
   {
+    name: 'Search',
+    Icon: AiOutlineSearch,
+  },
+  {
     name: 'Contact',
     Icon: MdOutlineContactPage,
   },
 ];
 
 export const sortItems = ['Relevance', 'Latest', 'Popular'];
+
+export const pendingRequestTableHeaders = [
+  // 'Book ID',
+  'ISBN',
+  'Title',
+  'Request Date',
+  'Pick-up Due Date',
+  'Status',
+];
+
+export const issuedBooksTableHeaders = [
+  // 'Book ID',
+  'ISBN',
+  'Title',
+  'Issued Date',
+  'Due Date',
+  'Penalty',
+];
+
+export const historyTableHeaders = [
+  // 'Book ID',
+  'ISBN',
+  'Title',
+  // 'Requested Date',
+  'Issued Date',
+  'Due Date',
+  'Returned Date',
+  'Penalty',
+  'Status',
+];
+
+export const requestStatus = ['Pending', 'Approved'];
+
+export const historyStatus = [
+  'Cancelledasdas',
+  'Returned',
+  'Returned with damage',
+  'Lost',
+];

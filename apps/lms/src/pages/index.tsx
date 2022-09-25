@@ -41,6 +41,7 @@ const Home: NextPage = () => {
       'currently issued books',
       'pending requests',
       'history',
+      'contact',
     ];
 
     function checkPage() {
@@ -53,7 +54,10 @@ const Home: NextPage = () => {
           router.push(
             {
               pathname: '/',
-              query: { page: 'home' },
+              query: {
+                ...router.query,
+                page: 'home',
+              },
             },
             undefined,
             { shallow: true }

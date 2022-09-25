@@ -50,7 +50,10 @@ export const Layout = ({
       return;
     }
 
-    if (router.query.searchKeyword === searchInputRef.current.value)
+    if (
+      router.query.searchKeyword === searchInputRef.current.value &&
+      router.query.page === 'search'
+    )
       return;
 
     const allQueries = { ...router.query };
@@ -68,7 +71,7 @@ export const Layout = ({
         },
       },
       undefined,
-      { shallow: router.pathname === '/404' ? false : true }
+      { shallow: true }
     );
   };
 
@@ -85,7 +88,7 @@ export const Layout = ({
         },
       },
       undefined,
-      { shallow: router.pathname === '/404' ? false : true }
+      { shallow: true }
     );
   };
 
@@ -155,12 +158,7 @@ export const Layout = ({
                       } hover:text-primary text-cGray-300`}
                       key={name}
                       onClick={() => {
-                        if (
-                          isActive &&
-                          router.pathname !== '/404' &&
-                          !router.query.bookId
-                        )
-                          return;
+                        if (isActive && !router.query.bookId) return;
                         handleSidebarItemClick(name);
                       }}
                     >
