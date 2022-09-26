@@ -92,7 +92,6 @@ const Search = () => {
             layout='fill'
             objectPosition='center'
             objectFit='contain'
-            quality={50}
           />
         </div>
         <div className='text-center text-3xl font-medium text-cGray-300'>

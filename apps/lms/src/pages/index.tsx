@@ -41,7 +41,6 @@ const Home: NextPage = () => {
       'currently issued books',
       'pending requests',
       'history',
-      'contact',
     ];
 
     function checkPage() {
