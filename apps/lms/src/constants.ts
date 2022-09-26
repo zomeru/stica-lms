@@ -90,7 +90,7 @@ export const historyTableHeaders = [
 export const requestStatus = ['Pending', 'Approved'];
 
 export const historyStatus = [
-  'Cancelledasdas',
+  'Cancelled',
   'Returned',
   'Returned with damage',
   'Lost',
