@@ -6,7 +6,7 @@
   "files": [
     "eslint-next.js"
   ],
-  "dependencies": {
+  "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "eslint-config-airbnb": "^19.0.2",

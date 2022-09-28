@@ -5,17 +5,7 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
-    "build:lms": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
-    },
-    "build:admin": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
-    },
     "start": { "outputs": [] },
-    "start:lms": { "outputs": [] },
-    "start:admin": { "outputs": [] },
     "lint": { "outputs": [] },
     "dev": { "cache": false },
     "clean": { "cache": false }
