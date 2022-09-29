@@ -21,10 +21,9 @@ const useAuth = () => {
       password.trim()
     )
       .then((userCredential) => {
-        const {user} = userCredential;
+        const { user } = userCredential;
         setUser(user);
-        router.push('/dashboard');
-        
+        // router.push('/dashboard');
       })
       .catch((loginError) => {
         const errorMessage = loginError.message;
@@ -52,9 +51,9 @@ const useAuth = () => {
       password.trim()
     )
       .then((userCredential) => {
-        const {user} = userCredential;
+        const { user } = userCredential;
         setUser(user);
-        router.push('/dashboard');
+        // router.push('/dashboard');
       })
       .catch((registerError) => {
         const errorMessage = registerError.message;

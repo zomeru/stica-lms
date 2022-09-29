@@ -1,13 +1,15 @@
 import type { AppProps } from 'next/app';
 
-import { UserProvider } from '@src/contexts';
+import { SidebarProvider, UserProvider } from '@src/contexts';
 
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <UserProvider>
-      <Component {...pageProps} />
+      <SidebarProvider>
+        <Component {...pageProps} />
+      </SidebarProvider>
     </UserProvider>
   );
 }
