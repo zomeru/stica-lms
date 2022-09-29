@@ -11,7 +11,6 @@ import {
 } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from 'db';
-import { useRouter } from 'next/router';
 
 export interface UserContextProps {
   user: User;
@@ -32,8 +31,6 @@ interface UserProviderProps {
 }
 
 export const UserProvider: FC<UserProviderProps> = ({ children }) => {
-  const router = useRouter();
-
   const [user, setUser] = useState<User>({} as User);
   const [loading, setLoading] = useState(true);
 
@@ -41,8 +38,7 @@ export const UserProvider: FC<UserProviderProps> = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        if (router.pathname !== '/dashboard') router.push('/dashboard');
-      } else if (router.pathname !== '/') router.push('/');
+      }
 
       setLoading(false);
     });

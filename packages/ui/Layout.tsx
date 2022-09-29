@@ -26,6 +26,8 @@ interface LayoutProps {
   username?: string;
   userPhoto?: string;
   children?: React.ReactNode;
+  showSearch?: boolean;
+  topBar?: React.ReactNode;
 }
 
 export const Layout = ({
@@ -37,6 +39,8 @@ export const Layout = ({
   sidebarItems,
   sidebarOpen = true,
   showHideSidebar,
+  showSearch = true,
+  topBar,
 }: LayoutProps) => {
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -214,26 +218,31 @@ export const Layout = ({
         </div>
         <div className='h-full w-full'>
           <div className='w-full h-[100px] flex px-[40px]'>
-            <form
-              onSubmit={handleSearch}
-              className='w-full h-full flex items-center space-x-3'
-            >
-              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
-                <AiOutlineSearch className='text-2xl text-cGray-300' />
-                <input
-                  ref={searchInputRef}
-                  placeholder='Search for books'
-                  type='text'
-                  className='w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full'
-                />
-              </div>
-              {/* <button
+            {showSearch ? (
+              <form
+                onSubmit={handleSearch}
+                className='w-full h-full flex items-center space-x-3'
+              >
+                <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
+                  <AiOutlineSearch className='text-2xl text-cGray-300' />
+                  <input
+                    ref={searchInputRef}
+                    placeholder='Search for books'
+                    type='text'
+                    className='w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full'
+                  />
+                </div>
+                {/* <button
                 type='submit'
                 className='bg-primary text-white py-3 px-10 rounded-full'
               >
                 Search
               </button> */}
-            </form>
+              </form>
+            ) : (
+              topBar
+            )}
+
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
               <button type='button'>
                 <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
