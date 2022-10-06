@@ -144,10 +144,13 @@ export const Layout = ({
                     router.pathname === '/' &&
                     (router.asPath.includes('/?page=home') ||
                       router.query.page === 'home' ||
-                      !router.query.page);
+                      !router.query.page ||
+                      router.query.page === 'books' ||
+                      router.asPath.includes('/?page=books'));
 
                   const isActive =
-                    name.toLowerCase() === 'home'
+                    name.toLowerCase() === 'home' ||
+                    name.toLowerCase() === 'books'
                       ? isHome
                       : name.toLowerCase() ===
                         decodeURIComponent(router.query.page as string);

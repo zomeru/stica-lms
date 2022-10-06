@@ -1,15 +1,18 @@
 import { FormEvent, useState } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 
-import { Layout } from 'ui';
+import { Layout } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';
+import { Books } from '@src/components/Content';
 
 const Home: NextPage = () => {
   const { user, loading } = useUser();
   const { login, error, logout } = useAuth();
   const { sidebarOpen, showHideSidebar } = useSidebar();
+  const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +21,20 @@ const Home: NextPage = () => {
     e.preventDefault();
 
     login(username, password);
+  };
+
+  const renderContent = () => {
+    const page = decodeURIComponent(router.query.page as string);
+
+    return (
+      <>
+        {(router.asPath === '/' ||
+          router.asPath.includes('/?page=books') ||
+          page === 'books' ||
+          !router.query.page) && <Books />}
+        {/* {<div>asdadad</div>} */}
+      </>
+    );
   };
 
   if (!loading && user.uid) {
@@ -29,11 +46,11 @@ const Home: NextPage = () => {
         sidebarItems={adminSidebarItems}
         authAction={logout}
         username='Admin'
-        showSearch={false}
+        // showSearch={false}
         userPhoto='/assets/images/STI_LOGO.png'
-        topBar={<div>top bar</div>}
+        // topBar={<div>top bar</div>}
       >
-        <div>asdasdasd</div>
+        {renderContent()}
       </Layout>
     );
   }
