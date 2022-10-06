@@ -4,7 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { auth } from 'db';
+import { auth } from '@lms/db';
 import { useUser } from '@src/contexts';
 import { useRouter } from 'next/router';
 

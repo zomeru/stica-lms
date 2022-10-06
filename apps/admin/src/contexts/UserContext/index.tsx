@@ -10,7 +10,7 @@ import {
   SetStateAction,
 } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from 'db';
+import { auth } from '@lms/db';
 
 export interface UserContextProps {
   user: User;

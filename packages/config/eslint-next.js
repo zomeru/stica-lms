@@ -38,8 +38,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/function-component-definition': 'off',
-    'import/no-extraneous-dependencies': 'off',
+    'react/require-default-props': 'off',
 
+    'import/no-extraneous-dependencies': 'off',
     'arrow-body-style': 'off',
     'import/prefer-default-export': 'off',
     'no-nested-ternary': 'off',
