@@ -274,7 +274,6 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
             title='Genre Type'
             options={GENRE_TYPES}
             setValue={setGenreType}
-            value={genreType}
             inputProps={{
               required: true,
             }}
@@ -286,7 +285,6 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
                 ? BOOK_GENRES_FICTION
                 : BOOK_GENRES_NONFICTION
             }
-            value={genre}
             setValue={setGenre}
             inputProps={{
               disabled: !genreType,
@@ -302,7 +300,7 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
               // defaultValue: 1,
               required: true,
               value: quantity,
-              onChange (e) {
+              onChange(e) {
                 if (Number(e.target.value) < quantity) {
                   setISBNs((prev) =>
                     prev.slice(0, Number(e.target.value))
