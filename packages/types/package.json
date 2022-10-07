@@ -1,0 +1,19 @@
+{
+  "name": "@lms/types",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint *.ts*"
+  },
+  "dependencies": {
+    "firebase": "^9.9.4"
+  },
+  "devDependencies": {
+    "@lms/config": "*",
+    "@lms/tsconfig": "*",
+    "eslint": "^7.32.0",
+    "typescript": "^4.5.2"
+  }
+}

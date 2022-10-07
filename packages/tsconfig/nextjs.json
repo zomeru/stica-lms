@@ -5,8 +5,10 @@
   "compilerOptions": {
     "jsx": "preserve",
     "noEmit": true,
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["@lms/types"]
   },
+
   "include": ["src/**/*", "next-env.d.ts"],
   "exclude": ["node_modules", ".next", ".turbo"]
 }

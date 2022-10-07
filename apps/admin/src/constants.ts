@@ -1,6 +1,7 @@
 import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai';
 import { MdLoop, MdOutlineLibraryBooks } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
+import { FictionType, GenreType, NonFictionType } from '@lms/types';
 
 export const adminSidebarItems = [
   {
@@ -40,9 +41,9 @@ export const ADD_BOOK_TEXT_INPUTS = [
   'Accession No.',
 ];
 
-export const GENRE_TYPES = ['Fiction', 'Non-Fiction'];
+export const GENRE_TYPES: GenreType[] = ['Fiction', 'Non-Fiction'];
 
-export const BOOK_GENRES_FICTION = [
+export const BOOK_GENRES_FICTION: FictionType[] = [
   'Action and adventure',
   'Alternate history',
   'Anthology',
@@ -73,7 +74,7 @@ export const BOOK_GENRES_FICTION = [
   'Young adult',
 ];
 
-export const BOOK_GENRES_NONFICTION = [
+export const BOOK_GENRES_NONFICTION: NonFictionType[] = [
   'Art/architecture',
   'Autobiography',
   'Biography',
