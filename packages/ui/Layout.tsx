@@ -27,7 +27,11 @@ interface LayoutProps {
   userPhoto?: string;
   children?: React.ReactNode;
   showSearch?: boolean;
+  searchPlaceholder?: string;
+  searchDisabled?: boolean;
   topBar?: React.ReactNode;
+  user?: 'user' | 'admin';
+  onAdminSearch?: () => void;
 }
 
 export const Layout = ({
@@ -40,13 +44,22 @@ export const Layout = ({
   sidebarOpen = true,
   showHideSidebar,
   showSearch = true,
+  searchDisabled = false,
+  searchPlaceholder = 'Search for books',
   topBar,
+  user = 'user',
+  onAdminSearch,
 }: LayoutProps) => {
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (user === 'admin') {
+      if (onAdminSearch) onAdminSearch();
+      return;
+    }
 
     if (!searchInputRef.current) return;
     if (!searchInputRef.current.value) {
@@ -230,9 +243,12 @@ export const Layout = ({
                   <AiOutlineSearch className='text-2xl text-cGray-300' />
                   <input
                     ref={searchInputRef}
-                    placeholder='Search for books'
+                    disabled={searchDisabled}
+                    placeholder={searchPlaceholder}
                     type='text'
-                    className='w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full'
+                    className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
+                      searchDisabled && 'cursor-not-allowed'
+                    }`}
                   />
                 </div>
                 {/* <button

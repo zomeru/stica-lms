@@ -47,6 +47,9 @@ const Home: NextPage = () => {
         authAction={logout}
         username='Admin'
         // showSearch={false}
+        searchDisabled
+        searchPlaceholder='Search disabled'
+        user='admin'
         userPhoto='/assets/images/STI_LOGO.png'
         // topBar={<div>top bar</div>}
       >
