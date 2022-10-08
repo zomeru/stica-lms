@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 
 import { IBookDoc } from '@lms/types';
 import { Loader } from '@src/components';
+import { SORT_ITEMS } from '@src/constants';
 
 import BookListCard from '../BookListCard';
+import { OrderType } from '..';
 
 interface BookListProps {
   books: IBookDoc[];
@@ -14,6 +16,10 @@ interface BookListProps {
   addBook: boolean;
   setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedBook: React.Dispatch<React.SetStateAction<string>>;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: string;
+  setSortOrder: React.Dispatch<React.SetStateAction<OrderType>>;
+  sortOrder: OrderType;
 }
 
 const BookList = ({
@@ -24,6 +30,10 @@ const BookList = ({
   addBook,
   setAddBook,
   setSelectedBook,
+  setSortBy,
+  sortBy,
+  sortOrder,
+  setSortOrder,
 }: BookListProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +44,11 @@ const BookList = ({
       setHeaderHeight(headerRef.current.clientHeight);
     }
   }, [headerHeight, headerRef]);
+
+  const currentOrderItems = useMemo(
+    () => SORT_ITEMS.find((el) => el.sort.field === sortBy)?.order,
+    [sortBy]
+  );
 
   return (
     <div
@@ -92,16 +107,37 @@ const BookList = ({
           style={{
             height: `calc(100% - ${headerHeight}px)`,
           }}
-          className="overflow-y-scroll w-full custom-scrollbar"
+          className='overflow-y-scroll w-full custom-scrollbar'
         >
-          <div className='flex space-x-5'>
-            <div className='flex space-x-3'>
-              <div>Sort by:</div>
-              <div>date</div>
+          <div className='flex space-x-5 items-center'>
+            <div className='flex space-x-3 items-center'>
+              <div className='text-cGray-300'>Sort by:</div>
+              <select
+                className='outline-none border border-cGray-200 px-2 py-[3px] rounded'
+                onChange={(e) => setSortBy(e.target.value)}
+                value={sortBy}
+              >
+                {SORT_ITEMS.map((item) => (
+                  <option key={item.sort.field} value={item.sort.field}>
+                    {item.sort.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className='flex space-x-3'>
-              <div>Order:</div>
-              <div>desc</div>
+            <div className='flex space-x-3 items-center'>
+              <div className='text-cGray-300'>Order:</div>
+              <select
+                className='outline-none border border-cGray-200 px-2 py-[3px] rounded'
+                onChange={(e) => setSortOrder(e.target.value as OrderType)}
+                value={sortOrder}
+              >
+                {currentOrderItems &&
+                  currentOrderItems.map((item) => (
+                    <option key={item.name} value={item.value}>
+                      {item.name}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
           <table className='min-w-full leading-normal overflow-y-scroll'>

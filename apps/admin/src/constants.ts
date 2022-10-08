@@ -34,6 +34,73 @@ export const adminSidebarItems = [
   },
 ];
 
+export const SORT_ITEMS = [
+  {
+    sort: {
+      name: 'Date',
+      field: 'updatedAt',
+    },
+    order: [
+      {
+        name: 'Latest',
+        value: 'desc',
+      },
+      {
+        name: 'Oldest',
+        value: 'asc',
+      },
+    ],
+  },
+  {
+    sort: {
+      name: 'Title',
+      field: 'title',
+    },
+    order: [
+      {
+        name: 'A-Z',
+        value: 'asc',
+      },
+      {
+        name: 'Z-A',
+        value: 'desc',
+      },
+    ],
+  },
+  {
+    sort: {
+      name: 'Author',
+      field: 'author',
+    },
+    order: [
+      {
+        name: 'A-Z',
+        value: 'asc',
+      },
+      {
+        name: 'Z-A',
+        value: 'desc',
+      },
+    ],
+  },
+  {
+    sort: {
+      name: 'Genre',
+      field: 'genre',
+    },
+    order: [
+      {
+        name: 'A-Z',
+        value: 'asc',
+      },
+      {
+        name: 'Z-A',
+        value: 'desc',
+      },
+    ],
+  },
+];
+
 export const ADD_BOOK_TEXT_INPUTS = [
   'Title',
   'Author',

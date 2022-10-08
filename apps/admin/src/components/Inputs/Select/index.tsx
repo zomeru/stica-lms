@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 interface SelectProps {
   title: string;
   options: string[];
+  value: string;
   setValue: React.Dispatch<React.SetStateAction<any>>;
   inputProps?: React.SelectHTMLAttributes<HTMLSelectElement>;
   dep?: any;
@@ -11,6 +12,7 @@ interface SelectProps {
 const Select = ({
   title,
   setValue,
+  value,
   options,
   inputProps,
   dep,
@@ -30,7 +32,7 @@ const Select = ({
         {...inputProps}
         className='focus:border-primary max-w-[400px] w-full outline-none border h-[40px] px-[10px] rounded border-neutral-300'
         onChange={(e) => setValue(e.target.value)}
-        defaultValue=''
+        value={value}
       >
         <option value='' disabled hidden>
           Choose a {title}

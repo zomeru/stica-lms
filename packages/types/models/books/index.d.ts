@@ -29,6 +29,10 @@ export interface IISBN {
   isbn: string;
 }
 
+export interface IISBNDoc extends IISBN {
+  id: string;
+}
+
 export type GenreTypes = FictionType | NonFictionType;
 
 export type FictionType =
