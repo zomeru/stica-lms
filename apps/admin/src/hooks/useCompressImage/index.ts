@@ -30,7 +30,7 @@ const useCompressImage: CompressFunction = (
 
     if (debug) {
       stime = performance.now();
-      // console.log('[useCompress] convert start...');
+      console.log('[useCompress] convert start...');
     }
 
     if (debug) {

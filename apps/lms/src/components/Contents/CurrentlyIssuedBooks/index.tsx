@@ -149,7 +149,7 @@ const CurrentlyIssuedBooks = () => {
                       Renew
                     </button>
                     <button
-                      className="text-white px-3 py-2 duration-300 transition-colors bg-red-500 hover:bg-red-600"
+                      className='text-white px-3 py-2 duration-300 transition-colors bg-red-500 hover:bg-red-600'
                       type='button'
                       onClick={() => setActionShowId('')}
                     >

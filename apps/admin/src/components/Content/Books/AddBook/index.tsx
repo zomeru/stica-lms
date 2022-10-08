@@ -14,7 +14,13 @@ import {
   BOOK_GENRES_NONFICTION,
   GENRE_TYPES,
 } from '@src/constants';
-import { GenreType, IBooks, GenreTypes, IISBN } from '@lms/types';
+import {
+  GenreType,
+  IBooks,
+  GenreTypes,
+  IISBN,
+  IBookDoc,
+} from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import nProgress from 'nprogress';
 import Loader from '@src/components/Loader';
@@ -33,11 +39,6 @@ const modalCustomStyle = {
     borderRadius: '15px',
   },
 };
-
-interface AddBookProps {
-  addBook: boolean;
-  setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
 const ISBNModal = ({
   isModalOpen,
@@ -113,7 +114,19 @@ const ISBNModal = ({
   );
 };
 
-const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
+interface AddBookProps {
+  addBook: boolean;
+  setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
+  books: IBookDoc[];
+  setBooks: React.Dispatch<React.SetStateAction<IBookDoc[]>>;
+}
+
+const AddBook = ({
+  addBook,
+  setAddBook,
+  books,
+  setBooks,
+}: AddBookProps) => {
   const [handleBookImage, bookFile, bookImage, clearImage] =
     useFileHandler();
   const { uploadImage } = useUploadImage();
@@ -215,6 +228,15 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
         setISBNs([]);
         clearImage();
 
+        const newBooks = [
+          {
+            id: bookAdded.id,
+            ...payload,
+          } as IBookDoc,
+          ...books,
+        ];
+        setBooks(newBooks);
+
         toast.success('Book added successfully');
       }
 
@@ -277,6 +299,7 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
             inputProps={{
               required: true,
             }}
+            value={genreType}
           />
           <Select
             title='Genre'
@@ -286,6 +309,7 @@ const AddBook = ({ addBook, setAddBook }: AddBookProps) => {
                 : BOOK_GENRES_NONFICTION
             }
             setValue={setGenre}
+            value={genre}
             inputProps={{
               disabled: !genreType,
               required: true,

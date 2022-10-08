@@ -63,8 +63,6 @@ const useAuth = () => {
         } else {
           setError('Something went wrong! Please try again later.');
         }
-
-        console.log('register error', errorMessage);
       });
   };
 
