@@ -35,10 +35,10 @@ const BookListCard = ({
         </p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
-        <p className='whitespace-no-wrap text-gray-600'>{title}</p>
+        <p className='whitespace-no-wrap text-gray-900'>{title}</p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
-        <p className='whitespace-no-wrap text-gray-600'>{author}</p>
+        <p className='whitespace-no-wrap text-gray-900'>{author}</p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>{genre}</p>
