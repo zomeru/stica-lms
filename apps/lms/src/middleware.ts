@@ -12,7 +12,9 @@ export default async function middleware(req: NextRequest) {
   );
 
   if (isMobile) {
-    return NextResponse.redirect(new URL('https://m.sticalms.com', url));
+    return NextResponse.redirect(
+      new URL(process.env.NEXT_PUBLIC_DOMAIN_MOBILE as string, url)
+    );
   }
 
   return NextResponse.next();
