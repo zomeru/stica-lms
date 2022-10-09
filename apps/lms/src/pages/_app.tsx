@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { DefaultSeo } from 'next-seo';
 import {
   EventType,
@@ -8,7 +8,6 @@ import {
   AuthenticationResult,
 } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import NProgress from 'nprogress';
 import { Toaster } from 'react-hot-toast';
 
 import { UserProvider, SidebarProvider } from '@src/contexts';
@@ -34,12 +33,12 @@ msalInstance.addEventCallback((event: EventMessage) => {
   }
 });
 
-Router.events.on('routeChangeStart', () => {
-  NProgress.configure({ showSpinner: false });
-  NProgress.start();
-});
-Router.events.on('routeChangeComplete', () => NProgress.done());
-Router.events.on('routeChangeError', () => NProgress.done());
+// Router.events.on('routeChangeStart', () => {
+//   NProgress.configure({ showSpinner: false });
+//   NProgress.start();
+// });
+// Router.events.on('routeChangeComplete', () => NProgress.done());
+// Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

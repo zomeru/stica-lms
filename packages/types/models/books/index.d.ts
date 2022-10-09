@@ -15,6 +15,8 @@ export interface IBooks {
     url: string;
     ref: string;
   };
+  views: number;
+  totalBorrow: number;
   createdAt: FieldValue;
   updatedAt: FieldValue;
 }

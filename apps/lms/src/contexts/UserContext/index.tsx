@@ -22,7 +22,7 @@ import { useIsAuthenticated } from '@azure/msal-react';
 import { PublicClientApplication } from '@azure/msal-browser';
 
 import { loginRequest } from '@src/config';
-import { db } from '@src/utils';
+import { db } from '@lms/db';
 import { IUser } from '@src/types';
 
 export interface UserContextProps {
