@@ -4,8 +4,7 @@ import Compressor from 'compressorjs';
 export type Options = Omit<Compressor.Options, 'success' | 'error'>;
 export type CompressFunction = (
   file: File,
-  options?: Options | undefined,
-  debug?: boolean
+  options?: Options | undefined
 ) => Promise<File>;
 
 const useCompressImage: CompressFunction = (
@@ -14,8 +13,7 @@ const useCompressImage: CompressFunction = (
     mimeType: 'image/jpeg',
     quality: 0.7,
     convertSize: 8 * 1024 * 1024,
-  },
-  debug = false
+  }
 ) => {
   const isImage = file.type.startsWith('image/') || file.type === '';
   // if not image, return original file
@@ -25,21 +23,6 @@ const useCompressImage: CompressFunction = (
 
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
-    let stime = 0;
-    let etime = 0;
-
-    if (debug) {
-      stime = performance.now();
-      console.log('[useCompress] convert start...');
-    }
-
-    if (debug) {
-      etime = performance.now();
-      console.log(`[useCompress] convert finished: ${etime - stime}ms`);
-      stime = performance.now();
-      console.log('[useCompress] compress start...');
-    }
-
     // eslint-disable-next-line no-new
     new Compressor(file, {
       quality: 0.5,
@@ -53,12 +36,6 @@ const useCompressImage: CompressFunction = (
           newFile = result;
         }
 
-        if (debug) {
-          etime = performance.now();
-          console.log(
-            `[useCompress] compress finished: ${etime - stime}ms`
-          );
-        }
         resolve(newFile);
       },
       error(err) {
