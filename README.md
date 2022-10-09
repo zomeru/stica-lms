@@ -1,8 +1,9 @@
 <div align="center">
   <img alt="Logo" src="https://raw.githubusercontent.com/zomeru/stica-lms/main/apps/lms/public/assets/images/STI_LOGO.png" width="100" />
 </div>
+
 <h1 align="center">
-  sticalms.com
+  <a href="https://sticalms.com/" target="_blank">sticalms.com</a>
 </h1>
 <p align="center">
   This is our capstone project for my final year in STI College Alabang. It is built with <a href="https://vercel.com/" target="_blank">Vercel</a> technologies such as <a href="https://nextjs.org/" target="_blank">Next.js</a> and <a href="https://turborepo.org/" target="_blank">Turborepo</a>. Uses <a href="https://firebase.google.com/" target="_blank">Firebase</a> as database and hosted in <a href="https://vercel.com/" target="_blank">Vercel</a>.
