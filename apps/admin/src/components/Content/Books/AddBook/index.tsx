@@ -194,7 +194,7 @@ const AddBook = ({
         newISBNs.push({
           isbn,
           isAvailable: true,
-        });
+        } as ISBNType);
       });
 
       if (imageCover) {
