@@ -42,18 +42,12 @@ const Search = () => {
     getResult();
   }, [searchKeyword]);
 
-  // const currentBooks = useClientPagination(
-  //   books,
-  //   currentPage ? Number(currentPage) : 1,
-  //   HITS_PER_PAGE
-  // );
-
   const [sortBy, setSortBy] = useState('views');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
 
   useEffect(() => {
     if (!router.query.sortBy) {
-      setSortBy('totalBorrow');
+      setSortBy('views');
     } else {
       const orderIndex = SORT_ITEMS.findIndex(
         (el) => el.sort.name === router.query.sortBy
@@ -67,8 +61,6 @@ const Search = () => {
     const orderIndex = SORT_ITEMS.findIndex(
       (el) => el.sort.name === router.query.sortBy
     );
-
-    console.log('orderIndex', orderIndex);
 
     const newOrder =
       orderIndex > -1
@@ -99,6 +91,8 @@ const Search = () => {
         .slice(indexOfFirstItem, indexOfLastItem),
     [books, currentPage, sortBy, sortOrder]
   );
+
+  console.log('currentBooks', currentBooks);
 
   const handleSort = (sortName: string) => {
     router.push(
@@ -202,7 +196,7 @@ const Search = () => {
                 <div className='text-cGray-300'>Order by:</div>
                 <div className='pr-3 bg-neutral-200 rounded-lg'>
                   <select
-                    className='outline-none border-none rounded-lg text-cGray-300 bg-neutral-200 px-2 py-[3px] rounded'
+                    className='outline-none border-none rounded-lg text-cGray-300 bg-neutral-200 px-2 py-[3px] '
                     onChange={(e) =>
                       setSortOrder(e.target.value as OrderType)
                     }
@@ -218,6 +212,12 @@ const Search = () => {
                 </div>
               </div>
             </div>
+            {/* <Pagination
+              showLast={false}
+              showFirst={false}
+              padding={1}
+              totalPages={Math.round(books.length / HITS_PER_PAGE)}
+            /> */}
             {books.length > 0 && books.length / HITS_PER_PAGE > 1 && (
               <div className='flex items-center space-x-3'>
                 <div>

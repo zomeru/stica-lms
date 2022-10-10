@@ -257,10 +257,10 @@ export const Layout = ({
                     className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
                       searchDisabled && 'cursor-not-allowed'
                     }`}
-                    onChange={(e) =>
-                      router.query.page === 'search' &&
-                      handleSearch(e.target.value)
-                    }
+                    // onChange={(e) =>
+                    //   router.query.page === 'search' &&
+                    //   handleSearch(e.target.value)
+                    // }
                   />
                 </div>
                 {/* <button

@@ -15,9 +15,7 @@ const BookCard = ({
   available,
   views,
   imageCover,
-}: // hit,
-IBookDoc & { objectID: string }) => {
-  // const { id, title, author, genre, available, views, imageCover } = hit;
+}: IBookDoc & { objectID: string }) => {
   const router = useRouter();
   const [isFavorite, setIsFavorite] = React.useState(false);
 

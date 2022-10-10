@@ -106,7 +106,7 @@ const Home: NextPage = () => {
         {isAuthenticated && page === 'currently issued books' && (
           <CurrentlyIssuedBooks />
         )}
-        {isAuthenticated && page === 'pending requests' && (
+        {isAuthenticated && page === 'borrow requests' && (
           <PendingRequests />
         )}
         {isAuthenticated && page === 'history' && <History />}

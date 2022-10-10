@@ -19,16 +19,17 @@ export interface IBooks {
   totalBorrow: number;
   createdAt: FieldValue;
   updatedAt: FieldValue;
+  isbns: Array<ISBNType>;
 }
 
 export interface IBookDoc extends IBooks {
   id: string;
 }
 
-export interface IISBN {
-  book: string;
-  available: boolean;
+export interface ISBNType {
   isbn: string;
+  available: number;
+  issuedBy: string | null;
 }
 
 export interface IISBNDoc extends IISBN {

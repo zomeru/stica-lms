@@ -27,7 +27,7 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: FiBookOpen,
   },
   {
-    name: 'Pending Requests',
+    name: 'Borrow Requests',
     Icon: MdPendingActions,
   },
   {
@@ -126,8 +126,9 @@ export const sortItems = ['Relevance', 'Latest'];
 
 export const pendingRequestTableHeaders = [
   // 'Book ID',
-  'ISBN',
   'Title',
+  'ISBN',
+  'Accession No',
   'Request Date',
   'Pick-up Due Date',
   'Status',
