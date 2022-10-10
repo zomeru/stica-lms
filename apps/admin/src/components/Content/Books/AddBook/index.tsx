@@ -191,10 +191,12 @@ const AddBook = ({
       const newISBNs: ISBNType[] = [];
 
       ISBNs.forEach((isbn) => {
-        newISBNs.push({
+        const newISBN: ISBNType = {
           isbn,
           isAvailable: true,
-        } as ISBNType);
+        } as ISBNType;
+
+        newISBNs.push(newISBN);
       });
 
       if (imageCover) {
