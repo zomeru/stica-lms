@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { Layout } from '@lms/ui';
 
+import { Layout } from '@lms/ui';
 import { usePhoto } from '@src/hooks';
 import {
   loggedInSidebarItems,
@@ -106,7 +106,7 @@ const Home: NextPage = () => {
         {isAuthenticated && page === 'currently issued books' && (
           <CurrentlyIssuedBooks />
         )}
-        {isAuthenticated && page === 'pending requests' && (
+        {isAuthenticated && page === 'borrow requests' && (
           <PendingRequests />
         )}
         {isAuthenticated && page === 'history' && <History />}

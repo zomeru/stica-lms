@@ -23,6 +23,10 @@ const PendingRequests = () => {
           10,
           99
         )}-${randNum(100000, 999999)}-${randNum(0, 9)}`,
+        accessionNo: `${randNum(100, 999)}-${randNum(0, 9)}-${randNum(
+          10,
+          99
+        )}-${randNum(100000, 999999)}-${randNum(0, 9)}`,
         title: `The Great Gatsby - ${1 + i}`,
         requestDate: today,
         pickupDueDate: randomStatus === 'Pending' ? 'N/A' : tomorrow,
@@ -62,9 +66,6 @@ const PendingRequests = () => {
                 </p>
               </td> */}
               <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className='w-max text-gray-900'>{request.isbn}</p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                 <p
                   className='w-[150px] text-ellipsis overflow-hidden text-gray-600'
                   data-for={request.title}
@@ -74,6 +75,16 @@ const PendingRequests = () => {
                 </p>
                 <ReactTooltip id={request.title} />
               </td>
+              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                <p className='w-max text-gray-900'>{request.isbn}</p>
+              </td>
+
+              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                <p className='w-max text-gray-900'>
+                  {request.accessionNo}
+                </p>
+              </td>
+
               <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                 <p className='whitespace-no-wrap text-gray-900'>
                   {request.requestDate}

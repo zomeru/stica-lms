@@ -99,6 +99,20 @@ export default class MyDocument extends Document {
             href='/assets/icons/favicon-16x16.png'
           />
           <link rel='manifest' href='/site.webmanifest' />
+          {/* <link
+            rel='stylesheet'
+            href='https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/reset-min.css'
+            integrity='sha256-QlHlZdbSVxaYkUHxhMFhAj/L3pJiW1LuomSCONXBWms='
+            crossOrigin='anonymous'
+          /> */}
+
+          <link
+            rel='stylesheet'
+            href='https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css'
+            integrity='sha256-TehzF/2QvNKhGQrrNpoOb2Ck4iGZ1J/DI4pkd2oUsBc='
+            crossOrigin='anonymous'
+          />
+
           <meta name='msapplication-TileColor' content='#ffffff' />
           <meta
             name='msapplication-TileImage'

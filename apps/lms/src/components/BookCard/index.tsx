@@ -4,25 +4,18 @@ import ReactTooltip from 'react-tooltip';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 
-const IMAGE_URL = 'https://i.imgur.com/01syuMU.jpg';
-
-interface BookCardProps {
-  id: string;
-  title: string;
-  author: string;
-  genre: string;
-  available: number;
-  views: number;
-}
+import { IBookDoc } from '@lms/types';
 
 const BookCard = ({
-  id,
+  // id,
+  objectID,
   title,
   author,
   genre,
   available,
   views,
-}: BookCardProps) => {
+  imageCover,
+}: IBookDoc & { objectID: string }) => {
   const router = useRouter();
   const [isFavorite, setIsFavorite] = React.useState(false);
 
@@ -44,16 +37,16 @@ const BookCard = ({
     <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%-2px)] before:top-[1px] before:rounded-2xl before:z-[-1]'>
       <div
         data-tip={title}
-        data-for={id}
+        data-for={objectID}
         className='w-[40%] h-full relative'
       >
         <Image
-          src={IMAGE_URL}
+          src={imageCover.url}
           layout='fill'
           objectFit='cover'
           objectPosition='center'
           quality={10}
-          blurDataURL={IMAGE_URL}
+          blurDataURL={imageCover.url}
           placeholder='blur'
         />
       </div>
@@ -76,7 +69,7 @@ const BookCard = ({
           <button
             type='button'
             className='bg-cGray-200 px-2 py-1 rounded-md text-sm text-blackText hover:bg-neutral-400 duration-200 transition-all'
-            onClick={() => handleBookDetailClick(id)}
+            onClick={() => handleBookDetailClick(objectID)}
           >
             Details
           </button>
@@ -99,7 +92,7 @@ const BookCard = ({
           </button>
         </div>
       </div>
-      <ReactTooltip id={id} />
+      <ReactTooltip id={objectID} />
     </div>
   );
 };

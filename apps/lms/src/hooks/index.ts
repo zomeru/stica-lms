@@ -1,2 +1,3 @@
 export { default as usePhoto } from './usePhoto';
-export * from './firestore';
+export { default as useNextQuery } from './useNextQuery';
+export { default as useClientPagination } from './useClientPagination';

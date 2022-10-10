@@ -12,8 +12,6 @@ import { AiOutlineLeft } from 'react-icons/ai';
 import { IconType } from 'react-icons';
 import { toast } from 'react-hot-toast';
 
-// const LOGO_URL = '/assets/images/STI_LOGO.png';
-
 interface LayoutProps {
   isAuthenticated: boolean;
   authAction: () => void;
@@ -53,13 +51,38 @@ export const Layout = ({
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearch = (keyword: string) => {
+    const allQueries: any = {
+      ...router.query,
+      searchKeyword: encodeURIComponent(keyword),
+    };
+    delete allQueries.bookId;
+
+    if (keyword.length === 0) delete allQueries.searchKeyword;
+
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...allQueries,
+          page: 'search',
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  // const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+  const onSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (user === 'admin') {
       if (onAdminSearch) onAdminSearch();
       return;
     }
+
+    // if (router.query.page === 'search') return;
 
     if (!searchInputRef.current) return;
     if (!searchInputRef.current.value) {
@@ -73,23 +96,7 @@ export const Layout = ({
     )
       return;
 
-    const allQueries = { ...router.query };
-    delete allQueries.bookId;
-
-    router.push(
-      {
-        pathname: '/',
-        query: {
-          ...allQueries,
-          page: 'search',
-          searchKeyword: encodeURIComponent(
-            searchInputRef.current?.value.trim()
-          ),
-        },
-      },
-      undefined,
-      { shallow: true }
-    );
+    handleSearch(searchInputRef.current.value.trim());
   };
 
   const handleSidebarItemClick = (name: string) => {
@@ -236,7 +243,8 @@ export const Layout = ({
           <div className='w-full h-[100px] flex px-[40px]'>
             {showSearch ? (
               <form
-                onSubmit={handleSearch}
+                // onSubmit={onSearch}
+                onSubmit={onSearch}
                 className='w-full h-full flex items-center space-x-3'
               >
                 <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
@@ -249,6 +257,10 @@ export const Layout = ({
                     className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
                       searchDisabled && 'cursor-not-allowed'
                     }`}
+                    // onChange={(e) =>
+                    //   router.query.page === 'search' &&
+                    //   handleSearch(e.target.value)
+                    // }
                   />
                 </div>
                 {/* <button

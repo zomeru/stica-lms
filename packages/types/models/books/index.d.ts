@@ -15,18 +15,21 @@ export interface IBooks {
     url: string;
     ref: string;
   };
+  views: number;
+  totalBorrow: number;
   createdAt: FieldValue;
   updatedAt: FieldValue;
+  isbns: ISBNType[];
 }
 
 export interface IBookDoc extends IBooks {
   id: string;
 }
 
-export interface IISBN {
-  book: string;
-  available: boolean;
+export interface ISBNType {
   isbn: string;
+  isAvailable: boolean;
+  issuedBy?: string;
 }
 
 export interface IISBNDoc extends IISBN {

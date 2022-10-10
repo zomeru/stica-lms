@@ -5,13 +5,10 @@ import Modal from 'react-modal';
 import { toast } from 'react-hot-toast';
 import {
   serverTimestamp,
-  collection,
-  query,
-  where,
   doc,
   updateDoc,
   increment,
-  addDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 
@@ -24,17 +21,10 @@ import {
   BOOK_GENRES_NONFICTION,
   GENRE_TYPES,
 } from '@src/constants';
-import {
-  GenreType,
-  GenreTypes,
-  IBookDoc,
-  IISBN,
-  IISBNDoc,
-} from '@lms/types';
+import { GenreType, GenreTypes, IBookDoc, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import nProgress from 'nprogress';
 import Loader from '@src/components/Loader';
-import { useCol } from '@src/services';
 
 Modal.setAppElement('#__next');
 
@@ -159,24 +149,8 @@ const BookDetails = ({
   const [ISBNs, setISBNs] = useState<string[]>([]);
   const [image, setImage] = useState('');
 
-  const [isbns, isbnLoading] = useCol<IISBNDoc>(
-    query(collection(db, 'isbns'), where('book', '==', selectedBook))
-  );
-
   useEffect(() => {
-    const newISBNs: string[] = [];
-
-    if (isbns) {
-      isbns.forEach(({ isbn }) => {
-        newISBNs.push(isbn);
-      });
-    }
-
-    setISBNs(newISBNs);
-  }, [isbnLoading]);
-
-  useEffect(() => {
-    const setDetails = async () => {
+    const setDetails = () => {
       setTitle(bookDetails.title);
       setAuthor(bookDetails.author);
       setPublisher(bookDetails.publisher);
@@ -185,6 +159,13 @@ const BookDetails = ({
       setGenre(bookDetails.genre);
       setQuantity(bookDetails.quantity);
       setImage(bookDetails.imageCover.url);
+
+      const newISBNs: string[] = [];
+      bookDetails.isbns.forEach(({ isbn }) => {
+        newISBNs.push(isbn);
+      });
+
+      setISBNs(newISBNs);
     };
 
     if (bookDetails) setDetails();
@@ -219,8 +200,10 @@ const BookDetails = ({
         genre === bookDetails.genre &&
         quantity === bookDetails.quantity &&
         image === bookDetails.imageCover.url &&
-        isbns
-        ? ISBNs.every((isbn, i) => isbn === isbns[i]?.isbn || '')
+        bookDetails.isbns
+        ? ISBNs.every(
+            (isbn, i) => isbn === bookDetails.isbns[i]?.isbn || ''
+          )
         : false;
     }
 
@@ -270,6 +253,23 @@ const BookDetails = ({
         updatedAt: timestamp,
       };
 
+      const newISBNsToAdd: ISBNType[] = [];
+
+      if (quantity > bookDetails.quantity) {
+        const addedISBNs = ISBNs.slice(bookDetails.quantity);
+
+        addedISBNs.forEach((isbn) => {
+          const newISBN = {
+            isbn,
+            isAvailable: true,
+          };
+
+          newISBNsToAdd.push(newISBN);
+        });
+
+        payload.isbns = arrayUnion(...newISBNsToAdd);
+      }
+
       if (bookFile) {
         const imageCover = await uploadImage('books', bookFile);
         if (imageCover) {
@@ -283,20 +283,6 @@ const BookDetails = ({
       const bookRef = doc(db, 'books', selectedBook);
       // const updatedBook = await updateDoc(bookRef, {...payload});
       await updateDoc(bookRef, { ...payload });
-
-      if (quantity > bookDetails.quantity) {
-        const addedISBNs = ISBNs.slice(bookDetails.quantity);
-
-        addedISBNs.forEach(async (isbn) => {
-          const isbnDoc: IISBN = {
-            book: selectedBook,
-            isbn,
-            available: true,
-          };
-
-          await addDoc(collection(db, 'isbns'), isbnDoc);
-        });
-      }
 
       const filteredBooks = books.filter(
         (book) => book.id !== selectedBook
@@ -314,6 +300,7 @@ const BookDetails = ({
           available:
             bookDetails.available + (quantity - bookDetails.quantity),
           imageCover: payload.imageCover || bookDetails.imageCover,
+          isbns: [...bookDetails.isbns, ...newISBNsToAdd],
         },
         ...filteredBooks,
       ] as IBookDoc[];

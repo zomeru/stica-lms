@@ -18,8 +18,8 @@ import {
   GenreType,
   IBooks,
   GenreTypes,
-  IISBN,
   IBookDoc,
+  ISBNType,
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import nProgress from 'nprogress';
@@ -188,6 +188,17 @@ const AddBook = ({
       nProgress.start();
       const imageCover = await uploadImage('books', bookFile);
 
+      const newISBNs: ISBNType[] = [];
+
+      ISBNs.forEach((isbn) => {
+        const newISBN: ISBNType = {
+          isbn,
+          isAvailable: true,
+        } as ISBNType;
+
+        newISBNs.push(newISBN);
+      });
+
       if (imageCover) {
         const timestamp = serverTimestamp();
 
@@ -199,24 +210,27 @@ const AddBook = ({
           genreType,
           genre,
           quantity,
+          totalBorrow: 0,
+          views: 0,
           available: quantity,
           createdAt: timestamp,
           updatedAt: timestamp,
           imageCover,
+          isbns: newISBNs,
         };
 
         const bookAdded = await addDoc(collection(db, 'books'), payload);
 
         // Add ISBNs to isbn collection
-        ISBNs.forEach(async (isbn) => {
-          const isbnDoc: IISBN = {
-            book: bookAdded.id,
-            isbn,
-            available: true,
-          };
+        // ISBNs.forEach(async (isbn) => {
+        //   const isbnDoc: IISBN = {
+        //     book: bookAdded.id,
+        //     isbn,
+        //     available: true,
+        //   };
 
-          await addDoc(collection(db, 'isbns'), isbnDoc);
-        });
+        //   await addDoc(collection(db, 'isbns'), isbnDoc);
+        // });
 
         setTitle('');
         setAuthor('');
