@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import algoliasearch from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch';
 import { InstantSearch, Configure } from 'react-instantsearch-hooks-web';
 
 import { BookCard } from '@src/components';
@@ -11,7 +11,7 @@ import { useNextQuery } from '@src/hooks';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY as string
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY as string
 );
 
 const searchIndex = searchClient.initIndex('books');
@@ -33,9 +33,24 @@ const Search = () => {
   // TODO: comment this out later
   useEffect(() => {
     const getResult = async () => {
-      const result = await searchIndex.search(searchKeyword || '');
-      if (result.hits) {
-        setBooks(result.hits as ABookDoc[]);
+      if (!searchKeyword) {
+        let hits: ABookDoc[] = [];
+
+        await searchIndex
+          .browseObjects({
+            batch: (batch) => {
+              hits = hits.concat(batch as ABookDoc[]);
+            },
+          })
+          .then(() => setBooks(hits));
+      }
+
+      if (searchKeyword) {
+        const result = await searchIndex.search(searchKeyword || '');
+
+        if (result.hits) {
+          setBooks(result.hits as ABookDoc[]);
+        }
       }
     };
 

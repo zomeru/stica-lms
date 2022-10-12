@@ -33,3 +33,9 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# firebase
+ui-debug.log
+firestore-debug.log
+firebase-debug.log
+.runtimeconfig.json

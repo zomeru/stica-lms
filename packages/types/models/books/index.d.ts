@@ -32,10 +32,6 @@ export interface ISBNType {
   issuedBy?: string;
 }
 
-export interface IISBNDoc extends IISBN {
-  id: string;
-}
-
 export type GenreTypes = FictionType | NonFictionType;
 
 export type FictionType =

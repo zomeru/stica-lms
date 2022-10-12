@@ -12,6 +12,7 @@
     "@azure/msal-react": "^1.4.7",
     "@lms/db": "*",
     "@lms/ui": "*",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "algoliasearch": "^4.14.2",
     "firebase": "^9.9.4",
     "next": "latest",
