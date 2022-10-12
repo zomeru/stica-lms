@@ -30,6 +30,8 @@ const Search = () => {
 
   const { width } = useWindowDimensions();
 
+  // const HITS_PER_PAGE = width < 1665 ? 12 : width < 1965 ? 20 : 30;
+
   const [books, setBooks] = useState<ABookDoc[]>([]);
 
   // TODO: comment this out later
@@ -87,7 +89,30 @@ const Search = () => {
     setSortOrder(newOrder);
   }, [sortBy]);
 
-  const HITS_PER_PAGE = width < 1665 ? 12 : width < 1965 ? 20 : 30;
+  const HITS_PER_PAGE = useMemo(
+    () => (width < 1665 ? 12 : width < 1965 ? 20 : 30),
+    [width]
+  );
+
+  useEffect(() => {
+    if (books && books.length > 0) {
+      const numPages = Math.ceil(books.length / HITS_PER_PAGE);
+
+      if (currentPage && Number(currentPage) > numPages) {
+        router.push(
+          {
+            pathname: '/',
+            query: {
+              ...router.query,
+              searchPage: 1,
+            },
+          },
+          undefined,
+          { shallow: true }
+        );
+      }
+    }
+  }, [width, HITS_PER_PAGE, books, currentPage]);
 
   const indexOfLastItem = useMemo(
     () => (currentPage ? Number(currentPage) : 1) * HITS_PER_PAGE,
@@ -174,12 +199,19 @@ const Search = () => {
 
   // const row = `grid-cols-${width > 1966 ? 5 : width > 1664 ? 4 : 3}`;
 
-  const row =
+  const rowSideOpen =
     width < 1665
       ? 'grid-cols-3'
       : width < 1965
       ? 'grid-cols-4'
       : 'grid-cols-5';
+
+  const rowSideClose =
+    width < 1665
+      ? 'grid-cols-4'
+      : width < 1965
+      ? 'grid-cols-5'
+      : 'grid-cols-6';
 
   return (
     <InstantSearch searchClient={searchClient} indexName='books'>
@@ -252,7 +284,7 @@ const Search = () => {
               <div className='flex items-center space-x-3'>
                 <div>
                   {Number(router.query.searchPage as string) || 1}/
-                  {Math.round(books.length / HITS_PER_PAGE)}
+                  {Math.ceil(books.length / HITS_PER_PAGE)}
                 </div>
                 <div className='space-x-1'>
                   <button
@@ -274,11 +306,11 @@ const Search = () => {
                     type='button'
                     disabled={
                       Number(router.query.searchPage as string) ===
-                      Math.round(books.length / HITS_PER_PAGE)
+                      Math.ceil(books.length / HITS_PER_PAGE)
                     }
                     className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                       Number(router.query.searchPage as string) ===
-                        Math.round(books.length / HITS_PER_PAGE) &&
+                        Math.ceil(books.length / HITS_PER_PAGE) &&
                       'opacity-40 cursor-not-allowed'
                     }`}
                     onClick={() => handlePagination('next')}
@@ -291,7 +323,7 @@ const Search = () => {
           </div>
           <div
             className={`w-full grid gap-y-5 justify-between place-items-left h-full place-content-start pt-1 pb-4  ${
-              sidebarOpen ? row : 'grid-cols-4'
+              sidebarOpen ? rowSideOpen : rowSideClose
             } ${
               currentBooks &&
               currentBooks.length > 0 &&
