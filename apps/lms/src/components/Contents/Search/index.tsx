@@ -7,7 +7,7 @@ import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
 import { SORT_ITEMS } from '@src/constants';
 import { IBookDoc } from '@lms/types';
-import { useNextQuery } from '@src/hooks';
+import { useNextQuery, useWindowDimensions } from '@src/hooks';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
@@ -16,7 +16,7 @@ const searchClient = algoliasearch(
 
 const searchIndex = searchClient.initIndex('books');
 
-const HITS_PER_PAGE = 12;
+// const HITS_PER_PAGE = 12;
 
 export type OrderType = 'asc' | 'desc';
 
@@ -27,6 +27,8 @@ const Search = () => {
   const { sidebarOpen } = useSidebar();
   const searchKeyword = useNextQuery('searchKeyword');
   const currentPage = useNextQuery('searchPage');
+
+  const { width } = useWindowDimensions();
 
   const [books, setBooks] = useState<ABookDoc[]>([]);
 
@@ -85,14 +87,18 @@ const Search = () => {
     setSortOrder(newOrder);
   }, [sortBy]);
 
+  const HITS_PER_PAGE = width < 1665 ? 12 : width < 1965 ? 20 : 30;
+
   const indexOfLastItem = useMemo(
     () => (currentPage ? Number(currentPage) : 1) * HITS_PER_PAGE,
-    [currentPage]
+    [currentPage, width]
   );
+
   const indexOfFirstItem = useMemo(
     () => indexOfLastItem - HITS_PER_PAGE,
-    [indexOfLastItem]
+    [indexOfLastItem, width]
   );
+
   const currentBooks = useMemo(
     () =>
       books
@@ -166,6 +172,15 @@ const Search = () => {
     [sortBy]
   );
 
+  // const row = `grid-cols-${width > 1966 ? 5 : width > 1664 ? 4 : 3}`;
+
+  const row =
+    width < 1665
+      ? 'grid-cols-3'
+      : width < 1965
+      ? 'grid-cols-4'
+      : 'grid-cols-5';
+
   return (
     <InstantSearch searchClient={searchClient} indexName='books'>
       <Configure hitsPerPage={HITS_PER_PAGE} />
@@ -193,7 +208,7 @@ const Search = () => {
                       <button
                         type='button'
                         key={sort.name}
-                        className={`px-3 py-2  rounded-lg text-sm ${
+                        className={`px-3 py-2 rounded-lg text-sm ${
                           isActiveSort
                             ? 'bg-primary text-white'
                             : 'bg-neutral-200 text-cGray-300'
@@ -275,13 +290,17 @@ const Search = () => {
             )}
           </div>
           <div
-            className={`w-full grid gap-y-5 justify-between place-items-left overflow-y-scroll h-full place-content-start pt-1 pb-4 2xl:grid-cols-5 ${
-              sidebarOpen ? 'grid-cols-3' : 'grid-cols-4'
+            className={`w-full grid gap-y-5 justify-between place-items-left h-full place-content-start pt-1 pb-4  ${
+              sidebarOpen ? row : 'grid-cols-4'
+            } ${
+              currentBooks &&
+              currentBooks.length > 0 &&
+              'overflow-y-scroll custom-scrollbar'
             }`}
           >
             {currentBooks &&
               currentBooks.map((book) => (
-                <BookCard key={book.objectID} {...book} />
+                <BookCard key={book.objectID} book={book} />
               ))}
           </div>
         </div>

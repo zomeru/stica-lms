@@ -1,5 +1,3 @@
-import { FieldValue } from 'firebase/firestore';
-
 export type GenreType = 'Fiction' | 'Non-Fiction';
 
 export interface IBooks {
@@ -17,8 +15,8 @@ export interface IBooks {
   };
   views: number;
   totalBorrow: number;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
+  createdAt: any;
+  updatedAt: any;
   isbns: ISBNType[];
 }
 

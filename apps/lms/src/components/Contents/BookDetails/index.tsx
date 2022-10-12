@@ -11,8 +11,6 @@ const BookDetails = () => {
   const router = useRouter();
   const bookId = useNextQuery('bookId');
 
-  console.log('bookId', bookId);
-
   const [viewAdded, setViewAdded] = useState(false);
 
   const [bookData] = useDoc<IBookDoc>(doc(db, 'books', bookId || ''));
@@ -38,26 +36,12 @@ const BookDetails = () => {
     if (!viewAdded) incrementViews();
   }, [bookId]);
 
-  const handleGoBack = () => {
-    const newQuery = { ...router.query };
-    delete newQuery.bookId;
-
-    router.push(
-      {
-        pathname: '/',
-        query: newQuery,
-      },
-      undefined,
-      { shallow: true }
-    );
-  };
-
   // const handleBorrow = () => {}
 
   return (
     <section className='w-full h-full flex-col justify-center items-center'>
       <h1 className='text-3xl font-medium'>Book Details</h1>
-      <button type='button' onClick={handleGoBack}>
+      <button type='button' onClick={() => router.back()}>
         Go back
       </button>
     </section>

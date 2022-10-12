@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 
-import { formatDate, randNum } from '@src/utils';
+import { formatDate, navigateToBook, randNum } from '@src/utils';
 import { historyStatus, historyTableHeaders } from '@src/constants';
+import { useCol } from '@src/services';
+import { IBorrowDoc } from '@lms/types';
+import { collection, query, where } from 'firebase/firestore';
+// import { collection, query, orderBy, where } from 'firebase/firestore';
+import { db } from '@lms/db';
+import { useUser } from '@src/contexts';
+import Image from 'next/image';
 
 function getRandomDate(from: Date, to: Date) {
   const fromTime = from.getTime();
@@ -11,6 +18,25 @@ function getRandomDate(from: Date, to: Date) {
 }
 
 const History = () => {
+  const { user } = useUser();
+
+  const [borrowHistory, historyLoading] = useCol<IBorrowDoc>(
+    query(
+      collection(db, 'borrows'),
+      // orderBy('updatedAt', 'desc'),
+      where('userId', '==', user?.id || ''),
+      where('status', 'in', [
+        'Cancelled',
+        'Lost',
+        'Returned',
+        'Returned with Damage',
+      ])
+    )
+  );
+
+  console.log('borrowHistory', borrowHistory);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const bookHistory = React.useMemo(() => {
     const newBookHistory: any = [];
     const daysDiff: any = [];
@@ -75,88 +101,131 @@ const History = () => {
   }, []);
 
   return (
-    <section className='h-full overflow-y-scroll custom-scrollbar'>
-      <table>
-        <thead>
-          <tr>
-            {historyTableHeaders.map((header) => (
-              <th
-                key={header}
-                className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
-              >
-                {' '}
-                {header}{' '}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {bookHistory.map((issue: any) => (
-            <tr key={issue.id} className='font-medium'>
-              {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className='whitespace-no-wrap text-gray-900'>
-                  {issue.id}
-                </p>
-              </td> */}
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className='w-max text-gray-900'>{issue.isbn}</p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p
-                  className='w-[150px] text-ellipsis overflow-hidden text-gray-600'
-                  data-for={issue.title}
-                  data-tip={issue.title}
+    <section
+      className={`w-full h-full custom-scrollbar ${
+        borrowHistory && borrowHistory.length > 0 && 'overflow-y-scroll'
+      }`}
+    >
+      {!historyLoading &&
+        (!borrowHistory ||
+          (borrowHistory && borrowHistory.length === 0)) && (
+          <div className='w-full h-full flex flex-col justify-center space-y-3'>
+            <div className='relative w-[75%] h-[75%] mx-auto'>
+              <Image
+                src='/assets/images/books_empty.png'
+                layout='fill'
+                objectFit='contain'
+                blurDataURL='/assets/images/books_empty.png'
+                placeholder='blur'
+              />
+            </div>
+            <h1 className='text-cGray-300 text-2xl text-center'>
+              Your history is currently empty.
+            </h1>
+          </div>
+        )}
+      {borrowHistory && borrowHistory.length > 0 && (
+        <table className='min-w-full leading-normal'>
+          <thead>
+            <tr>
+              {historyTableHeaders.map((header) => (
+                <th
+                  key={header}
+                  className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                 >
-                  {issue.title}
-                </p>
-                <ReactTooltip id={issue.title} />
-              </td>
-              {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                  {' '}
+                  {header}{' '}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {borrowHistory.map((history) => {
+              let issuedDate = 'N/A';
+              let dueDate = 'N/A';
+              let returnedDate = 'N/A';
+
+              if (history.issuedDate)
+                issuedDate = formatDate(history.issuedDate.toDate());
+              if (history.dueDate)
+                dueDate = formatDate(history.dueDate.toDate());
+              if (history.returnedDate)
+                returnedDate = formatDate(history.returnedDate.toDate());
+
+              return (
+                <React.Fragment key={history.id}>
+                  <ReactTooltip id={history.title} />
+
+                  <tr key={history.id} className='font-medium'>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <button
+                        type='button'
+                        onClick={() => navigateToBook(history.bookId)}
+                      >
+                        <p
+                          className='w-[150px] line-clamp-2 overflow-hidden text-gray-600'
+                          data-for={history.title}
+                          data-tip={history.title}
+                        >
+                          {history.title}
+                        </p>
+                      </button>
+                    </td>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p className='w-max text-gray-900'>{history.isbn}</p>
+                    </td>
+
+                    {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                 <p className='whitespace-no-wrap text-gray-900'>
                   {issue.requestedDate}
                 </p>
               </td> */}
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className="whitespace-no-wrap text-gray-600">
-                  {issue.issuedDate}
-                </p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className="whitespace-no-wrap text-gray-600">
-                  {issue.dueDate}
-                </p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p className="whitespace-no-wrap text-gray-600">
-                  {issue.returnedDate}
-                </p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p
-                  className={`whitespace-no-wrap ${
-                    issue.penalty > 0 ? 'text-red-600' : 'text-green-600'
-                  }`}
-                >
-                  ₱{issue.penalty}
-                </p>
-              </td>
-              <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                <p
-                  className={`whitespace-no-wrap ${
-                    issue.status === 'Returned'
-                      ? 'text-sky-600'
-                      : issue.status === 'Cancelled'
-                      ? 'text-yellow-600'
-                      : 'text-red-600'
-                  }`}
-                >
-                  {issue.status}
-                </p>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p className='whitespace-no-wrap text-gray-600'>
+                        {issuedDate}
+                      </p>
+                    </td>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p className='whitespace-no-wrap text-gray-600'>
+                        {dueDate}
+                      </p>
+                    </td>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p className='whitespace-no-wrap text-gray-600'>
+                        {returnedDate}
+                      </p>
+                    </td>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p
+                        className={`whitespace-no-wrap ${
+                          history.penalty > 0
+                            ? 'text-red-600'
+                            : 'text-green-600'
+                        }`}
+                      >
+                        ₱{history.penalty}
+                      </p>
+                    </td>
+                    <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <p
+                        className={`whitespace-no-wrap ${
+                          history.status === 'Returned'
+                            ? 'text-sky-600'
+                            : history.status === 'Cancelled'
+                            ? 'text-yellow-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {history.status}
+                      </p>
+                    </td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </section>
   );
 };

@@ -136,8 +136,8 @@ export const pendingRequestTableHeaders = [
 
 export const issuedBooksTableHeaders = [
   // 'Book ID',
-  'ISBN',
   'Title',
+  'ISBN',
   'Issued Date',
   'Due Date',
   'Penalty',
@@ -145,8 +145,8 @@ export const issuedBooksTableHeaders = [
 
 export const historyTableHeaders = [
   // 'Book ID',
-  'ISBN',
   'Title',
+  'ISBN',
   // 'Requested Date',
   'Issued Date',
   'Due Date',

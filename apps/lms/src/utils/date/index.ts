@@ -27,14 +27,16 @@ export function addZero(num: number) {
   return num < 10 ? `0${num}` : num;
 }
 
-export function formatDate(date: Date) {
+export function formatDate(date: Date | number | string) {
   // const dateStr = `${addZero(
   //   date.getMonth() + 1
   // )}/${date.getDate()}/${date.getFullYear()}`;
 
+  const dateObj = new Date(date);
+
   const dateStr = `${
-    MONTHS[date.getMonth()]
-  }. ${date.getDate()}, ${date.getFullYear()}`;
+    MONTHS[dateObj.getMonth()]
+  }. ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
 
   // , ${DAYS[date.getDay()]}
 

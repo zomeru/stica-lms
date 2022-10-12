@@ -45,6 +45,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-nested-ternary': 'off',
     'import/no-cycle': 'off',
+    'no-underscore-dangle': 'off',
+    '@typescript-eslint/naming-convention': 'off',
 
     // next
     '@next/next/no-html-link-for-pages': 'off',

@@ -1,6 +1,11 @@
-import { FieldValue } from 'firebase/firestore';
-
-export type PendingStatus = 'Pending' | 'Approved';
+export type BorrowStatus =
+  | 'Pending'
+  | 'Approved'
+  | 'Issued'
+  | 'Returned'
+  | 'Returned with damage'
+  | 'Lost'
+  | 'Cancelled';
 
 export interface IBorrow {
   userId: string;
@@ -8,9 +13,14 @@ export interface IBorrow {
   title: string;
   isbn: string;
   accessionNumber: string;
-  requestDate: FieldValue;
-  status: PendingStatus;
-  pickUpDueDate?: FieldValue;
+  requestDate: any;
+  status: BorrowStatus;
+  penalty: number;
+  updatedAt: any;
+  pickUpDueDate?: any;
+  returnedDate?: any;
+  dueDate?: any;
+  issuedDate?: any;
 }
 
 export interface IBorrowDoc extends IBorrow {
