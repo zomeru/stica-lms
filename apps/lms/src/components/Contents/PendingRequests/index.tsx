@@ -1,15 +1,14 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, orderBy, query, where } from 'firebase/firestore';
+import Image from 'next/image';
 
 import { formatDate, navigateToBook } from '@src/utils';
 import { pendingRequestTableHeaders } from '@src/constants';
-import { useCol } from '@src/services';
+import { cancelBorrowRequest, useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import { cancelBorrowRequest } from '@src/utils/borrow';
-import Image from 'next/image';
 
 const PendingRequests = () => {
   const { user } = useUser();
@@ -19,9 +18,9 @@ const PendingRequests = () => {
   const [userBorrows, borrowLoading] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
-      // orderBy('updatedAt', 'desc'),
       where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Pending', 'Approved'])
+      where('status', 'in', ['Pending', 'Approved']),
+      orderBy('updatedAt', 'desc')
     )
   );
 
@@ -93,7 +92,7 @@ const PendingRequests = () => {
                         onClick={() => navigateToBook(borrow.bookId)}
                       >
                         <p
-                          className='w-[150px] overflow-hidden text-gray-600 line-clamp-2'
+                          className='w-[150px] overflow-hidden text-primary line-clamp-2'
                           data-for={borrow.title}
                           data-tip={borrow.title}
                         >

@@ -3,6 +3,7 @@ import {
   AiOutlineHome,
   AiOutlineMessage,
   AiOutlineSearch,
+  AiOutlineHeart,
 } from 'react-icons/ai';
 import { MdOutlineContactPage, MdPendingActions } from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
@@ -31,9 +32,14 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: MdPendingActions,
   },
   {
+    name: 'My Likes',
+    Icon: AiOutlineHeart,
+  },
+  {
     name: 'History',
     Icon: AiOutlineHistory,
   },
+
   {
     name: 'Contact',
     Icon: MdOutlineContactPage,
@@ -141,6 +147,15 @@ export const issuedBooksTableHeaders = [
   'Issued Date',
   'Due Date',
   'Penalty',
+];
+
+export const likedBooksTableHeaders = [
+  // 'Book ID',
+  'Cover',
+  'Title',
+  'Author',
+  'Genre',
+  'Accession No',
 ];
 
 export const historyTableHeaders = [

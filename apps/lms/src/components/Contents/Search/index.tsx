@@ -6,8 +6,8 @@ import { InstantSearch, Configure } from 'react-instantsearch-hooks-web';
 import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
 import { SORT_ITEMS } from '@src/constants';
-import { IBookDoc } from '@lms/types';
 import { useNextQuery, useWindowDimensions } from '@src/hooks';
+import { AlgoBookDoc } from '@lms/types';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
@@ -20,8 +20,6 @@ const searchIndex = searchClient.initIndex('books');
 
 export type OrderType = 'asc' | 'desc';
 
-export type ABookDoc = IBookDoc & { objectID: string };
-
 const Search = () => {
   const router = useRouter();
   const { sidebarOpen } = useSidebar();
@@ -32,18 +30,18 @@ const Search = () => {
 
   // const HITS_PER_PAGE = width < 1665 ? 12 : width < 1965 ? 20 : 30;
 
-  const [books, setBooks] = useState<ABookDoc[]>([]);
+  const [books, setBooks] = useState<AlgoBookDoc[]>([]);
 
   // TODO: comment this out later
   useEffect(() => {
     const getResult = async () => {
       if (!searchKeyword) {
-        let hits: ABookDoc[] = [];
+        let hits: AlgoBookDoc[] = [];
 
         await searchIndex
           .browseObjects({
             batch: (batch) => {
-              hits = hits.concat(batch as ABookDoc[]);
+              hits = hits.concat(batch as AlgoBookDoc[]);
             },
           })
           .then(() => setBooks(hits));
@@ -53,7 +51,7 @@ const Search = () => {
         const result = await searchIndex.search(searchKeyword || '');
 
         if (result.hits) {
-          setBooks(result.hits as ABookDoc[]);
+          setBooks(result.hits as AlgoBookDoc[]);
         }
       }
     };
@@ -128,8 +126,8 @@ const Search = () => {
     () =>
       books
         .sort((a, b) => {
-          const newA = a[sortBy as keyof ABookDoc];
-          const newB = b[sortBy as keyof ABookDoc];
+          const newA = a[sortBy as keyof AlgoBookDoc];
+          const newB = b[sortBy as keyof AlgoBookDoc];
           if (newA > newB) return sortOrder === 'desc' ? -1 : 1;
           if (newA < newB) return sortOrder === 'desc' ? 1 : -1;
           return 0;

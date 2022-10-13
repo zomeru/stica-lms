@@ -6,3 +6,4 @@ export { default as Messages } from './Messages';
 export { default as PendingRequests } from './PendingRequests';
 export { default as Search } from './Search';
 export { default as BookDetails } from './BookDetails';
+export { default as LikedBooks } from './LikedBooks';

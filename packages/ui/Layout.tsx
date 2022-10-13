@@ -178,7 +178,7 @@ export const Layout = ({
                   return (
                     <button
                       type='button'
-                      className={`h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
+                      className={`h-[50px] 2xl:h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
                         isActive
                           ? 'before:h-full before:border-l-[6px] before:border-primary'
                           : 'before:h-0'

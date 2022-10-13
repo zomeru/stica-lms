@@ -24,6 +24,8 @@ export interface IBookDoc extends IBooks {
   id: string;
 }
 
+export type AlgoBookDoc = IBookDoc & { objectID: string };
+
 export interface ISBNType {
   isbn: string;
   isAvailable: boolean;

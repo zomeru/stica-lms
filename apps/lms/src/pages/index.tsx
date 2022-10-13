@@ -19,6 +19,7 @@ import {
   Contact,
   Search,
   BookDetails,
+  LikedBooks,
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 
@@ -39,8 +40,9 @@ const Home: NextPage = () => {
     const authenticatedPages = [
       'messages',
       'currently issued books',
-      'pending requests',
+      'borrow requests',
       'history',
+      'my likes',
     ];
 
     function checkPage() {
@@ -110,6 +112,7 @@ const Home: NextPage = () => {
           <PendingRequests />
         )}
         {isAuthenticated && page === 'history' && <History />}
+        {isAuthenticated && page === 'my likes' && <LikedBooks />}
         {page === 'contact' && <Contact />}
       </>
     );

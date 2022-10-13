@@ -5,15 +5,19 @@ import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { collection, query, where } from 'firebase/firestore';
 import { useIsAuthenticated } from '@azure/msal-react';
 
-import { IBookDoc, IBorrowDoc } from '@lms/types';
+import { AlgoBookDoc, IBorrowDoc, ILikedBookDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import { useCol } from '@src/services';
+import {
+  addToLikedBooks,
+  borrowBook,
+  removeFromLikedBooks,
+  useCol,
+} from '@src/services';
 import { navigateToBook } from '@src/utils';
-import { borrowBook } from '@src/utils/borrow';
 
 interface BookCardProps {
-  book: IBookDoc & { objectID: string };
+  book: AlgoBookDoc;
 }
 
 const BookCard = ({ book }: BookCardProps) => {
@@ -30,15 +34,21 @@ const BookCard = ({ book }: BookCardProps) => {
   const isAuthenticated = useIsAuthenticated();
   const { user } = useUser();
 
-  const [isFavorite, setIsFavorite] = React.useState(false);
+  const [tempRequestStatus] = React.useState(['Pending', 'Approved']);
 
   const [userBorrows] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
       where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Pending', 'Approved'])
+      where('status', 'in', ['Pending', 'Approved', 'Issued'])
     )
   );
+
+  const [myLikes] = useCol<ILikedBookDoc>(
+    query(collection(db, `users/${user?.id || ''}/my-likes`))
+  );
+
+  console.log('myLikes', myLikes);
 
   return (
     <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%)] before:rounded-2xl before:z-[-1]'>
@@ -100,16 +110,42 @@ const BookCard = ({ book }: BookCardProps) => {
                 : 'bg-primary hover:bg-[#004c95] '
             } `}
           >
-            {userBorrows?.some((el) => el.bookId === objectID)
+            {userBorrows?.some(
+              (el) =>
+                tempRequestStatus.includes(el.status) &&
+                el.bookId === objectID
+            )
+              ? 'Requested'
+              : userBorrows?.some(
+                  (el) => el.status === 'Issued' && el.bookId === objectID
+                )
               ? 'Borrowed'
               : 'Borrow'}
           </button>
           <button
             type='button'
             className='mr-[10px]'
-            onClick={() => setIsFavorite((prev) => !prev)}
+            onClick={() => {
+              if (
+                myLikes &&
+                myLikes.some((el) => el.bookId === objectID)
+              ) {
+                const likedBook = myLikes.find(
+                  (el) => el.bookId === objectID
+                );
+
+                if (likedBook)
+                  removeFromLikedBooks(
+                    likedBook.id,
+                    isAuthenticated,
+                    user?.id || ''
+                  );
+              } else {
+                addToLikedBooks(book, isAuthenticated, user?.id || '');
+              }
+            }}
           >
-            {isFavorite ? (
+            {myLikes && myLikes.some((el) => el.bookId === objectID) ? (
               <AiFillHeart className='w-[20px] h-[20px] text-primary' />
             ) : (
               <AiOutlineHeart className='w-[20px] h-[20px] text-blackText' />

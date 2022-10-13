@@ -1,15 +1,14 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import Image from 'next/image';
 
 import { formatDate, navigateToBook, randNum } from '@src/utils';
 import { historyStatus, historyTableHeaders } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
-import { collection, query, where } from 'firebase/firestore';
-// import { collection, query, orderBy, where } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import Image from 'next/image';
 
 function getRandomDate(from: Date, to: Date) {
   const fromTime = from.getTime();
@@ -23,14 +22,14 @@ const History = () => {
   const [borrowHistory, historyLoading] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
-      // orderBy('updatedAt', 'desc'),
       where('userId', '==', user?.id || ''),
       where('status', 'in', [
         'Cancelled',
         'Lost',
         'Returned',
         'Returned with Damage',
-      ])
+      ]),
+      orderBy('updatedAt', 'desc')
     )
   );
 
@@ -163,7 +162,7 @@ const History = () => {
                         onClick={() => navigateToBook(history.bookId)}
                       >
                         <p
-                          className='w-[150px] line-clamp-2 overflow-hidden text-gray-600'
+                          className='w-[150px] line-clamp-2 overflow-hidden text-primary'
                           data-for={history.title}
                           data-tip={history.title}
                         >
@@ -181,17 +180,17 @@ const History = () => {
                 </p>
               </td> */}
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                      <p className='whitespace-no-wrap text-gray-600'>
+                      <p className='whitespace-no-wrap text-gray-900'>
                         {issuedDate}
                       </p>
                     </td>
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                      <p className='whitespace-no-wrap text-gray-600'>
+                      <p className='whitespace-no-wrap text-gray-900'>
                         {dueDate}
                       </p>
                     </td>
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                      <p className='whitespace-no-wrap text-gray-600'>
+                      <p className='whitespace-no-wrap text-gray-900'>
                         {returnedDate}
                       </p>
                     </td>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import { collection, query, where } from 'firebase/firestore';
+import Image from 'next/image';
+import { collection, orderBy, query, where } from 'firebase/firestore';
 
 import { formatDate, randNum } from '@src/utils';
 import { issuedBooksTableHeaders } from '@src/constants';
@@ -8,7 +9,6 @@ import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { useUser } from '@src/contexts';
 import { db } from '@lms/db';
-import Image from 'next/image';
 
 const CurrentlyIssuedBooks = () => {
   const { user } = useUser();
@@ -18,9 +18,9 @@ const CurrentlyIssuedBooks = () => {
   const [issuedBooks, issueLoading] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
-      // orderBy('updatedAt', 'desc'),
       where('userId', '==', user?.id || ''),
-      where('status', '==', 'Issued')
+      where('status', '==', 'Issued'),
+      orderBy('updatedAt', 'desc')
     )
   );
 
@@ -120,7 +120,7 @@ const CurrentlyIssuedBooks = () => {
                 <tr className='font-medium'>
                   <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                     <p
-                      className='w-[150px] text-ellipsis overflow-hidden text-gray-600'
+                      className='w-[150px] text-ellipsis overflow-hidden text-primary'
                       data-for={issue.title}
                       data-tip={issue.title}
                     >

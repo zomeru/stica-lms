@@ -23,10 +23,10 @@ import { PublicClientApplication } from '@azure/msal-browser';
 
 import { loginRequest } from '@src/config';
 import { db } from '@lms/db';
-import { IUser } from '@src/types';
+import { IUserDoc } from '@lms/types';
 
 export interface UserContextProps {
-  user: IUser | null;
+  user: IUserDoc | null;
   loading: boolean;
 }
 
@@ -48,7 +48,7 @@ export const UserProvider: FC<UserProviderProps> = ({
   msalInstance,
 }) => {
   const isAuthenticated = useIsAuthenticated();
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<IUserDoc | null>(null);
   const [loading, setLoading] = useState(false);
 
   const getUser = useCallback(async () => {
@@ -73,7 +73,7 @@ export const UserProvider: FC<UserProviderProps> = ({
 
         const newUser = await userRes.json();
 
-        const userObject: IUser = {} as IUser;
+        const userObject: IUserDoc = {} as IUserDoc;
         if (newUser) {
           userObject.displayName = newUser.displayName.replace(
             ' (Student)',
@@ -92,7 +92,7 @@ export const UserProvider: FC<UserProviderProps> = ({
 
         const querySnapshot = await getDocs(q);
 
-        let newUserDoc: IUser | null = null;
+        let newUserDoc: IUserDoc | null = null;
 
         if (querySnapshot.empty) {
           const timeStamp = serverTimestamp();
@@ -114,13 +114,13 @@ export const UserProvider: FC<UserProviderProps> = ({
             return {
               id: docSnap.id,
               ...docSnap.data(),
-            } as IUser;
+            } as IUserDoc;
           });
         } else {
           newUserDoc = {
             id: querySnapshot.docs[0].id,
             ...querySnapshot.docs[0].data(),
-          } as IUser;
+          } as IUserDoc;
         }
 
         const photoRes = await fetch(
