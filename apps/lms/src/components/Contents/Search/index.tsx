@@ -136,8 +136,6 @@ const Search = () => {
     [books, currentPage, sortBy, sortOrder]
   );
 
-  console.log('currentBooks', currentBooks);
-
   const handleSort = (sortName: string) => {
     router.push(
       {

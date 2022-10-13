@@ -3,7 +3,7 @@ import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import { collection, orderBy, query, where } from 'firebase/firestore';
 
-import { formatDate, randNum } from '@src/utils';
+import { formatDate, navigateToBook, randNum } from '@src/utils';
 import { issuedBooksTableHeaders } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
@@ -12,8 +12,6 @@ import { db } from '@lms/db';
 
 const CurrentlyIssuedBooks = () => {
   const { user } = useUser();
-
-  const [actionShowId, setActionShowId] = React.useState('');
 
   const [issuedBooks, issueLoading] = useCol<IBorrowDoc>(
     query(
@@ -24,10 +22,8 @@ const CurrentlyIssuedBooks = () => {
     )
   );
 
-  console.log('issuedBooks', issuedBooks);
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const issuedBooks_ = React.useMemo(() => {
+  const issuedBooks_: IBorrowDoc[] = React.useMemo(() => {
     const newIssuedBooks: any = [];
     const daysDiff: any = [];
 
@@ -116,16 +112,20 @@ const CurrentlyIssuedBooks = () => {
             {issuedBooks.map((issue) => (
               <React.Fragment key={issue.id}>
                 <ReactTooltip id={issue.title} />
-
                 <tr className='font-medium'>
                   <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                    <p
-                      className='w-[150px] text-ellipsis overflow-hidden text-primary'
-                      data-for={issue.title}
-                      data-tip={issue.title}
+                    <button
+                      type='button'
+                      onClick={() => navigateToBook(issue.bookId)}
                     >
-                      {issue.title}
-                    </p>
+                      <p
+                        className='max-w-[200px] line-clamp-2 text-left overflow-hidden text-primary'
+                        data-for={issue.title}
+                        data-tip={issue.title}
+                      >
+                        {issue.title}
+                      </p>
+                    </button>
                   </td>
                   <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                     <p className='w-max text-gray-900'>{issue.isbn}</p>
@@ -156,48 +156,36 @@ const CurrentlyIssuedBooks = () => {
                       ₱{issue.penalty}
                     </p>
                   </td>
-                  <td className='border-b border-cGray-200 bg-white px-5 py-5 text-right text-sm relative'>
+                  <td className='border-b border-cGray-200 pr-5 space-x-3 bg-white text-right text-sm relative'>
+                    <ReactTooltip id={issue.id} />
                     <button
+                      data-for={issue.id}
+                      data-tip={
+                        issue.penalty > 0
+                          ? 'You can not renew this book because you have a penalty.'
+                          : ''
+                      }
+                      // disabled={issue.penalty > 0}
+                      className={`duration-300 transition-colors ${
+                        issue.penalty > 0
+                          ? 'cursor-not-allowed text-neutral-500'
+                          : 'text-sky-600'
+                      }`}
                       type='button'
-                      className='inline-block text-gray-500 hover:text-gray-700'
                       onClick={() => {
-                        if (actionShowId === issue.id) {
-                          setActionShowId('');
-                        } else {
-                          setActionShowId(issue.id);
-                        }
+                        // if (issue.penalty > 0) return;
                       }}
                     >
-                      <svg
-                        className='inline-block h-6 w-6 fill-current'
-                        viewBox='0 0 24 24'
-                      >
-                        <path d='M12 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm-2 6a2 2 0 104 0 2 2 0 00-4 0z' />
-                      </svg>
+                      Renew
                     </button>
-                    {actionShowId === issue.id && (
-                      <div className='flex flex-col absolute -top-[15px] left-0 -translate-x-[50px] 2xl:-translate-x-[20px] space-y-1'>
-                        <button
-                          disabled={issue.penalty > 0}
-                          className={` text-white px-3 py-2 duration-300 transition-colors ${
-                            issue.penalty > 0
-                              ? 'cursor-not-allowed bg-cGray-300'
-                              : 'bg-sky-500 hover:bg-sky-600'
-                          }`}
-                          type='button'
-                          onClick={() => setActionShowId('')}
-                        >
-                          Renew
-                        </button>
-                        <button
-                          className='text-white px-3 py-2 duration-300 transition-colors bg-red-500 hover:bg-red-600'
-                          type='button'
-                          onClick={() => setActionShowId('')}
-                        >
-                          Lost
-                        </button>
-                      </div>
-                    )}
+
+                    {/* <button
+                      className='text-red-600 duration-300 transition-colors'
+                      type='button'
+                      onClick={() => {}}
+                    >
+                      Lost
+                    </button> */}
                   </td>
                 </tr>
               </React.Fragment>

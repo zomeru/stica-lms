@@ -64,10 +64,7 @@ export const borrowBook = async (
   }
 };
 
-export const cancelBorrowRequest = async (
-  borrowId: string,
-  cb?: Function | (() => void)
-) => {
+export const cancelBorrowRequest = async (borrowId: string) => {
   try {
     const borrowRef = doc(db, 'borrows', borrowId);
     const timestamp = serverTimestamp();
@@ -80,8 +77,6 @@ export const cancelBorrowRequest = async (
     console.log('Error cancel borrow', e);
     toast.error('Something went wrong! Please try again later.');
   }
-
-  if (cb) cb();
 };
 
 export const addToLikedBooks = async (

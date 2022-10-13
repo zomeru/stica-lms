@@ -33,8 +33,6 @@ const History = () => {
     )
   );
 
-  console.log('borrowHistory', borrowHistory);
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const bookHistory = React.useMemo(() => {
     const newBookHistory: any = [];
@@ -162,7 +160,7 @@ const History = () => {
                         onClick={() => navigateToBook(history.bookId)}
                       >
                         <p
-                          className='w-[150px] line-clamp-2 overflow-hidden text-primary'
+                          className='max-w-[200px] line-clamp-2 overflow-hidden text-primary text-left'
                           data-for={history.title}
                           data-tip={history.title}
                         >

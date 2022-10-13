@@ -24,6 +24,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineMessage,
   },
   {
+    name: 'My Likes',
+    Icon: AiOutlineHeart,
+  },
+  {
     name: 'Currently Issued Books',
     Icon: FiBookOpen,
   },
@@ -31,15 +35,11 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     name: 'Borrow Requests',
     Icon: MdPendingActions,
   },
-  {
-    name: 'My Likes',
-    Icon: AiOutlineHeart,
-  },
+
   {
     name: 'History',
     Icon: AiOutlineHistory,
   },
-
   {
     name: 'Contact',
     Icon: MdOutlineContactPage,

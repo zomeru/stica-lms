@@ -13,8 +13,6 @@ import { useUser } from '@src/contexts';
 const PendingRequests = () => {
   const { user } = useUser();
 
-  const [actionShowId, setActionShowId] = React.useState('');
-
   const [userBorrows, borrowLoading] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
@@ -92,7 +90,7 @@ const PendingRequests = () => {
                         onClick={() => navigateToBook(borrow.bookId)}
                       >
                         <p
-                          className='w-[150px] overflow-hidden text-primary line-clamp-2'
+                          className='max-w-[200px] overflow-hidden text-primary line-clamp-2 text-left'
                           data-for={borrow.title}
                           data-tip={borrow.title}
                         >
@@ -140,35 +138,13 @@ const PendingRequests = () => {
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-right text-sm relative'>
                       <button
                         type='button'
-                        className='inline-block text-gray-500 hover:text-gray-700'
+                        className='inline-block text-red-500 hover:text-red-600'
                         onClick={() => {
-                          if (actionShowId === borrow.id) {
-                            setActionShowId('');
-                          } else {
-                            setActionShowId(borrow.id);
-                          }
+                          cancelBorrowRequest(borrow.id);
                         }}
                       >
-                        <svg
-                          className='inline-block h-6 w-6 fill-current'
-                          viewBox='0 0 24 24'
-                        >
-                          <path d='M12 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm-2 6a2 2 0 104 0 2 2 0 00-4 0z' />
-                        </svg>
+                        Cancel request
                       </button>
-                      {actionShowId === borrow.id && (
-                        <button
-                          className='bg-red-500 absolute text-white px-3 py-2 top-[10px] left-0 -translate-x-[50px] 2xl:-translate-x-[20px] hover:bg-red-600 duration-300 transition-colors truncate'
-                          type='button'
-                          onClick={() => {
-                            cancelBorrowRequest(borrow.id, () =>
-                              setActionShowId('')
-                            );
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      )}
                     </td>
                   </tr>
                 </React.Fragment>

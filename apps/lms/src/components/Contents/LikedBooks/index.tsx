@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { useIsAuthenticated } from '@azure/msal-react';
 
 import { navigateToBook } from '@src/utils';
 import { likedBooksTableHeaders } from '@src/constants';
 import { removeFromLikedBooks, useCol } from '@src/services';
 import { ILikedBookDoc } from '@lms/types';
-import { collection, query, orderBy } from 'firebase/firestore';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
 
@@ -21,8 +21,6 @@ const History = () => {
       orderBy('createdAt', 'desc')
     )
   );
-
-  console.log('borrowHistory', likedBooks);
 
   return (
     <section
@@ -93,7 +91,7 @@ const History = () => {
                         onClick={() => navigateToBook(like.bookId)}
                       >
                         <p
-                          className='w-[150px] line-clamp-2 overflow-hidden text-primary'
+                          className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'
                           data-for={like.title}
                           data-tip={like.title}
                         >
@@ -102,7 +100,7 @@ const History = () => {
                       </button>
                     </td>
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                      <p className='w-max text-gray-900'>{like.author}</p>
+                      <p className='text-gray-900'>{like.author}</p>
                     </td>
 
                     <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>

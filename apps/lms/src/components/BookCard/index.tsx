@@ -48,8 +48,6 @@ const BookCard = ({ book }: BookCardProps) => {
     query(collection(db, `users/${user?.id || ''}/my-likes`))
   );
 
-  console.log('myLikes', myLikes);
-
   return (
     <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%)] before:rounded-2xl before:z-[-1]'>
       <ReactTooltip id={objectID} />
