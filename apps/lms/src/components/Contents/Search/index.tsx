@@ -16,8 +16,6 @@ const searchClient = algoliasearch(
 
 const searchIndex = searchClient.initIndex('books');
 
-// const HITS_PER_PAGE = 12;
-
 export type OrderType = 'asc' | 'desc';
 
 const Search = () => {
@@ -27,8 +25,6 @@ const Search = () => {
   const currentPage = useNextQuery('searchPage');
 
   const { width } = useWindowDimensions();
-
-  // const HITS_PER_PAGE = width < 1665 ? 12 : width < 1965 ? 20 : 30;
 
   const [books, setBooks] = useState<AlgoBookDoc[]>([]);
 
@@ -170,7 +166,11 @@ const Search = () => {
         { shallow: true }
       );
     } else {
-      if (Number(router.query.searchPage) === 10) return;
+      if (
+        Number(router.query.searchPage) ===
+        Math.ceil(books.length / HITS_PER_PAGE)
+      )
+        return;
 
       router.push(
         {
@@ -318,7 +318,16 @@ const Search = () => {
             )}
           </div>
           <div
-            className={`w-full grid gap-y-5 justify-between place-items-left h-full place-content-start pt-1 pb-4  ${
+            style={{
+              height: `calc(100% - ${
+                books &&
+                books.length > 0 &&
+                books.length / HITS_PER_PAGE > 1
+                  ? 36
+                  : 0
+              }px)`,
+            }}
+            className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${
               sidebarOpen ? rowSideOpen : rowSideClose
             } ${
               currentBooks &&
