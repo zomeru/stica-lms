@@ -48,6 +48,17 @@ export const borrowBook = (
       const date = new Date(timeData.datetime);
       const day = DAYS[date.getDay()];
       const dayToAdd = day === 'Friday' ? 3 : day === 'Saturday' ? 2 : 1;
+
+      // TODO : do this in fast dev mode
+      // const sampleDate = new Date();
+      // add 1 minute to sample date
+      // sampleDate.setMinutes(sampleDate.getMinutes() + 1);
+      // add 20 seconds to sample date
+      // sampleDate.setSeconds(sampleDate.getSeconds() + 20);
+
+      // set date time to 5pm
+      date.setHours(17, 0, 0, 0);
+      // const pickUpDueDate = addDays(sampleDate, 0);
       const pickUpDueDate = addDays(date, dayToAdd);
       const pickupDueTimestamp = Timestamp.fromDate(pickUpDueDate);
 
@@ -79,13 +90,13 @@ export const borrowBook = (
       // });
 
       toast.success('Borrow request sent successfully.');
+      nProgress.done();
     })
     .catch((err) => {
       console.log('error borrow', err);
       toast.error('Something went wrong, please try again later.');
+      nProgress.done();
     });
-
-  nProgress.done();
 };
 
 export const cancelBorrowRequest = async (borrowId: string) => {

@@ -35,16 +35,26 @@ export function addZero(num: number) {
   return num < 10 ? `0${num}` : num;
 }
 
-export function formatDate(date: Date | number | string) {
+export function formatDate(
+  date: Date | number | string,
+  showTime: boolean = false
+) {
   // const dateStr = `${addZero(
   //   date.getMonth() + 1
   // )}/${date.getDate()}/${date.getFullYear()}`;
 
   const dateObj = new Date(date);
 
+  // show time in 12 hour format
+  const time = `${dateObj.getHours() % 12}:${addZero(
+    dateObj.getMinutes()
+  )} ${dateObj.getHours() >= 12 ? 'PM' : 'AM'}`;
+
   const dateStr = `${
     MONTHS[dateObj.getMonth()]
-  }. ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+  }. ${dateObj.getDate()}, ${dateObj.getFullYear()}${
+    showTime ? ` ${time}` : ''
+  }`;
 
   // console.log(dateObj.getHours(), '-', dateObj.getMinutes());
   // , ${DAYS[date.getDay()]}

@@ -24,12 +24,13 @@ interface LayoutProps {
   username?: string;
   userPhoto?: string;
   children?: React.ReactNode;
-  showSearch?: boolean;
   searchPlaceholder?: string;
   searchDisabled?: boolean;
-  topBar?: React.ReactNode;
   user?: 'user' | 'admin';
   onAdminSearch?: () => void;
+  adminSearchInput?: string;
+  setAdminSearchInput?: React.Dispatch<React.SetStateAction<string>>;
+  adminInput?: React.ReactNode;
 }
 
 export const Layout = ({
@@ -41,12 +42,13 @@ export const Layout = ({
   sidebarItems,
   sidebarOpen = true,
   showHideSidebar,
-  showSearch = true,
   searchDisabled = false,
   searchPlaceholder = 'Search for books',
-  topBar,
   user = 'user',
   onAdminSearch,
+  adminSearchInput,
+  setAdminSearchInput,
+  adminInput,
 }: LayoutProps) => {
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -241,14 +243,16 @@ export const Layout = ({
         </div>
         <div className='h-full w-full'>
           <div className='w-full h-[100px] flex px-[40px]'>
-            {showSearch ? (
-              <form
-                // onSubmit={onSearch}
-                onSubmit={onSearch}
-                className='w-full h-full flex items-center space-x-3'
-              >
-                <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
-                  <AiOutlineSearch className='text-2xl text-cGray-300' />
+            <form
+              // onSubmit={onSearch}
+              onSubmit={onSearch}
+              className='w-full h-full flex items-center space-x-3'
+            >
+              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
+                <AiOutlineSearch className='text-2xl text-cGray-300' />
+                {user === 'admin' ? (
+                  adminInput
+                ) : (
                   <input
                     ref={searchInputRef}
                     disabled={searchDisabled}
@@ -257,22 +261,16 @@ export const Layout = ({
                     className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
                       searchDisabled && 'cursor-not-allowed'
                     }`}
-                    // onChange={(e) =>
-                    //   router.query.page === 'search' &&
-                    //   handleSearch(e.target.value)
-                    // }
                   />
-                </div>
-                {/* <button
+                )}
+              </div>
+              {/* <button
                 type='submit'
                 className='bg-primary text-white py-3 px-10 rounded-full'
               >
                 Search
               </button> */}
-              </form>
-            ) : (
-              topBar
-            )}
+            </form>
 
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
               <button type='button'>

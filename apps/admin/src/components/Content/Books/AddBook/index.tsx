@@ -18,8 +18,8 @@ import {
   GenreType,
   IBooks,
   GenreTypes,
-  IBookDoc,
   ISBNType,
+  AlgoBookDoc,
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import nProgress from 'nprogress';
@@ -117,8 +117,8 @@ const ISBNModal = ({
 interface AddBookProps {
   addBook: boolean;
   setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
-  books: IBookDoc[];
-  setBooks: React.Dispatch<React.SetStateAction<IBookDoc[]>>;
+  books: AlgoBookDoc[];
+  setBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
 }
 
 const AddBook = ({
@@ -221,17 +221,6 @@ const AddBook = ({
 
         const bookAdded = await addDoc(collection(db, 'books'), payload);
 
-        // Add ISBNs to isbn collection
-        // ISBNs.forEach(async (isbn) => {
-        //   const isbnDoc: IISBN = {
-        //     book: bookAdded.id,
-        //     isbn,
-        //     available: true,
-        //   };
-
-        //   await addDoc(collection(db, 'isbns'), isbnDoc);
-        // });
-
         setTitle('');
         setAuthor('');
         setPublisher('');
@@ -246,7 +235,7 @@ const AddBook = ({
           {
             id: bookAdded.id,
             ...payload,
-          } as IBookDoc,
+          } as AlgoBookDoc,
           ...books,
         ];
         setBooks(newBooks);

@@ -21,7 +21,7 @@ import {
   BOOK_GENRES_NONFICTION,
   GENRE_TYPES,
 } from '@src/constants';
-import { GenreType, GenreTypes, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBookDoc, GenreType, GenreTypes, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import nProgress from 'nprogress';
 import Loader from '@src/components/Loader';
@@ -116,11 +116,11 @@ const ISBNModal = ({
 };
 
 interface AddBookProps {
-  bookDetails: IBookDoc;
+  bookDetails: AlgoBookDoc;
   selectedBook: string;
   setSelectedBook: React.Dispatch<React.SetStateAction<string>>;
-  books: IBookDoc[];
-  setBooks: React.Dispatch<React.SetStateAction<IBookDoc[]>>;
+  books: AlgoBookDoc[];
+  setBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
 }
 
 const BookDetails = ({
@@ -303,7 +303,7 @@ const BookDetails = ({
           isbns: [...bookDetails.isbns, ...newISBNsToAdd],
         },
         ...filteredBooks,
-      ] as IBookDoc[];
+      ] as AlgoBookDoc[];
       setBooks(updatedBooks);
 
       toast.success('Book updated successfully');

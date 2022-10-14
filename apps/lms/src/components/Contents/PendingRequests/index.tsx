@@ -125,7 +125,8 @@ const PendingRequests = () => {
                 );
 
                 const pickupDueDate = formatDate(
-                  borrow.pickUpDueDate.toDate()
+                  borrow.pickUpDueDate.toDate(),
+                  true
                 );
 
                 return (

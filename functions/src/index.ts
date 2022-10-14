@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 export * from './algolia';
+export * from './borrows';
 
 const regionalFunctions = functions.region('asia-east2');
 

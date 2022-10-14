@@ -1,32 +1,31 @@
 import React from 'react';
 import Image from 'next/image';
+import { AlgoBookDoc } from '@lms/types';
 
 interface BookListCardProps {
-  title: string;
-  imageUrl: string;
-  accessionNumber: string;
-  author: string;
-  genre: string;
-  quantity: number;
-  available: number;
+  book: AlgoBookDoc;
   onEdit: () => void;
 }
 
-const BookListCard = ({
-  title,
-  imageUrl,
-  accessionNumber,
-  author,
-  genre,
-  quantity,
-  available,
-  onEdit,
-}: BookListCardProps) => {
+const BookListCard = ({ book, onEdit }: BookListCardProps) => {
+  const {
+    // id,
+    objectID,
+    title,
+    author,
+    genre,
+    available,
+    // views,
+    quantity,
+    imageCover,
+    accessionNumber,
+  } = book;
+
   return (
     <tr>
       <td className='border-b border-gray-200 w-[70px] bg-white px-5 py-5 text-sm'>
         <div className='relative w-[60px] h-[70px] rounded-md overflow-hidden'>
-          <Image layout='fill' src={imageUrl} quality={5} priority />
+          <Image layout='fill' src={imageCover.url} quality={5} priority />
         </div>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
@@ -35,7 +34,14 @@ const BookListCard = ({
         </p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
-        <p className='whitespace-no-wrap text-gray-900'>{title}</p>
+        <button
+          data-for={objectID}
+          data-tip={title}
+          onClick={onEdit}
+          type='button'
+        >
+          <p className='line-clamp-2 text-primary text-left'>{title}</p>
+        </button>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>{author}</p>
@@ -62,7 +68,6 @@ const BookListCard = ({
             Delete
           </button>
         </div>
-        {/* <p className='whitespace-no-wrap text-gray-900'>asd</p> */}
       </td>
     </tr>
   );

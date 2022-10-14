@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import algoliasearch from 'algoliasearch';
-import { InstantSearch, Configure } from 'react-instantsearch-hooks-web';
 
 import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
@@ -30,7 +29,7 @@ const Search = () => {
 
   // TODO: comment this out later
   useEffect(() => {
-    const getResult = async () => {
+    const getBooks = async () => {
       if (!searchKeyword) {
         let hits: AlgoBookDoc[] = [];
 
@@ -52,7 +51,7 @@ const Search = () => {
       }
     };
 
-    getResult();
+    getBooks();
   }, [searchKeyword]);
 
   const [sortBy, setSortBy] = useState('views');
@@ -210,139 +209,134 @@ const Search = () => {
       : 'grid-cols-6';
 
   return (
-    <InstantSearch searchClient={searchClient} indexName='books'>
-      <Configure hitsPerPage={HITS_PER_PAGE} />
-      <div className='w-full h-full flex justify-between'>
-        <div className='w-[calc(100%)] 2xl:w-[calc(100%)] space-y-3 h-full'>
-          <div className='flex justify-between'>
-            <div className='flex space-x-5 items-center'>
-              <div className='flex space-x-3 items-center'>
-                <div className='text-cGray-300'>Sort by:</div>
-                <div className='flex space-x-2'>
-                  {SORT_ITEMS.map(({ sort }) => {
-                    const isDefaultSort =
-                      router.query.sortBy === undefined ||
-                      router.query.sortBy === 'Relevance';
+    <div className='w-full h-full flex justify-between'>
+      <div className='w-[calc(100%)] 2xl:w-[calc(100%)] space-y-3 h-full'>
+        <div className='flex justify-between'>
+          <div className='flex space-x-5 items-center'>
+            <div className='flex space-x-3 items-center'>
+              <div className='text-cGray-300'>Sort by:</div>
+              <div className='flex space-x-2'>
+                {SORT_ITEMS.map(({ sort }) => {
+                  const isDefaultSort =
+                    router.query.sortBy === undefined ||
+                    router.query.sortBy === 'Relevance';
 
-                    const isActiveSort =
-                      sort.name === 'Relevance'
-                        ? isDefaultSort
-                        : sort.name ===
-                          decodeURIComponent(
-                            (router.query.sortBy as string) || ''
-                          );
+                  const isActiveSort =
+                    sort.name === 'Relevance'
+                      ? isDefaultSort
+                      : sort.name ===
+                        decodeURIComponent(
+                          (router.query.sortBy as string) || ''
+                        );
 
-                    return (
-                      <button
-                        type='button'
-                        key={sort.name}
-                        className={`px-3 py-2 rounded-lg text-sm ${
-                          isActiveSort
-                            ? 'bg-primary text-white'
-                            : 'bg-neutral-200 text-cGray-300'
-                        }`}
-                        onClick={() => handleSort(sort.name)}
-                      >
-                        {sort.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className='flex space-x-3 items-center'>
-                <div className='text-cGray-300'>Order by:</div>
-                <div className='pr-3 bg-neutral-200 rounded-lg'>
-                  <select
-                    className='outline-none border-none rounded-lg text-cGray-300 bg-neutral-200 px-2 py-[3px] '
-                    onChange={(e) =>
-                      setSortOrder(e.target.value as OrderType)
-                    }
-                    value={sortOrder}
-                  >
-                    {currentOrderItems &&
-                      currentOrderItems.map((item) => (
-                        <option key={item.name} value={item.value}>
-                          {item.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                  return (
+                    <button
+                      type='button'
+                      key={sort.name}
+                      className={`px-3 py-2 rounded-lg text-sm ${
+                        isActiveSort
+                          ? 'bg-primary text-white'
+                          : 'bg-neutral-200 text-cGray-300'
+                      }`}
+                      onClick={() => handleSort(sort.name)}
+                    >
+                      {sort.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            {/* <Pagination
+
+            <div className='flex space-x-3 items-center'>
+              <div className='text-cGray-300'>Order by:</div>
+              <div className='pr-3 bg-neutral-200 rounded-lg'>
+                <select
+                  className='outline-none border-none rounded-lg text-cGray-300 bg-neutral-200 px-2 py-[3px] '
+                  onChange={(e) =>
+                    setSortOrder(e.target.value as OrderType)
+                  }
+                  value={sortOrder}
+                >
+                  {currentOrderItems &&
+                    currentOrderItems.map((item) => (
+                      <option key={item.name} value={item.value}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          {/* <Pagination
               showLast={false}
               showFirst={false}
               padding={1}
               totalPages={Math.round(books.length / HITS_PER_PAGE)}
             /> */}
-            {books.length > 0 && books.length / HITS_PER_PAGE > 1 && (
-              <div className='flex items-center space-x-3'>
-                <div>
-                  {Number(router.query.searchPage as string) || 1}/
-                  {Math.ceil(books.length / HITS_PER_PAGE)}
-                </div>
-                <div className='space-x-1'>
-                  <button
-                    type='button'
-                    disabled={
-                      !router.query.searchPage ||
-                      Number(router.query.searchPage as string) === 1
-                    }
-                    className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                      (!router.query.searchPage ||
-                        Number(router.query.searchPage as string) === 1) &&
-                      'opacity-40 cursor-not-allowed'
-                    }`}
-                    onClick={() => handlePagination('prev')}
-                  >
-                    {'<'}
-                  </button>
-                  <button
-                    type='button'
-                    disabled={
-                      Number(router.query.searchPage as string) ===
-                      Math.ceil(books.length / HITS_PER_PAGE)
-                    }
-                    className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                      Number(router.query.searchPage as string) ===
-                        Math.ceil(books.length / HITS_PER_PAGE) &&
-                      'opacity-40 cursor-not-allowed'
-                    }`}
-                    onClick={() => handlePagination('next')}
-                  >
-                    {'>'}
-                  </button>
-                </div>
+          {books.length > 0 && books.length / HITS_PER_PAGE > 1 && (
+            <div className='flex items-center space-x-3'>
+              <div>
+                {Number(router.query.searchPage as string) || 1}/
+                {Math.ceil(books.length / HITS_PER_PAGE)}
               </div>
-            )}
-          </div>
-          <div
-            style={{
-              height: `calc(100% - ${
-                books &&
-                books.length > 0 &&
-                books.length / HITS_PER_PAGE > 1
-                  ? 36
-                  : 0
-              }px)`,
-            }}
-            className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${
-              sidebarOpen ? rowSideOpen : rowSideClose
-            } ${
-              currentBooks &&
-              currentBooks.length > 0 &&
-              'overflow-y-scroll custom-scrollbar'
-            }`}
-          >
-            {currentBooks &&
-              currentBooks.map((book) => (
-                <BookCard key={book.objectID} book={book} />
-              ))}
-          </div>
+              <div className='space-x-1'>
+                <button
+                  type='button'
+                  disabled={
+                    !router.query.searchPage ||
+                    Number(router.query.searchPage as string) === 1
+                  }
+                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                    (!router.query.searchPage ||
+                      Number(router.query.searchPage as string) === 1) &&
+                    'opacity-40 cursor-not-allowed'
+                  }`}
+                  onClick={() => handlePagination('prev')}
+                >
+                  {'<'}
+                </button>
+                <button
+                  type='button'
+                  disabled={
+                    Number(router.query.searchPage as string) ===
+                    Math.ceil(books.length / HITS_PER_PAGE)
+                  }
+                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                    Number(router.query.searchPage as string) ===
+                      Math.ceil(books.length / HITS_PER_PAGE) &&
+                    'opacity-40 cursor-not-allowed'
+                  }`}
+                  onClick={() => handlePagination('next')}
+                >
+                  {'>'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        <div
+          style={{
+            height: `calc(100% - ${
+              books && books.length > 0 && books.length / HITS_PER_PAGE > 1
+                ? 36
+                : 0
+            }px)`,
+          }}
+          className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${
+            sidebarOpen ? rowSideOpen : rowSideClose
+          } ${
+            currentBooks &&
+            currentBooks.length > 0 &&
+            'overflow-y-scroll custom-scrollbar'
+          }`}
+        >
+          {currentBooks &&
+            currentBooks.map((book) => (
+              <BookCard key={book.objectID} book={book} />
+            ))}
         </div>
       </div>
-    </InstantSearch>
+    </div>
   );
 };
 

@@ -31,6 +31,7 @@ import { useUser } from '@src/contexts';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { formatDate } from '@src/utils';
+import ReactTooltip from 'react-tooltip';
 
 const BookDetails = () => {
   const { user } = useUser();
@@ -242,13 +243,18 @@ const BookDetails = () => {
             {userBorrow?.some(
               (el) => el.status === 'Pending' && el.bookId === bookId
             ) && (
-              <div className='text-orange-600 flex items-start mt-2'>
-                <span className='text-sm'>
+              <>
+                <ReactTooltip id={bookId} />
+                <p
+                  data-for={bookId}
+                  data-tip='Library is open from Monday to Friday, 9:00 AM to 5:00 PM.'
+                  className='text-orange-600 flex mt-2 text-sm'
+                >
                   Please pick up the book from the library before{' '}
-                  {formatDate(userBorrow[0].pickUpDueDate.toDate())} 5:00
-                  PM or it will automatically be cancelled.
-                </span>
-              </div>
+                  {formatDate(userBorrow[0].pickUpDueDate.toDate(), true)}{' '}
+                  or it will automatically be cancelled.
+                </p>
+              </>
             )}
           </div>
         </div>

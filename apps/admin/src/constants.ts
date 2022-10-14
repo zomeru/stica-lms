@@ -17,11 +17,11 @@ export const adminSidebarItems = [
     Icon: AiOutlineMessage,
   },
   {
-    name: 'Currently Issued Books',
+    name: 'Currently Loaned Books',
     Icon: FiBookOpen,
   },
   {
-    name: 'Issue Requests',
+    name: 'Borrow Requests',
     Icon: MdLoop,
   },
   {
