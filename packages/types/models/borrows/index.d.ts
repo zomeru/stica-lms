@@ -1,6 +1,5 @@
 export type BorrowStatus =
   | 'Pending'
-  | 'Approved'
   | 'Issued'
   | 'Returned'
   | 'Returned with damage'
@@ -17,10 +16,10 @@ export interface IBorrow {
   status: BorrowStatus;
   penalty: number;
   updatedAt: any;
-  pickUpDueDate?: any;
+  pickUpDueDate: any;
+  issuedDate?: any;
   returnedDate?: any;
   dueDate?: any;
-  issuedDate?: any;
 }
 
 export interface IBorrowDoc extends IBorrow {

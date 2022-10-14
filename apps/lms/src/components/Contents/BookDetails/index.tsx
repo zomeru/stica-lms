@@ -30,6 +30,7 @@ import {
 import { useUser } from '@src/contexts';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { useIsAuthenticated } from '@azure/msal-react';
+import { formatDate } from '@src/utils';
 
 const BookDetails = () => {
   const { user } = useUser();
@@ -43,17 +44,19 @@ const BookDetails = () => {
   const [viewAdded, setViewAdded] = useState(false);
 
   const [bookData] = useDoc<IBookDoc>(doc(db, 'books', bookId || ''));
-  const [userBorrows] = useCol<IBorrowDoc>(
+  const [userBorrow] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
       where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Pending', 'Approved', 'Issued']),
+      where('status', 'in', ['Pending', 'Issued']),
       where('bookId', '==', bookId || '')
     )
   );
   const [myLikes] = useCol<ILikedBookDoc>(
     query(collection(db, `users/${user?.id || 'default'}/my-likes`))
   );
+
+  console.log('userBorrow', userBorrow);
 
   useEffect(() => {
     const incrementViews = async () => {
@@ -165,76 +168,88 @@ const BookDetails = () => {
               </span>
             </p>
           </div>
-          <div className='flex items-center space-x-3'>
-            <button
-              disabled={
-                userBorrows &&
-                userBorrows?.some((el) => el.bookId === bookId)
-              }
-              className={`text-white px-5 py-2 rounded-md ${
-                userBorrows &&
-                userBorrows?.some((el) => el.bookId === bookId)
-                  ? 'cursor-not-allowed bg-neutral-500'
-                  : 'bg-primary'
-              }`}
-              type='button'
-              onClick={() =>
-                borrowBook(book, isAuthenticated, user?.id || '')
-              }
-            >
-              {userBorrows?.some(
-                (el) => el.status === 'Pending' && el.bookId === bookId
-              )
-                ? 'Pending'
-                : userBorrows?.some(
-                    (el) =>
-                      el.status === 'Approved' && el.bookId === bookId
-                  )
-                ? 'Approved - Ready for pickup'
-                : 'Borrow'}
-            </button>
-            {userBorrows &&
-              userBorrows?.some(
-                (el) =>
-                  ['Approved', 'Pending'].includes(el.status) &&
-                  el.bookId === bookData?.id
-              ) && (
-                <button
-                  type='button'
-                  className='px-5 py-2 rounded-md border-2 text-orange-700 border-orange-700'
-                  onClick={() => cancelBorrowRequest(userBorrows[0]?.id)}
-                >
-                  Cancel
-                </button>
-              )}
-            <button
-              type='button'
-              onClick={() => {
-                if (
-                  myLikes &&
-                  myLikes.some((el) => el.bookId === bookId)
-                ) {
-                  const likedBook = myLikes.find(
-                    (el) => el.bookId === bookId
-                  );
-
-                  if (likedBook)
-                    removeFromLikedBooks(
-                      likedBook.id,
-                      isAuthenticated,
-                      user?.id || ''
-                    );
-                } else if (bookId) {
-                  addToLikedBooks(book, isAuthenticated, user?.id || '');
+          <div className=''>
+            <div className='flex items-center space-x-3'>
+              <button
+                disabled={
+                  userBorrow &&
+                  userBorrow?.some((el) => el.bookId === bookId)
                 }
-              }}
-            >
-              {myLikes && myLikes.some((el) => el.bookId === bookId) ? (
-                <AiFillHeart className='w-[40px] h-[40px] text-primary' />
-              ) : (
-                <AiOutlineHeart className='w-[40px] h-[40px] text-blackText' />
-              )}
-            </button>
+                className={`text-white px-[20px] py-[8px] rounded-md ${
+                  userBorrow &&
+                  userBorrow?.some((el) => el.bookId === bookId)
+                    ? 'cursor-not-allowed bg-neutral-500'
+                    : 'bg-primary'
+                }`}
+                type='button'
+                onClick={() =>
+                  borrowBook(book, isAuthenticated, user?.id || '')
+                }
+              >
+                {userBorrow?.some(
+                  (el) => el.status === 'Pending' && el.bookId === bookId
+                )
+                  ? 'Pending'
+                  : // : userBorrows?.some(
+                    //     (el) =>
+                    //       el.status === 'Approved' && el.bookId === bookId
+                    //   )
+                    // ? 'Approved - Ready for pickup'
+                    'Borrow'}
+              </button>
+              {userBorrow &&
+                userBorrow?.some(
+                  (el) =>
+                    el.status === 'Pending' && el.bookId === bookData?.id
+                ) && (
+                  <button
+                    type='button'
+                    className='px-[18px] py-[6px] rounded-md border-2 text-orange-700 border-orange-700'
+                    onClick={() => cancelBorrowRequest(userBorrow[0]?.id)}
+                  >
+                    Cancel
+                  </button>
+                )}
+              <button
+                type='button'
+                onClick={() => {
+                  if (
+                    myLikes &&
+                    myLikes.some((el) => el.bookId === bookId)
+                  ) {
+                    const likedBook = myLikes.find(
+                      (el) => el.bookId === bookId
+                    );
+
+                    if (likedBook)
+                      removeFromLikedBooks(
+                        likedBook.id,
+                        isAuthenticated,
+                        user?.id || ''
+                      );
+                  } else if (bookId) {
+                    addToLikedBooks(book, isAuthenticated, user?.id || '');
+                  }
+                }}
+              >
+                {myLikes && myLikes.some((el) => el.bookId === bookId) ? (
+                  <AiFillHeart className='w-[40px] h-[40px] text-primary' />
+                ) : (
+                  <AiOutlineHeart className='w-[40px] h-[40px] text-blackText' />
+                )}
+              </button>
+            </div>
+            {userBorrow?.some(
+              (el) => el.status === 'Pending' && el.bookId === bookId
+            ) && (
+              <div className='text-orange-600 flex items-start mt-2'>
+                <span className='text-sm'>
+                  Please pick up the book from the library before{' '}
+                  {formatDate(userBorrow[0].pickUpDueDate.toDate())} 5:00
+                  PM or it will automatically be cancelled.
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

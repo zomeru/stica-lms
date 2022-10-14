@@ -34,13 +34,11 @@ const BookCard = ({ book }: BookCardProps) => {
   const isAuthenticated = useIsAuthenticated();
   const { user } = useUser();
 
-  const [tempRequestStatus] = React.useState(['Pending', 'Approved']);
-
   const [userBorrows] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
       where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Pending', 'Approved', 'Issued'])
+      where('status', 'in', ['Pending', 'Issued'])
     )
   );
 
@@ -109,15 +107,13 @@ const BookCard = ({ book }: BookCardProps) => {
             } `}
           >
             {userBorrows?.some(
-              (el) =>
-                tempRequestStatus.includes(el.status) &&
-                el.bookId === objectID
+              (el) => el.status === 'Pending' && el.bookId === objectID
             )
-              ? 'Requested'
+              ? 'Pending'
               : userBorrows?.some(
                   (el) => el.status === 'Issued' && el.bookId === objectID
                 )
-              ? 'Borrowed'
+              ? 'Issued'
               : 'Borrow'}
           </button>
           <button

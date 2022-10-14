@@ -137,7 +137,7 @@ export const pendingRequestTableHeaders = [
   'Accession No',
   'Request Date',
   'Pick-up Due Date',
-  'Status',
+  // 'Status',
 ];
 
 export const issuedBooksTableHeaders = [

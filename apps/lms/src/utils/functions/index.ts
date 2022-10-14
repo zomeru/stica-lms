@@ -1,10 +1,12 @@
 import Router from 'next/router';
 
+import { DayType, MonthType } from '@src/types';
+
 export function randNum(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const DAYS = [
+export const DAYS: DayType[] = [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -14,7 +16,7 @@ export const DAYS = [
   'Saturday',
 ];
 
-export const MONTHS = [
+export const MONTHS: MonthType[] = [
   'Jan',
   'Feb',
   'Mar',
@@ -44,10 +46,16 @@ export function formatDate(date: Date | number | string) {
     MONTHS[dateObj.getMonth()]
   }. ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
 
+  // console.log(dateObj.getHours(), '-', dateObj.getMinutes());
   // , ${DAYS[date.getDay()]}
 
   return dateStr;
 }
+
+export const addDays = (date: Date, days: number) => {
+  const newDate = new Date(date);
+  return new Date(newDate.setDate(date.getDate() + days));
+};
 
 export const navigateToBook = (bookId: string) => {
   const allQueries = Router.query;

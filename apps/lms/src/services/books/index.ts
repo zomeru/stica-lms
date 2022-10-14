@@ -6,12 +6,15 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
+  Timestamp,
 } from 'firebase/firestore';
+import nProgress from 'nprogress';
 
 import { AlgoBookDoc, IBorrow, ILikedBooks } from '@lms/types';
 import { db } from '@lms/db';
+import { addDays, DAYS } from '@src/utils';
 
-export const borrowBook = async (
+export const borrowBook = (
   book: AlgoBookDoc,
   isAuthenticated: boolean,
   userId: string
@@ -28,40 +31,61 @@ export const borrowBook = async (
     return;
   }
 
-  try {
-    const timestamp = serverTimestamp();
+  const url = `https://timezone.abstractapi.com/v1/current_time/?api_key=${
+    process.env.NEXT_PUBLIC_TIMEZONE_API_KEY as string
+  }&location=Manila, Philippines`;
 
-    const payload: IBorrow = {
-      bookId: book.objectID,
-      userId,
-      title: book.title,
-      isbn: availableIsbn,
-      accessionNumber: book.accessionNumber,
-      requestDate: timestamp,
-      status: 'Pending',
-      updatedAt: timestamp,
-      penalty: 0,
-    };
+  // const worldtimeapi = 'http://worldtimeapi.org/api/timezone/Asia/Manila';
 
-    await addDoc(collection(db, 'borrows'), payload);
+  nProgress.configure({
+    showSpinner: true,
+  });
+  nProgress.start();
+  fetch(url)
+    .then((res) => res.json())
+    .then(async (timeData) => {
+      const requestDateTimestamp = serverTimestamp();
+      const date = new Date(timeData.datetime);
+      const day = DAYS[date.getDay()];
+      const dayToAdd = day === 'Friday' ? 3 : day === 'Saturday' ? 2 : 1;
+      const pickUpDueDate = addDays(date, dayToAdd);
+      const pickupDueTimestamp = Timestamp.fromDate(pickUpDueDate);
 
-    // const bookRef = doc(db, 'books', objectID);
+      const payload: IBorrow = {
+        bookId: book.objectID,
+        userId,
+        title: book.title,
+        isbn: availableIsbn,
+        accessionNumber: book.accessionNumber,
+        requestDate: requestDateTimestamp,
+        status: 'Pending',
+        updatedAt: requestDateTimestamp,
+        penalty: 0,
+        pickUpDueDate: pickupDueTimestamp,
+      };
 
-    // const filterIsbn = isbns.filter((el) => el.isbn !== availableIsbn);
+      await addDoc(collection(db, 'borrows'), payload);
 
-    // await updateDoc(bookRef, {
-    //   available: increment(-1),
-    //   isbns: [
-    //     ...filterIsbn,
-    //     { isbn: availableIsbn, isAvailable: false, issuedBy: user.id },
-    //   ],
-    // });
+      // const bookRef = doc(db, 'books', objectID);
 
-    toast.success('Borrow request sent successfully.');
-  } catch (error) {
-    console.log('error borrow', error);
-    toast.error('Something went wrong, please try again later.');
-  }
+      // const filterIsbn = isbns.filter((el) => el.isbn !== availableIsbn);
+
+      // await updateDoc(bookRef, {
+      //   available: increment(-1),
+      //   isbns: [
+      //     ...filterIsbn,
+      //     { isbn: availableIsbn, isAvailable: false, issuedBy: user.id },
+      //   ],
+      // });
+
+      toast.success('Borrow request sent successfully.');
+    })
+    .catch((err) => {
+      console.log('error borrow', err);
+      toast.error('Something went wrong, please try again later.');
+    });
+
+  nProgress.done();
 };
 
 export const cancelBorrowRequest = async (borrowId: string) => {

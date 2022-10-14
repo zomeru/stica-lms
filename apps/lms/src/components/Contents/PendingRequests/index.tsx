@@ -124,13 +124,9 @@ const PendingRequests = () => {
                   borrow.requestDate.toDate()
                 );
 
-                let pickupDueDate = 'N/A';
-
-                if (borrow.pickUpDueDate) {
-                  pickupDueDate = formatDate(
-                    borrow.pickUpDueDate.toDate()
-                  );
-                }
+                const pickupDueDate = formatDate(
+                  borrow.pickUpDueDate.toDate()
+                );
 
                 return (
                   <React.Fragment key={borrow.id}>
@@ -184,7 +180,7 @@ const PendingRequests = () => {
                           {pickupDueDate}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                         <p
                           className={`whitespace-no-wrap ${
                             borrow.status === 'Pending'
@@ -194,7 +190,7 @@ const PendingRequests = () => {
                         >
                           {borrow.status}
                         </p>
-                      </td>
+                      </td> */}
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-right text-sm relative'>
                         <button
                           type='button'
