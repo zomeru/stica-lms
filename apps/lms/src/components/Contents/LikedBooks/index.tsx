@@ -20,7 +20,7 @@ const History = () => {
 
   const [likedBooks, likeLoading] = useCol<ILikedBookDoc>(
     query(
-      collection(db, `users/${user?.id || ''}/my-likes`),
+      collection(db, `users/${user?.id || 'default'}/my-likes`),
       orderBy('createdAt', 'desc')
     )
   );
@@ -117,7 +117,7 @@ const History = () => {
                 <th
                   className='border-b-2 border-gray-200 bg-primary px-5 py-5 '
                   aria-label='action'
-                 />
+                />
               </tr>
             </thead>
             <tbody>

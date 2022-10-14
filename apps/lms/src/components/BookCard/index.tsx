@@ -45,7 +45,7 @@ const BookCard = ({ book }: BookCardProps) => {
   );
 
   const [myLikes] = useCol<ILikedBookDoc>(
-    query(collection(db, `users/${user?.id || ''}/my-likes`))
+    query(collection(db, `users/${user?.id || 'default'}/my-likes`))
   );
 
   return (

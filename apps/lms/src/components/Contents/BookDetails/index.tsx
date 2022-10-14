@@ -52,7 +52,7 @@ const BookDetails = () => {
     )
   );
   const [myLikes] = useCol<ILikedBookDoc>(
-    query(collection(db, `users/${user?.id || ''}/my-likes`))
+    query(collection(db, `users/${user?.id || 'default'}/my-likes`))
   );
 
   useEffect(() => {
@@ -225,8 +225,8 @@ const BookDetails = () => {
                       user?.id || ''
                     );
                 } else if (bookId) {
-                    addToLikedBooks(book, isAuthenticated, user?.id || '');
-                  }
+                  addToLikedBooks(book, isAuthenticated, user?.id || '');
+                }
               }}
             >
               {myLikes && myLikes.some((el) => el.bookId === bookId) ? (
