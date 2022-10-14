@@ -31,17 +31,15 @@ export const borrowBook = (
     return;
   }
 
-  const url = `https://timezone.abstractapi.com/v1/current_time/?api_key=${
+  const timeApiUrl = `https://timezone.abstractapi.com/v1/current_time/?api_key=${
     process.env.NEXT_PUBLIC_TIMEZONE_API_KEY as string
   }&location=Manila, Philippines`;
-
-  // const worldtimeapi = 'http://worldtimeapi.org/api/timezone/Asia/Manila';
 
   nProgress.configure({
     showSpinner: true,
   });
   nProgress.start();
-  fetch(url)
+  fetch(timeApiUrl)
     .then((res) => res.json())
     .then(async (timeData) => {
       const requestDateTimestamp = serverTimestamp();
@@ -53,8 +51,8 @@ export const borrowBook = (
       // const sampleDate = new Date();
       // add 1 minute to sample date
       // sampleDate.setMinutes(sampleDate.getMinutes() + 1);
-      // add 20 seconds to sample date
-      // sampleDate.setSeconds(sampleDate.getSeconds() + 20);
+      // add 10 seconds to sample date
+      // sampleDate.setSeconds(sampleDate.getSeconds() + 10);
 
       // set date time to 5pm
       date.setHours(17, 0, 0, 0);

@@ -4,7 +4,9 @@ import { db } from '..';
 const regionalFunctions = functions.region('asia-east2');
 
 export const cancelNotPickupBorrows = regionalFunctions.pubsub
-  .schedule('every 1 minutes')
+  //.schedule('every 1 minutes')
+  // everyday every 5:00 PM
+  .schedule('0 17 * * *')
   .timeZone('Asia/Manila')
   .onRun(async () => {
     const borrows = await db.collection('borrows').get();
@@ -16,18 +18,13 @@ export const cancelNotPickupBorrows = regionalFunctions.pubsub
         const now = new Date();
         const pickUpDueDate = data.pickUpDueDate.toDate();
         const diff = now.getTime() - pickUpDueDate.getTime();
-        // const minutes = Math.floor(diff / 1000 / 60);
-        const seconds = Math.floor(diff / 1000);
 
-        // check if 20 seconds has passed
-        if (seconds >= 20) {
-          await borrow.ref.update({ status: 'Cancelled' });
+        if (diff / 1000 > 10) {
+          await borrow.ref.update({
+            status: 'Cancelled',
+            updatedAt: new Date(),
+          });
         }
-
-        // // check if 1 minute has passed
-        // if (minutes >= 1) {
-        //   await borrow.ref.update({ status: 'Cancelled' });
-        // }
       }
     });
   });
