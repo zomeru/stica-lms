@@ -43,6 +43,7 @@ const BookDetails = () => {
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [viewAdded, setViewAdded] = useState(false);
+  const [isBorrowing, setIsBorrowing] = useState(false);
 
   const [bookData] = useDoc<IBookDoc>(doc(db, 'books', bookId || ''));
   const [userBorrow] = useCol<IBorrowDoc>(
@@ -173,19 +174,23 @@ const BookDetails = () => {
             <div className='flex items-center space-x-3'>
               <button
                 disabled={
-                  userBorrow &&
-                  userBorrow?.some((el) => el.bookId === bookId)
+                  (userBorrow &&
+                    userBorrow?.some((el) => el.bookId === bookId)) ||
+                  isBorrowing
                 }
                 className={`text-white px-[20px] py-[8px] rounded-md ${
-                  userBorrow &&
-                  userBorrow?.some((el) => el.bookId === bookId)
+                  (userBorrow &&
+                    userBorrow?.some((el) => el.bookId === bookId)) ||
+                  isBorrowing
                     ? 'cursor-not-allowed bg-neutral-500'
                     : 'bg-primary'
                 }`}
                 type='button'
-                onClick={() =>
-                  borrowBook(book, isAuthenticated, user?.id || '')
-                }
+                onClick={() => {
+                  borrowBook(book, isAuthenticated, user?.id || '', () =>
+                    setIsBorrowing(false)
+                  ).then(() => setIsBorrowing(true));
+                }}
               >
                 {userBorrow?.some(
                   (el) => el.status === 'Pending' && el.bookId === bookId
@@ -247,7 +252,7 @@ const BookDetails = () => {
                 <ReactTooltip id={bookId} />
                 <p
                   data-for={bookId}
-                  data-tip='Library is open from Monday to Friday, 9:00 AM to 5:00 PM.'
+                  data-tip='Library is open from Monday to Friday, 9:00 AM to 5:00 PM. Holidays are excluded.'
                   className='text-orange-600 flex mt-2 text-sm'
                 >
                   Please pick up the book from the library before{' '}

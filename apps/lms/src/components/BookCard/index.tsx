@@ -34,6 +34,8 @@ const BookCard = ({ book }: BookCardProps) => {
   const isAuthenticated = useIsAuthenticated();
   const { user } = useUser();
 
+  const [isBorrowing, setIsBorrowing] = React.useState(false);
+
   const [userBorrows] = useCol<IBorrowDoc>(
     query(
       collection(db, 'borrows'),
@@ -95,13 +97,19 @@ const BookCard = ({ book }: BookCardProps) => {
             Details
           </button>
           <button
-            disabled={userBorrows?.some((el) => el.bookId === objectID)}
+            disabled={
+              userBorrows?.some((el) => el.bookId === objectID) ||
+              isBorrowing
+            }
             onClick={() =>
-              borrowBook(book, isAuthenticated, user?.id || '')
+              borrowBook(book, isAuthenticated, user?.id || '', () =>
+                setIsBorrowing(false)
+              ).then(() => setIsBorrowing(true))
             }
             type='button'
             className={` px-2 py-1 rounded-md text-white text-xs duration-200 transition-all ${
-              userBorrows?.some((el) => el.bookId === objectID)
+              userBorrows?.some((el) => el.bookId === objectID) ||
+              isBorrowing
                 ? 'bg-neutral-500 cursor-not-allowed'
                 : 'bg-primary hover:bg-[#004c95] '
             } `}

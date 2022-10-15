@@ -62,6 +62,20 @@ export function formatDate(
   return dateStr;
 }
 
+export function simpleFormatDate(
+  date: Date | number | string,
+  daysToAdd?: number
+) {
+  const dateObj = new Date(date);
+
+  // 2022-05-01
+  const dateStr = `${dateObj.getFullYear()}-${addZero(
+    dateObj.getMonth() + 1
+  )}-${addZero(dateObj.getDate() + (daysToAdd || 0))}`;
+
+  return dateStr;
+}
+
 export const addDays = (date: Date, days: number) => {
   const newDate = new Date(date);
   return new Date(newDate.setDate(date.getDate() + days));
