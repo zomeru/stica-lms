@@ -29,7 +29,8 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
         await searchIndex
           .browseObjects({
             batch: (batch) => {
-              hits = hits.concat(batch as T[]);
+              const newBatch = batch.map((b) => b as T);
+              hits = hits.concat(newBatch);
             },
           })
           .then(() => {
