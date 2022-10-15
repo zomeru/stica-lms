@@ -24,16 +24,16 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
     const getAlgoData = async () => {
       setLoading(true);
       if (!searchKeyword) {
-        let hits: any[] = [];
+        let hits: T[] = [];
 
         await searchIndex
           .browseObjects({
             batch: (batch) => {
-              hits = hits.concat(batch);
+              hits = hits.concat(batch as unknown as T[]);
             },
           })
           .then(() => {
-            setAlgoData(hits as T[]);
+            setAlgoData(hits);
             setLoading(false);
           })
           .catch((err) => {
@@ -46,7 +46,8 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
         const result = await searchIndex.search(searchKeyword || '');
 
         if (result.hits) {
-          setAlgoData(result.hits as T[]);
+          const hits = [...(result.hits as unknown as T[])];
+          setAlgoData(hits);
         }
 
         setLoading(false);
