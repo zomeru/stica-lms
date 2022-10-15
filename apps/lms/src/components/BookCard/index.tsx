@@ -102,8 +102,12 @@ const BookCard = ({ book }: BookCardProps) => {
               isBorrowing
             }
             onClick={() =>
-              borrowBook(book, isAuthenticated, user?.id || '', () =>
-                setIsBorrowing(false)
+              borrowBook(
+                book,
+                isAuthenticated,
+                user?.id || '',
+                user?.displayName || '',
+                () => setIsBorrowing(false)
               ).then(() => setIsBorrowing(true))
             }
             type='button'

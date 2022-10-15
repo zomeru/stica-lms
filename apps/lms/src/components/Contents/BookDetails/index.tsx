@@ -58,8 +58,6 @@ const BookDetails = () => {
     query(collection(db, `users/${user?.id || 'default'}/my-likes`))
   );
 
-  console.log('userBorrow', userBorrow);
-
   useEffect(() => {
     const incrementViews = async () => {
       try {
@@ -187,8 +185,12 @@ const BookDetails = () => {
                 }`}
                 type='button'
                 onClick={() => {
-                  borrowBook(book, isAuthenticated, user?.id || '', () =>
-                    setIsBorrowing(false)
+                  borrowBook(
+                    book,
+                    isAuthenticated,
+                    user?.id || '',
+                    user?.displayName || '',
+                    () => setIsBorrowing(false)
                   ).then(() => setIsBorrowing(true));
                 }}
               >
@@ -196,12 +198,12 @@ const BookDetails = () => {
                   (el) => el.status === 'Pending' && el.bookId === bookId
                 )
                   ? 'Pending'
-                  : // : userBorrows?.some(
-                    //     (el) =>
-                    //       el.status === 'Approved' && el.bookId === bookId
-                    //   )
-                    // ? 'Approved - Ready for pickup'
-                    'Borrow'}
+                  : userBorrow?.some(
+                      (el) =>
+                        el.status === 'Issued' && el.bookId === bookId
+                    )
+                  ? 'Issued'
+                  : 'Borrow'}
               </button>
               {userBorrow &&
                 userBorrow?.some(

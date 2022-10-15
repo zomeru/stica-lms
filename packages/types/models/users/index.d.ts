@@ -19,6 +19,8 @@ export interface IUserDoc extends IUser {
   id: string;
 }
 
+export type AlgoUserDoc = IUserDoc & { objectID: string };
+
 export interface ILikedBooks {
   bookId: string;
   title: string;

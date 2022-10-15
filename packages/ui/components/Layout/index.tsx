@@ -119,7 +119,8 @@ export const Layout = ({
   };
 
   return (
-    <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'>
+    <div className='max-w-[1920px] mx-auto h-[calc(100vh)]'>
+      {/* <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'> */}
       <main className='flex w-full h-full'>
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
@@ -312,14 +313,14 @@ export const Layout = ({
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
       </main>
-      <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
+      {/* <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
         <p className='text-sm text-neutral-300'>
           <span className='font-medium text-white'>
             &copy; 2022 Stica LMS.
           </span>{' '}
           All rights reserved.
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 };

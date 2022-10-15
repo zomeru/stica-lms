@@ -108,6 +108,29 @@ export const ADD_BOOK_TEXT_INPUTS = [
   'Accession No.',
 ];
 
+export const ITEMS_PER_PAGE = 10;
+
+export const loanedBooksTableHeaders = [
+  // 'Book ID',
+  'Student Name',
+  'Title',
+  // 'Author',
+  'Genre',
+  'ISBN',
+  'Accession No',
+  'Due Date',
+];
+
+export const borrowRequestBooksTableHeaders = [
+  // 'Book ID',
+  'Student Name',
+  'Title',
+  'Author',
+  'Genre',
+  'ISBN',
+  'Accession No',
+];
+
 export const GENRE_TYPES: GenreType[] = ['Fiction', 'Non-Fiction'];
 
 export const BOOK_GENRES_FICTION: FictionType[] = [

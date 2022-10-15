@@ -18,6 +18,7 @@ export const borrowBook = async (
   book: AlgoBookDoc,
   isAuthenticated: boolean,
   userId: string,
+  studentName: string,
   cb?: () => void
 ) => {
   if (!isAuthenticated || !userId) {
@@ -62,17 +63,15 @@ export const borrowBook = async (
         const holidayItems: any = [];
 
         holidays.forEach((item) => {
-          if (item.start.date.includes(date.getFullYear().toString())) {
-            const calItems = {
-              id: item.id,
-              description: item.description,
-              summary: item.summary,
-              startDate: item.start.date,
-              endDate: item.end.date,
-            };
+          const calItems = {
+            id: item.id,
+            description: item.description,
+            summary: item.summary,
+            startDate: item.start.date,
+            endDate: item.end.date,
+          };
 
-            holidayItems.push(calItems);
-          }
+          holidayItems.push(calItems);
         });
 
         let holidayDaysToAdd = 0;
@@ -115,7 +114,10 @@ export const borrowBook = async (
         const payload: IBorrow = {
           bookId: book.objectID,
           userId,
+          studentName,
           title: book.title,
+          author: book.author,
+          genre: book.genre,
           isbn: availableIsbn,
           accessionNumber: book.accessionNumber,
           requestDate: requestDateTimestamp,
@@ -141,18 +143,24 @@ export const borrowBook = async (
 
         toast.success('Borrow request sent successfully.');
         nProgress.done();
-        if (cb) cb();
+        if (cb) {
+          cb();
+        }
       })
       .catch((err) => {
         console.log('error borrow', err);
         toast.error('Something went wrong, please try again later.');
         nProgress.done();
-        if (cb) cb();
+        if (cb) {
+          cb();
+        }
       });
   } catch (error) {
     console.log('error', error);
     toast.error('Something went wrong, please try again later.');
-    if (cb) cb();
+    if (cb) {
+      cb();
+    }
   }
 };
 

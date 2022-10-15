@@ -8,8 +8,11 @@ export type BorrowStatus =
 
 export interface IBorrow {
   userId: string;
+  studentName: string;
   bookId: string;
   title: string;
+  author: string;
+  genre: string;
   isbn: string;
   accessionNumber: string;
   requestDate: any;
@@ -25,3 +28,5 @@ export interface IBorrow {
 export interface IBorrowDoc extends IBorrow {
   id: string;
 }
+
+export type AlgoBorrowDoc = IBorrowDoc & { objectID: string };

@@ -1,13 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-export * from './algolia';
+// export * from './algolia';
 export * from './borrows';
 
-const regionalFunctions = functions.region('asia-east2');
+export const regionalFunctions = functions.region('asia-east2');
 
 admin.initializeApp();
 export const db = admin.firestore();
+export const storage = admin.storage();
 export const fieldValue = admin.firestore.FieldValue;
 
 export const hello = regionalFunctions.https.onRequest((_, response) => {

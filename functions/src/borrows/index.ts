@@ -1,7 +1,4 @@
-import * as functions from 'firebase-functions';
-import { db } from '..';
-
-const regionalFunctions = functions.region('asia-east2');
+import { db, regionalFunctions } from '..';
 
 export const cancelNotPickupBorrows = regionalFunctions.pubsub
   //.schedule('every 1 minutes')
@@ -9,7 +6,9 @@ export const cancelNotPickupBorrows = regionalFunctions.pubsub
   .schedule('0 17 * * *')
   .timeZone('Asia/Manila')
   .onRun(async () => {
-    const borrows = await db.collection('borrows').get();
+    const borrowsRef = db.collection('borrows');
+    const query = borrowsRef.where('status', '==', 'Pending');
+    const borrows = await query.get();
 
     borrows.forEach(async (borrow) => {
       const data = borrow.data();

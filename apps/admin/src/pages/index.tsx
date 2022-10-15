@@ -1,13 +1,18 @@
-import { FormEvent, useEffect, useState, useRef } from 'react';
+import { FormEvent, useEffect, useState, useRef, Fragment } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 import { Layout, useNextQuery } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';
-import { Books } from '@src/components/Content';
-import toast from 'react-hot-toast';
+import {
+  Books,
+  BorrowRequest,
+  LoanedBooks,
+  Users,
+} from '@src/components/Content';
 
 const Home: NextPage = () => {
   const { user, loading } = useUser();
@@ -49,6 +54,34 @@ const Home: NextPage = () => {
       );
       router.push(routerArg, undefined, { shallow: true });
     }
+
+    if (
+      [
+        'currently loaned books',
+        'borrow requests',
+        'renewal requests',
+      ].some((el) => el === page)
+    ) {
+      if (page === 'currently loaned books') {
+        routerArg.query.loanedSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      if (page === 'borrow requests') {
+        routerArg.query.borrowSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      if (page === 'renewal requests') {
+        routerArg.query.renewalSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      router.push(routerArg, undefined, { shallow: true });
+    }
   };
 
   useEffect(() => {
@@ -75,7 +108,10 @@ const Home: NextPage = () => {
         {(router.asPath === '/' ||
           router.asPath.includes('/?page=books') ||
           page === 'books' ||
-          !router.query.page) && <Books />}
+          !page) && <Books />}
+        {page === 'users' && <Users />}
+        {page === 'currently loaned books' && <LoanedBooks />}
+        {page === 'borrow requests' && <BorrowRequest />}
       </>
     );
   };
