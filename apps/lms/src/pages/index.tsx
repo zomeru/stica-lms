@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
 import { Layout } from '@lms/ui';
-import { usePhoto } from '@src/hooks';
+import { useUserPhoto } from '@src/hooks';
 import {
   loggedInSidebarItems,
   loggedOutSidebarItems,
@@ -12,7 +12,7 @@ import {
 import { loginRequest } from '@src/config';
 import {
   Home as HomeComp,
-  Messages,
+  Notifications,
   CurrentlyIssuedBooks,
   PendingRequests,
   History,
@@ -30,7 +30,7 @@ const sidebarItems = loggedInSidebarItems.map((item) =>
 const Home: NextPage = () => {
   const isAuthenticated = useIsAuthenticated();
   const { accounts, instance } = useMsal();
-  const { photo } = usePhoto();
+  const { photo } = useUserPhoto();
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
 
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const authenticatedPages = [
-      'messages',
+      'notifications',
       'currently issued books',
       'borrow requests',
       'history',
@@ -104,7 +104,7 @@ const Home: NextPage = () => {
           page === 'home' ||
           !router.query.page) && <HomeComp />}
         {page === 'search' && !router.query.bookId && <Search />}
-        {isAuthenticated && page === 'messages' && <Messages />}
+        {isAuthenticated && page === 'notifications' && <Notifications />}
         {isAuthenticated && page === 'currently issued books' && (
           <CurrentlyIssuedBooks />
         )}
@@ -129,6 +129,9 @@ const Home: NextPage = () => {
       authAction={loggedIn ? logoutHandler : loginHandler}
       username={accounts[0]?.name?.replace(' (Student)', '')}
       userPhoto={photo || undefined}
+      showNotification
+      // TODO: dynamic notification
+      hasNewNotification={false}
     >
       {renderContent()}
     </Layout>

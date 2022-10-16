@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Messages = () => {
+const Notifications = () => {
   const [selected, setSelected] = useState('messages');
 
   const handleMessageClick = () => {
@@ -23,7 +23,7 @@ const Messages = () => {
           }`}
           onClick={handleMessageClick}
         >
-          Messages
+          Notifications
         </button>
         <button
           type='button'
@@ -52,4 +52,4 @@ const Messages = () => {
   );
 };
 
-export default Messages;
+export default Notifications;

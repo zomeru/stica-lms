@@ -1,11 +1,14 @@
 import {
   AiOutlineHistory,
   AiOutlineHome,
-  AiOutlineMessage,
   AiOutlineSearch,
   AiOutlineHeart,
 } from 'react-icons/ai';
-import { MdOutlineContactPage, MdPendingActions } from 'react-icons/md';
+import {
+  MdOutlineContactPage,
+  MdPendingActions,
+  MdOutlineNotificationsNone,
+} from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
 
 import { SideBarItemsType } from './types';
@@ -20,8 +23,8 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineSearch,
   },
   {
-    name: 'Messages',
-    Icon: AiOutlineMessage,
+    name: 'Notifications',
+    Icon: MdOutlineNotificationsNone,
   },
   {
     name: 'My Likes',
@@ -130,6 +133,8 @@ export const SORT_ITEMS = [
 
 export const sortItems = ['Relevance', 'Latest'];
 
+export const ITEMS_PER_PAGE = 10;
+
 export const pendingRequestTableHeaders = [
   // 'Book ID',
   'Title',
@@ -220,6 +225,8 @@ export const BOOK_GENRES_NONFICTION = [
   'Diary',
   'Dictionary',
   'Encyclopedia',
+  'Finance',
+  'Personal finance',
   'Food',
   'Guide',
   'Health/fitness',

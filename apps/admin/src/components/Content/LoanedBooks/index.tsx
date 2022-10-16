@@ -109,6 +109,15 @@ const LoanedBooks = () => {
                   ? 'No results found'
                   : 'There is currently no loaned book.'}
               </h1>
+              {!loanedSearchKey && (
+                <button
+                  type='button'
+                  onClick={handleUpdate}
+                  className='text-sky-600 text-xl'
+                >
+                  Refresh
+                </button>
+              )}
             </div>
           )}
         {issuedBorrows && issuedBorrows.length > 0 && (
@@ -184,13 +193,32 @@ const LoanedBooks = () => {
                       </td>
 
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <div className='flex space-x-3'>
+                        <p
+                          className={`whitespace-no-wrap ${
+                            borrow.penalty > 0
+                              ? 'text-orange-500'
+                              : 'text-green-500'
+                          }`}
+                        >
+                          ₱{borrow.penalty}
+                        </p>
+                      </td>
+
+                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                        <div className='flex space-y-2 flex-col'>
                           <button
                             type='button'
-                            className='text-red-600'
+                            className='truncate bg-sky-600 text-white px-2 py-1 rounded-md text-xs'
                             onClick={() => {}}
                           >
                             Returned
+                          </button>
+                          <button
+                            type='button'
+                            className='truncate bg-red-600 text-white px-2 py-1 rounded-md text-xs'
+                            onClick={() => {}}
+                          >
+                            Lost
                           </button>
                         </div>
                       </td>

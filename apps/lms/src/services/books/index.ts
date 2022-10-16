@@ -104,6 +104,7 @@ export const borrowBook = async (
         // sampleDate.setMinutes(sampleDate.getMinutes() + 1);
         // add 10 seconds to sample date
         // sampleDate.setSeconds(sampleDate.getSeconds() + 10);
+        // TODO : do this in fast dev mode
 
         // set date time to 5pm
         date.setHours(17, 0, 0, 0);

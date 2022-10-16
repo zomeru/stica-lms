@@ -18,6 +18,7 @@ const Users = () => {
   const [users] = useCol(query(collection(db, 'users')));
 
   console.log('users', users);
+  console.log('algoUsers', algoUsers);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -39,8 +40,6 @@ const Users = () => {
 
     getUsers();
   }, []);
-
-  console.log('algoUsers', algoUsers);
 
   return <div>Users</div>;
 };

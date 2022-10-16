@@ -3,15 +3,13 @@ import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import { collection, orderBy, query, where } from 'firebase/firestore';
 
-import { formatDate, navigateToBook, randNum } from '@src/utils';
-import { issuedBooksTableHeaders } from '@src/constants';
+import { formatDate, navigateToBook } from '@src/utils';
+import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { useUser } from '@src/contexts';
 import { db } from '@lms/db';
-import { useClientPagination } from '@src/hooks';
-
-const PAGE_SIZE = 10;
+import { useClientPagination } from '@lms/ui';
 
 const CurrentlyIssuedBooks = () => {
   const { user } = useUser();
@@ -25,61 +23,19 @@ const CurrentlyIssuedBooks = () => {
     )
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const issuedBooks_: IBorrowDoc[] = React.useMemo(() => {
-    const newIssuedBooks: any = [];
-    const daysDiff: any = [];
-
-    new Array(15).fill(0).forEach((_, i) => {
-      const date = new Date();
-      const oneOrTwo = randNum(1, 2);
-
-      // generated yester's date if oneOrTwo is 1 else generated the day before yesterday's date
-      const issuedDate =
-        oneOrTwo === 1
-          ? new Date(date.getTime() - 24 * 60 * 60 * 1000)
-          : new Date(date.getTime() - 48 * 60 * 60 * 1000);
-
-      // generated todays's date if oneOrTwo is 1 else generated yesterday's date
-      const dueDate =
-        oneOrTwo === 1
-          ? new Date(date.getTime())
-          : new Date(date.getTime() - 24 * 60 * 60 * 1000);
-
-      // difference
-      const diff = dueDate.getTime() - date.getTime();
-      const totalDays = Math.abs(diff / (1000 * 3600 * 24));
-      daysDiff.push(totalDays);
-
-      newIssuedBooks.push({
-        id: `bookId-${1 + i}`,
-        isbn: `${randNum(100, 999)}-${randNum(0, 9)}-${randNum(
-          10,
-          99
-        )}-${randNum(100000, 999999)}-${randNum(0, 9)}`,
-        title: `The Great Gatsby - ${1 + i}`,
-        issuedDate: formatDate(issuedDate),
-        dueDate: formatDate(dueDate),
-        penalty: totalDays * 5,
-      });
-    });
-
-    console.log('daysDiff', daysDiff);
-    return newIssuedBooks;
-  }, []);
-
   const [currentIssuedBooks, currentPage, next, prev] =
-    useClientPagination(issuedBooks || [], PAGE_SIZE);
+    useClientPagination(issuedBooks || [], ITEMS_PER_PAGE);
 
   return (
     <section className='w-full h-full'>
       {issuedBooks &&
         issuedBooks.length > 0 &&
-        issuedBooks.length / PAGE_SIZE > 1 && (
+        issuedBooks.length / ITEMS_PER_PAGE > 1 && (
           <div className='flex justify-end mb-[10px]'>
             <div className='flex items-center space-x-3'>
               <div>
-                {currentPage}/{Math.ceil(issuedBooks.length / PAGE_SIZE)}
+                {currentPage}/
+                {Math.ceil(issuedBooks.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -96,11 +52,11 @@ const CurrentlyIssuedBooks = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(issuedBooks.length / PAGE_SIZE)
+                    Math.ceil(issuedBooks.length / ITEMS_PER_PAGE)
                   }
                   className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                     currentPage ===
-                      Math.ceil(issuedBooks.length / PAGE_SIZE) &&
+                      Math.ceil(issuedBooks.length / ITEMS_PER_PAGE) &&
                     'opacity-40 cursor-not-allowed'
                   }`}
                   onClick={() => next()}
@@ -116,7 +72,7 @@ const CurrentlyIssuedBooks = () => {
           height: `calc(100% - ${
             issuedBooks &&
             issuedBooks.length > 0 &&
-            issuedBooks.length / PAGE_SIZE > 1
+            issuedBooks.length / ITEMS_PER_PAGE > 1
               ? 28
               : 0
           }px)`,

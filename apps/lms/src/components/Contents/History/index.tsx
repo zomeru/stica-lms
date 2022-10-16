@@ -1,23 +1,15 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 
-import { formatDate, navigateToBook, randNum } from '@src/utils';
-import { historyStatus, historyTableHeaders } from '@src/constants';
+import { formatDate, navigateToBook } from '@src/utils';
+import { historyTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
-import { collection, query, orderBy, where } from 'firebase/firestore';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import { useClientPagination } from '@src/hooks';
-
-function getRandomDate(from: Date, to: Date) {
-  const fromTime = from.getTime();
-  const toTime = to.getTime();
-  return new Date(fromTime + Math.random() * (toTime - fromTime));
-}
-
-const PAGE_SIZE = 10;
+import { useClientPagination } from '@lms/ui';
 
 const History = () => {
   const { user } = useUser();
@@ -36,82 +28,19 @@ const History = () => {
     )
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const bookHistory = React.useMemo(() => {
-    const newBookHistory: any = [];
-    const daysDiff: any = [];
-
-    new Array(10).fill(0).forEach((_, i) => {
-      // generate random date between 1 to 10 days
-      const today = new Date();
-      // 7 days ago
-      const from = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-      const status = historyStatus[randNum(0, 3)];
-
-      const generatedDate = getRandomDate(from, today);
-
-      const oneOrTwo = randNum(1, 2);
-
-      // generated yester's date if oneOrTwo is 1 else generated the day before yesterday's date
-      const issuedDate =
-        oneOrTwo === 1
-          ? new Date(generatedDate.getTime() - 24 * 60 * 60 * 1000)
-          : new Date(generatedDate.getTime() - 48 * 60 * 60 * 1000);
-
-      // generated todays's date if oneOrTwo is 1 else generated yesterday's date
-      const dueDate =
-        oneOrTwo === 1
-          ? new Date(generatedDate.getTime())
-          : new Date(generatedDate.getTime() - 24 * 60 * 60 * 1000);
-
-      const rand = randNum(0, 2);
-      const toMul = 24 * 60 * 60 * 1000 * rand;
-
-      const returnedDate =
-        rand === 0 ? dueDate : new Date(dueDate.getTime() + toMul);
-
-      // difference
-      const diff = dueDate.getTime() - returnedDate.getTime();
-      const totalDays = Math.abs(diff / (1000 * 3600 * 24));
-      daysDiff.push(totalDays);
-
-      newBookHistory.push({
-        id: `bookId-${1 + i}`,
-        isbn: `${randNum(100, 999)}-${randNum(0, 9)}-${randNum(
-          10,
-          99
-        )}-${randNum(100000, 999999)}-${randNum(0, 9)}`,
-        title: `The Great Gatsby - ${1 + i}`,
-        requestedDate: formatDate(generatedDate),
-        issuedDate:
-          status === 'Cancelled' ? 'N/A' : formatDate(issuedDate),
-        dueDate: status === 'Cancelled' ? 'N/A' : formatDate(issuedDate),
-        returnedDate:
-          status === 'Lost' || status === 'Cancelled'
-            ? 'N/A'
-            : formatDate(returnedDate),
-        penalty: status === 'Cancelled' ? '0' : totalDays * 5,
-        status,
-      });
-    });
-
-    console.log('daysDiff', daysDiff);
-    return newBookHistory;
-  }, []);
-
   const [currentBorrowHistory, currentPage, next, prev] =
-    useClientPagination(borrowHistory || [], PAGE_SIZE);
+    useClientPagination(borrowHistory || [], ITEMS_PER_PAGE);
 
   return (
     <section className='w-full h-full'>
       {borrowHistory &&
         borrowHistory.length > 0 &&
-        borrowHistory.length / PAGE_SIZE > 1 && (
+        borrowHistory.length / ITEMS_PER_PAGE > 1 && (
           <div className='flex justify-end mb-[10px]'>
             <div className='flex items-center space-x-3'>
               <div>
-                {currentPage}/{Math.ceil(borrowHistory.length / PAGE_SIZE)}
+                {currentPage}/
+                {Math.ceil(borrowHistory.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -128,11 +57,11 @@ const History = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(borrowHistory.length / PAGE_SIZE)
+                    Math.ceil(borrowHistory.length / ITEMS_PER_PAGE)
                   }
                   className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                     currentPage ===
-                      Math.ceil(borrowHistory.length / PAGE_SIZE) &&
+                      Math.ceil(borrowHistory.length / ITEMS_PER_PAGE) &&
                     'opacity-40 cursor-not-allowed'
                   }`}
                   onClick={() => next()}
@@ -148,7 +77,7 @@ const History = () => {
           height: `calc(100% - ${
             borrowHistory &&
             borrowHistory.length > 0 &&
-            borrowHistory.length / PAGE_SIZE > 1
+            borrowHistory.length / ITEMS_PER_PAGE > 1
               ? 28
               : 0
           }px)`,

@@ -4,14 +4,15 @@ import { collection, orderBy, query, where } from 'firebase/firestore';
 import Image from 'next/image';
 
 import { formatDate, navigateToBook } from '@src/utils';
-import { pendingRequestTableHeaders } from '@src/constants';
+import {
+  pendingRequestTableHeaders,
+  ITEMS_PER_PAGE,
+} from '@src/constants';
 import { cancelBorrowRequest, useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import { useClientPagination } from '@src/hooks';
-
-const PAGE_SIZE = 10;
+import { useClientPagination } from '@lms/ui';
 
 const PendingRequests = () => {
   const { user } = useUser();
@@ -26,17 +27,18 @@ const PendingRequests = () => {
   );
 
   const [currentBorrowedBooks, currentPage, next, prev] =
-    useClientPagination(userBorrows || [], PAGE_SIZE);
+    useClientPagination(userBorrows || [], ITEMS_PER_PAGE);
 
   return (
     <section className='w-full h-full'>
       {userBorrows &&
         userBorrows.length > 0 &&
-        userBorrows.length / PAGE_SIZE > 1 && (
+        userBorrows.length / ITEMS_PER_PAGE > 1 && (
           <div className='flex justify-end mb-[10px]'>
             <div className='flex items-center space-x-3'>
               <div>
-                {currentPage}/{Math.ceil(userBorrows.length / PAGE_SIZE)}
+                {currentPage}/
+                {Math.ceil(userBorrows.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -53,11 +55,11 @@ const PendingRequests = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(userBorrows.length / PAGE_SIZE)
+                    Math.ceil(userBorrows.length / ITEMS_PER_PAGE)
                   }
                   className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                     currentPage ===
-                      Math.ceil(userBorrows.length / PAGE_SIZE) &&
+                      Math.ceil(userBorrows.length / ITEMS_PER_PAGE) &&
                     'opacity-40 cursor-not-allowed'
                   }`}
                   onClick={() => next()}
@@ -73,7 +75,7 @@ const PendingRequests = () => {
           height: `calc(100% - ${
             userBorrows &&
             userBorrows.length > 0 &&
-            userBorrows.length / PAGE_SIZE > 1
+            userBorrows.length / ITEMS_PER_PAGE > 1
               ? 28
               : 0
           }px)`,

@@ -5,14 +5,12 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { useIsAuthenticated } from '@azure/msal-react';
 
 import { navigateToBook } from '@src/utils';
-import { likedBooksTableHeaders } from '@src/constants';
+import { likedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { removeFromLikedBooks, useCol } from '@src/services';
 import { ILikedBookDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useUser } from '@src/contexts';
-import { useClientPagination } from '@src/hooks';
-
-const PAGE_SIZE = 10;
+import { useClientPagination } from '@lms/ui';
 
 const History = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -27,18 +25,19 @@ const History = () => {
 
   const [currentLikedBooks, currentPage, next, prev] = useClientPagination(
     likedBooks || [],
-    PAGE_SIZE
+    ITEMS_PER_PAGE
   );
 
   return (
     <section className='w-full h-full'>
       {likedBooks &&
         likedBooks.length > 0 &&
-        likedBooks.length / PAGE_SIZE > 1 && (
+        likedBooks.length / ITEMS_PER_PAGE > 1 && (
           <div className='flex justify-end mb-[10px]'>
             <div className='flex items-center space-x-3'>
               <div>
-                {currentPage}/{Math.ceil(likedBooks.length / PAGE_SIZE)}
+                {currentPage}/
+                {Math.ceil(likedBooks.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -55,11 +54,11 @@ const History = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(likedBooks.length / PAGE_SIZE)
+                    Math.ceil(likedBooks.length / ITEMS_PER_PAGE)
                   }
                   className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                     currentPage ===
-                      Math.ceil(likedBooks.length / PAGE_SIZE) &&
+                      Math.ceil(likedBooks.length / ITEMS_PER_PAGE) &&
                     'opacity-40 cursor-not-allowed'
                   }`}
                   onClick={() => next()}
@@ -75,7 +74,7 @@ const History = () => {
           height: `calc(100% - ${
             likedBooks &&
             likedBooks.length > 0 &&
-            likedBooks.length / PAGE_SIZE > 1
+            likedBooks.length / ITEMS_PER_PAGE > 1
               ? 28
               : 0
           }px)`,

@@ -28,9 +28,9 @@ interface LayoutProps {
   searchDisabled?: boolean;
   user?: 'user' | 'admin';
   onAdminSearch?: () => void;
-  adminSearchInput?: string;
-  setAdminSearchInput?: React.Dispatch<React.SetStateAction<string>>;
   adminInput?: React.ReactNode;
+  showNotification?: boolean;
+  hasNewNotification?: boolean;
 }
 
 export const Layout = ({
@@ -46,9 +46,9 @@ export const Layout = ({
   searchPlaceholder = 'Search for books',
   user = 'user',
   onAdminSearch,
-  adminSearchInput,
-  setAdminSearchInput,
   adminInput,
+  showNotification,
+  hasNewNotification,
 }: LayoutProps) => {
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -111,6 +111,23 @@ export const Layout = ({
         query: {
           ...allQueries,
           page: encodeURIComponent(name.toLowerCase()),
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const handleNotificationClick = () => {
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
+
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...allQueries,
+          page: 'notifications',
         },
       },
       undefined,
@@ -274,9 +291,19 @@ export const Layout = ({
             </form>
 
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
-              <button type='button'>
-                <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
-              </button>
+              {showNotification && (
+                <button
+                  type='button'
+                  className={`${
+                    hasNewNotification &&
+                    'relative after:content-[""] after:w-[10px] after:h-[10px] after:rounded-full after:absolute after:bg-red-600 after:top-[3px] after:right-[3px]'
+                  }`}
+                  onClick={handleNotificationClick}
+                >
+                  <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
+                </button>
+              )}
+
               {isAuthenticated ? (
                 <div className='flex items-center space-x-2'>
                   <div className='relative w-[40px] h-[40px] overflow-hidden rounded-full'>

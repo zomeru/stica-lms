@@ -1,5 +1,9 @@
-import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai';
-import { MdLoop, MdOutlineLibraryBooks } from 'react-icons/md';
+import { AiOutlineHistory } from 'react-icons/ai';
+import {
+  MdLoop,
+  MdOutlineLibraryBooks,
+  MdOutlineNotificationsNone,
+} from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
 
@@ -13,8 +17,8 @@ export const adminSidebarItems = [
     Icon: FiUsers,
   },
   {
-    name: 'Messages',
-    Icon: AiOutlineMessage,
+    name: 'Send Notifications',
+    Icon: MdOutlineNotificationsNone,
   },
   {
     name: 'Currently Loaned Books',
@@ -119,6 +123,7 @@ export const loanedBooksTableHeaders = [
   'ISBN',
   'Accession No',
   'Due Date',
+  'Penalty',
 ];
 
 export const borrowRequestBooksTableHeaders = [
@@ -174,6 +179,7 @@ export const BOOK_GENRES_NONFICTION: NonFictionType[] = [
   'Diary',
   'Dictionary',
   'Encyclopedia',
+  'Finance',
   'Food',
   'Guide',
   'Health/fitness',
@@ -183,6 +189,7 @@ export const BOOK_GENRES_NONFICTION: NonFictionType[] = [
   'Journal',
   'Math',
   'Memoir',
+  'Personal finance',
   'Philosophy',
   'Politics',
   'Prayer',
