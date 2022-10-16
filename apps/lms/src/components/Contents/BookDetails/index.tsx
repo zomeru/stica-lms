@@ -10,9 +10,11 @@ import {
 } from 'firebase/firestore';
 import { BsArrowLeft } from 'react-icons/bs';
 import Image from 'next/image';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { useIsAuthenticated } from '@azure/msal-react';
+import ReactTooltip from 'react-tooltip';
 
 import { db } from '@lms/db';
-import { useNextQuery } from '@src/hooks';
 import {
   addToLikedBooks,
   borrowBook,
@@ -28,10 +30,9 @@ import {
   ILikedBookDoc,
 } from '@lms/types';
 import { useUser } from '@src/contexts';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import { useIsAuthenticated } from '@azure/msal-react';
+
 import { formatDate } from '@src/utils';
-import ReactTooltip from 'react-tooltip';
+import { useNextQuery } from '@lms/ui';
 
 const BookDetails = () => {
   const { user } = useUser();

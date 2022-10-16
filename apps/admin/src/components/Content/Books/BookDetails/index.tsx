@@ -11,6 +11,7 @@ import {
   arrayUnion,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
+import nProgress from 'nprogress';
 
 import { db, storage } from '@lms/db';
 import { useFileHandler, useUploadImage } from '@src/hooks';
@@ -23,7 +24,6 @@ import {
 } from '@src/constants';
 import { AlgoBookDoc, GenreType, GenreTypes, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
-import nProgress from 'nprogress';
 import Loader from '@src/components/Loader';
 
 Modal.setAppElement('#__next');
