@@ -14,10 +14,8 @@ interface BookListProps {
   books: AlgoBookDoc[];
   currentBooks: AlgoBookDoc[];
   bookLoading: boolean;
-  selectedBook: string;
   addBook: boolean;
   setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedBook: React.Dispatch<React.SetStateAction<string>>;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   sortBy: string;
   setSortOrder: React.Dispatch<React.SetStateAction<OrderType>>;
@@ -30,10 +28,8 @@ interface BookListProps {
 const BookList = ({
   books,
   bookLoading,
-  selectedBook,
   addBook,
   setAddBook,
-  setSelectedBook,
   setSortBy,
   sortBy,
   sortOrder,
@@ -44,6 +40,7 @@ const BookList = ({
   currentBooks,
 }: BookListProps) => {
   const bookSearchKey = useNextQuery('bookSearchKey');
+  const bookId = useNextQuery('bookId');
   const headerRef = useRef<HTMLDivElement>(null);
 
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -62,7 +59,7 @@ const BookList = ({
   return (
     <div
       className={`w-full h-full duration-300 transition-all space-y-4 ${
-        selectedBook ? '-translate-x-[100%]' : 'translate-x-0'
+        bookId ? '-translate-x-[100%]' : 'translate-x-0'
       } ${addBook ? 'translate-y-[100%]' : 'translate-y-0'}`}
     >
       <div className='flex justify-between' ref={headerRef}>
@@ -212,10 +209,7 @@ const BookList = ({
                 return (
                   <React.Fragment key={book.objectID}>
                     <ReactTooltip id={book.objectID} />
-                    <BookListCard
-                      book={book}
-                      onEdit={() => setSelectedBook(book.objectID)}
-                    />
+                    <BookListCard book={book} />
                   </React.Fragment>
                 );
               })}

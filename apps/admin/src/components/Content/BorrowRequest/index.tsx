@@ -9,6 +9,7 @@ import {
   ITEMS_PER_PAGE,
 } from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
+import { navigateToBook } from '@src/utils';
 import PickedUpModal from './PickedUpModal';
 
 const BorrowRequest = () => {
@@ -169,7 +170,10 @@ const BorrowRequest = () => {
                       </td>
 
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <button type='button'>
+                        <button
+                          type='button'
+                          onClick={() => navigateToBook(borrow.bookId)}
+                        >
                           <p
                             className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'
                             data-for={borrow.objectID}

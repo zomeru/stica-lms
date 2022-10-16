@@ -57,7 +57,7 @@ const PickedUpModal = ({
 
   const handleConfirmBookPickup = async () => {
     try {
-      nProgress.configure({ showSpinner: false });
+      nProgress.configure({ showSpinner: true });
       nProgress.start();
       setIsConfirming(true);
 

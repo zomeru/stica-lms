@@ -22,7 +22,7 @@ const History = () => {
         'Cancelled',
         'Lost',
         'Returned',
-        'Returned with Damage',
+        'Returned with damage',
       ]),
       orderBy('updatedAt', 'desc')
     )
@@ -130,7 +130,10 @@ const History = () => {
                 if (history.dueDate)
                   dueDate = formatDate(history.dueDate.toDate());
                 if (history.returnedDate)
-                  returnedDate = formatDate(history.returnedDate.toDate());
+                  returnedDate = formatDate(
+                    history.returnedDate.toDate(),
+                    true
+                  );
 
                 return (
                   <React.Fragment key={history.id}>

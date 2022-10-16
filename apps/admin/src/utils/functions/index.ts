@@ -1,4 +1,5 @@
 import { DayType, MonthType } from '@src/types';
+import Router from 'next/router';
 
 export const keyGen = (diff?: string | number) => {
   return Math.trunc(
@@ -86,4 +87,21 @@ export function simpleFormatDate(
 export const addDays = (date: Date, days: number) => {
   // const newDate = new Date(date);
   return new Date(date.setDate(date.getDate() + days));
+};
+
+export const navigateToBook = (bookId: string) => {
+  const allQueries = Router.query;
+
+  Router.push(
+    {
+      pathname: '/',
+      query: {
+        ...allQueries,
+        page: 'books',
+        bookId,
+      },
+    },
+    undefined,
+    { shallow: true }
+  );
 };

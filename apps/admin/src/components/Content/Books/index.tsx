@@ -1,79 +1,28 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import algoliasearch from 'algoliasearch';
 
 import { AlgoBookDoc } from '@lms/types';
-import { SORT_ITEMS } from '@src/constants';
+import { ITEMS_PER_PAGE, SORT_ITEMS } from '@src/constants';
 
-import { useNextQuery } from '@lms/ui';
-import nProgress from 'nprogress';
+import { useAlgoData, useNextQuery } from '@lms/ui';
 import AddBook from './AddBook';
 import BookDetails from './BookDetails';
 import BookList from './BookList';
 
 export type OrderType = 'asc' | 'desc';
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY as string
-);
-
-const HITS_PER_PAGE = 10;
-
-const searchIndex = searchClient.initIndex('books');
-
 const Books = () => {
   const bookSearchKey = useNextQuery('bookSearchKey');
+  const bookId = useNextQuery('bookId');
 
   const [addBook, setAddBook] = useState(false);
-  const [selectedBook, setSelectedBook] = useState('');
 
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
-  const [bookLoading, setBookLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [algoBooks, setAlgoBooks] = useState<AlgoBookDoc[]>([]);
-
-  useEffect(() => {
-    const getBooks = async () => {
-      nProgress.configure({ showSpinner: true });
-      nProgress.start();
-      setBookLoading(true);
-      if (!bookSearchKey) {
-        let hits: AlgoBookDoc[] = [];
-
-        await searchIndex
-          .browseObjects({
-            batch: (batch) => {
-              hits = hits.concat(batch as AlgoBookDoc[]);
-            },
-          })
-          .then(() => {
-            setAlgoBooks(hits);
-            setBookLoading(false);
-          })
-          .catch((err) => {
-            console.error('Error fetching books', err);
-            setBookLoading(false);
-          });
-      }
-
-      if (bookSearchKey) {
-        setCurrentPage(1);
-        const result = await searchIndex.search(bookSearchKey || '');
-
-        if (result.hits) {
-          setAlgoBooks(result.hits as AlgoBookDoc[]);
-        }
-
-        setBookLoading(false);
-      }
-
-      nProgress.done();
-    };
-
-    getBooks();
-  }, [bookSearchKey]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [algoBooks, setAlgoBooks, _, bookLoading] =
+    useAlgoData<AlgoBookDoc>('books', bookSearchKey);
 
   useEffect(() => {
     const orderIndex = SORT_ITEMS.findIndex(
@@ -97,12 +46,12 @@ const Books = () => {
   }, [sortBy]);
 
   const indexOfLastItem = useMemo(
-    () => (currentPage ? Number(currentPage) : 1) * HITS_PER_PAGE,
+    () => (currentPage ? Number(currentPage) : 1) * ITEMS_PER_PAGE,
     [currentPage]
   );
 
   const indexOfFirstItem = useMemo(
-    () => indexOfLastItem - HITS_PER_PAGE,
+    () => indexOfLastItem - ITEMS_PER_PAGE,
     [indexOfLastItem]
   );
 
@@ -121,8 +70,8 @@ const Books = () => {
   );
 
   const selectedBookData = useMemo(() => {
-    return algoBooks.find((book) => book.objectID === selectedBook);
-  }, [algoBooks, selectedBook]);
+    return algoBooks.find((book) => book.objectID === bookId);
+  }, [algoBooks, bookId]);
 
   const onPrev = () => {
     if (currentPage === 1) return;
@@ -132,7 +81,7 @@ const Books = () => {
   const onNext = () => {
     if (
       algoBooks &&
-      currentPage === Math.ceil(algoBooks.length / HITS_PER_PAGE)
+      currentPage === Math.ceil(algoBooks.length / ITEMS_PER_PAGE)
     )
       return;
 
@@ -149,10 +98,8 @@ const Books = () => {
         books={algoBooks}
         currentBooks={currentBooks}
         bookLoading={bookLoading}
-        selectedBook={selectedBook}
         addBook={addBook}
         setAddBook={setAddBook}
-        setSelectedBook={setSelectedBook}
         setSortBy={setSortBy}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -161,8 +108,6 @@ const Books = () => {
 
       {/* Book details */}
       <BookDetails
-        selectedBook={selectedBook}
-        setSelectedBook={setSelectedBook}
         bookDetails={selectedBookData!}
         books={algoBooks}
         setBooks={setAlgoBooks}

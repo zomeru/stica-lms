@@ -1,13 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+
 import { AlgoBookDoc } from '@lms/types';
 
 interface BookListCardProps {
   book: AlgoBookDoc;
-  onEdit: () => void;
+  // onEdit: () => void;
 }
 
-const BookListCard = ({ book, onEdit }: BookListCardProps) => {
+const BookListCard = ({ book }: BookListCardProps) => {
   const {
     // id,
     objectID,
@@ -20,6 +22,22 @@ const BookListCard = ({ book, onEdit }: BookListCardProps) => {
     imageCover,
     accessionNumber,
   } = book;
+
+  const router = useRouter();
+
+  const handleEdit = () => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...router.query,
+          bookId: objectID,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <tr>
@@ -37,7 +55,7 @@ const BookListCard = ({ book, onEdit }: BookListCardProps) => {
         <button
           data-for={objectID}
           data-tip={title}
-          onClick={onEdit}
+          onClick={handleEdit}
           type='button'
         >
           <p className='line-clamp-2 text-primary text-left'>{title}</p>
@@ -58,7 +76,7 @@ const BookListCard = ({ book, onEdit }: BookListCardProps) => {
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <div className='flex space-x-4'>
           <button
-            onClick={onEdit}
+            onClick={handleEdit}
             type='button'
             className='text-blue-600 font-medium'
           >

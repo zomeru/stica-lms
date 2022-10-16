@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
@@ -6,10 +6,13 @@ import nProgress from 'nprogress';
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import { ITEMS_PER_PAGE, loanedBooksTableHeaders } from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
-import { formatDate } from '@src/utils';
+import { formatDate, navigateToBook } from '@src/utils';
+import ReturnedModal from './ReturnedModal';
 
 const LoanedBooks = () => {
   const loanedSearchKey = useNextQuery('loanedSearchKey');
+
+  const [selectedReturnBorrow, setSelectedReturnBorrow] = useState('');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
@@ -35,6 +38,15 @@ const LoanedBooks = () => {
 
   return (
     <section className='w-full h-full'>
+      <ReturnedModal
+        isModalOpen={!!selectedReturnBorrow}
+        setSelectedBorrow={setSelectedReturnBorrow}
+        borrowData={issuedBorrows.find(
+          (borrow) => borrow.objectID === selectedReturnBorrow
+        )}
+        borrows={algoBorrows}
+        setBorrows={setBorrows}
+      />
       {issuedBorrows && issuedBorrows.length > 0 && (
         <div className='flex justify-between mb-[10px]'>
           <button
@@ -157,7 +169,10 @@ const LoanedBooks = () => {
                       </td>
 
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <button type='button'>
+                        <button
+                          type='button'
+                          onClick={() => navigateToBook(borrow.bookId)}
+                        >
                           <p
                             className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'
                             data-for={borrow.objectID}
@@ -187,7 +202,7 @@ const LoanedBooks = () => {
                       </td>
 
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
+                        <p className='max-w-[210px] text-left overflow-hidden text-neutral-900'>
                           {dueDate}
                         </p>
                       </td>
@@ -196,8 +211,8 @@ const LoanedBooks = () => {
                         <p
                           className={`whitespace-no-wrap ${
                             borrow.penalty > 0
-                              ? 'text-orange-500'
-                              : 'text-green-500'
+                              ? 'text-orange-600'
+                              : 'text-green-600'
                           }`}
                         >
                           ₱{borrow.penalty}
@@ -209,7 +224,9 @@ const LoanedBooks = () => {
                           <button
                             type='button'
                             className='truncate bg-sky-600 text-white px-2 py-1 rounded-md text-xs'
-                            onClick={() => {}}
+                            onClick={() =>
+                              setSelectedReturnBorrow(borrow.objectID)
+                            }
                           >
                             Returned
                           </button>

@@ -154,7 +154,7 @@ const CurrentlyIssuedBooks = () => {
                         <p
                           className={`whitespace-no-wrap ${
                             issue.penalty > 0
-                              ? 'text-red-500'
+                              ? 'text-red-600'
                               : 'text-sky-600'
                           }`}
                         >
