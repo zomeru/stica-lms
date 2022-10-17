@@ -94,19 +94,27 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
 
         const userObject: IUserDoc = {} as IUserDoc;
 
-        if (userInfo) {
-          const displayName = userInfo.displayName!.replace(
-            ' (Student)',
-            ''
-          );
-          const givenName = displayName.split(',')[1].slice(1);
-          const surname = displayName.split(',')[0];
+        const displayName = userInfo.displayName!.replace(
+          ' (Student)',
+          ''
+        );
+        const givenName = displayName.split(',')[1].slice(1);
+        const surname = displayName.split(',')[0];
 
-          userObject.displayName = displayName;
-          userObject.email = userInfo.email!;
-          userObject.givenName = givenName;
-          userObject.surname = surname;
+        userObject.displayName = displayName;
+        userObject.email = userInfo.email!;
+        userObject.givenName = givenName;
+        userObject.surname = surname;
 
+        const q = query(
+          collection(db, 'users'),
+          where('email', '==', userInfo.email)
+        );
+        const querySnapshot = await getDocs(q);
+
+        let newUserDoc: IUserDoc | null = null;
+
+        if (querySnapshot.empty) {
           const photoRes = await fetch(
             'https://graph.microsoft.com/v1.0/me/photo/$value',
             {
@@ -128,17 +136,7 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
           if (profilePhoto) {
             userObject.photo = profilePhoto;
           }
-        }
 
-        const q = query(
-          collection(db, 'users'),
-          where('email', '==', userInfo.email)
-        );
-        const querySnapshot = await getDocs(q);
-
-        let newUserDoc: IUserDoc | null = null;
-
-        if (querySnapshot.empty) {
           const timestamp = serverTimestamp();
 
           newUserDoc = await addDoc(collection(db, 'users'), {
