@@ -5,7 +5,12 @@ import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
 import { SORT_ITEMS } from '@src/constants';
 import { AlgoBookDoc } from '@lms/types';
-import { useAlgoData, useNextQuery, useWindowDimensions } from '@lms/ui';
+import {
+  useAlgoData,
+  useClientPagination,
+  useNextQuery,
+  useWindowDimensions,
+} from '@lms/ui';
 import Image from 'next/image';
 
 export type OrderType = 'asc' | 'desc';
@@ -22,6 +27,21 @@ const Search = () => {
 
   const [sortBy, setSortBy] = useState('views');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
+
+  const HITS_PER_PAGE = useMemo(
+    () => (width < 1665 ? 12 : width < 1965 ? 20 : 30),
+    [width]
+  );
+
+  const [currentBooks] = useClientPagination(
+    books,
+    HITS_PER_PAGE,
+    {
+      sortBy,
+      sortOrder,
+    },
+    currentPage ? Number(currentPage) : 1
+  );
 
   useEffect(() => {
     if (!router.query.sortBy) {
@@ -48,11 +68,6 @@ const Search = () => {
     setSortOrder(newOrder);
   }, [sortBy]);
 
-  const HITS_PER_PAGE = useMemo(
-    () => (width < 1665 ? 12 : width < 1965 ? 20 : 30),
-    [width]
-  );
-
   useEffect(() => {
     if (books && books.length > 0) {
       const numPages = Math.ceil(books.length / HITS_PER_PAGE);
@@ -72,30 +87,6 @@ const Search = () => {
       }
     }
   }, [width, HITS_PER_PAGE, books, currentPage]);
-
-  const indexOfLastItem = useMemo(
-    () => (currentPage ? Number(currentPage) : 1) * HITS_PER_PAGE,
-    [currentPage, width]
-  );
-
-  const indexOfFirstItem = useMemo(
-    () => indexOfLastItem - HITS_PER_PAGE,
-    [indexOfLastItem, width]
-  );
-
-  const currentBooks = useMemo(
-    () =>
-      books
-        .sort((a, b) => {
-          const newA = a[sortBy as keyof AlgoBookDoc];
-          const newB = b[sortBy as keyof AlgoBookDoc];
-          if (newA > newB) return sortOrder === 'desc' ? -1 : 1;
-          if (newA < newB) return sortOrder === 'desc' ? 1 : -1;
-          return 0;
-        })
-        .slice(indexOfFirstItem, indexOfLastItem),
-    [books, currentPage, sortBy, sortOrder]
-  );
 
   const handleSort = (sortName: string) => {
     router.push(
@@ -157,8 +148,6 @@ const Search = () => {
     () => SORT_ITEMS.find((el) => el.sort.field === sortBy)?.order,
     [sortBy]
   );
-
-  // const row = `grid-cols-${width > 1966 ? 5 : width > 1664 ? 4 : 3}`;
 
   const rowSideOpen =
     width < 1665

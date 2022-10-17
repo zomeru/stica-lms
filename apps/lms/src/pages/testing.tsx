@@ -1,10 +1,8 @@
-import React from 'react';
-
 const Testing = () => {
   return (
     <div>
       <button type='button' onClick={() => {}}>
-        Testing
+        Sign in MS
       </button>
     </div>
   );

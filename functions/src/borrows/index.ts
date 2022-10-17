@@ -20,7 +20,7 @@ function addZero(num: number) {
 // .schedule('0 17 * * 1-5') - Every weekday at 5:00 PM
 
 // cancel pending borrows when not picked up before pick up due date (24h, always 5:00 PM)
-export const cancelNotPickupBorrows = regionalFunctions.pubsub
+export const autoCancelBorrows = regionalFunctions.pubsub
   .schedule('0 17 * * 1-5')
   .timeZone('Asia/Manila')
   .onRun(async () => {

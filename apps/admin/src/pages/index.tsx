@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import { Layout, useNextQuery } from '@lms/ui';
+import { useNextQuery, Layout } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';

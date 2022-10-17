@@ -1,20 +1,30 @@
 import { useMemo, useState } from 'react';
 
+type FunctionType = () => void;
+type PaginationReturnType<S> = [S[], number, FunctionType, FunctionType];
+
 /**
  *
  * @param data the query key
  * @param itemsPerPage the number of items per page
+ * @param sorter {sortBy: string, sortOrder: 'asc' | 'desc'} the sorter object
+ * @param customCurrentPage custom current page, if provided, next and prev functions will not work
  * @returns [items, currentPage, next, prev]
  */
 export const useClientPagination = <T>(
   data: T[],
-  itemsPerPage: number
-) => {
+  itemsPerPage: number,
+  sorter?: {
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
+  },
+  customCurrentPage?: number
+): PaginationReturnType<T> => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const indexOfLastItem = useMemo(
-    () => currentPage * itemsPerPage,
-    [currentPage, itemsPerPage]
+    () => (customCurrentPage || currentPage) * itemsPerPage,
+    [customCurrentPage, currentPage, itemsPerPage]
   );
   const indexOfFirstItem = useMemo(
     () => indexOfLastItem - itemsPerPage,
@@ -22,8 +32,27 @@ export const useClientPagination = <T>(
   );
 
   const items = useMemo(
-    () => data.slice(indexOfFirstItem, indexOfLastItem),
-    [data, indexOfFirstItem, indexOfLastItem]
+    () =>
+      (sorter
+        ? data.sort((a, b) => {
+            const sortBy = sorter.sortBy;
+            const sortOrder = sorter.sortOrder;
+
+            const newA = a[sortBy as keyof T];
+            const newB = b[sortBy as keyof T];
+
+            const newAa =
+              typeof newA === 'string' ? newA.toLowerCase() : newA;
+            const newBb =
+              typeof newB === 'string' ? newB.toLowerCase() : newB;
+
+            if (newAa > newBb) return sortOrder === 'desc' ? -1 : 1;
+            if (newAa < newBb) return sortOrder === 'desc' ? 1 : -1;
+            return 0;
+          })
+        : data
+      ).slice(indexOfFirstItem, indexOfLastItem),
+    [data, indexOfFirstItem, indexOfLastItem, sorter]
   );
 
   const next = () => {
@@ -38,5 +67,12 @@ export const useClientPagination = <T>(
     setCurrentPage((prevPage) => prevPage - 1);
   };
 
-  return [items, currentPage, next, prev] as const;
+  const returnArray: PaginationReturnType<T> = [
+    items,
+    currentPage,
+    next,
+    prev,
+  ];
+
+  return returnArray;
 };

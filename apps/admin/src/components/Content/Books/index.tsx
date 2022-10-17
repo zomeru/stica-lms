@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { AlgoBookDoc } from '@lms/types';
 import { ITEMS_PER_PAGE, SORT_ITEMS } from '@src/constants';
 
-import { useAlgoData, useNextQuery } from '@lms/ui';
+import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import AddBook from './AddBook';
 import BookDetails from './BookDetails';
 import BookList from './BookList';
@@ -18,7 +18,6 @@ const Books = () => {
 
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoBooks, setAlgoBooks, _, bookLoading] =
@@ -45,48 +44,18 @@ const Books = () => {
     setSortOrder(newOrder);
   }, [sortBy]);
 
-  const indexOfLastItem = useMemo(
-    () => (currentPage ? Number(currentPage) : 1) * ITEMS_PER_PAGE,
-    [currentPage]
-  );
-
-  const indexOfFirstItem = useMemo(
-    () => indexOfLastItem - ITEMS_PER_PAGE,
-    [indexOfLastItem]
-  );
-
-  const currentBooks = useMemo(
-    () =>
-      algoBooks
-        .sort((a, b) => {
-          const newA = a[sortBy as keyof AlgoBookDoc];
-          const newB = b[sortBy as keyof AlgoBookDoc];
-          if (newA > newB) return sortOrder === 'desc' ? -1 : 1;
-          if (newA < newB) return sortOrder === 'desc' ? 1 : -1;
-          return 0;
-        })
-        .slice(indexOfFirstItem, indexOfLastItem),
-    [algoBooks, currentPage, sortBy, sortOrder]
+  const [currentBooks, currentPage, onNext, onPrev] = useClientPagination(
+    algoBooks,
+    ITEMS_PER_PAGE,
+    {
+      sortBy,
+      sortOrder,
+    }
   );
 
   const selectedBookData = useMemo(() => {
     return algoBooks.find((book) => book.objectID === bookId);
   }, [algoBooks, bookId]);
-
-  const onPrev = () => {
-    if (currentPage === 1) return;
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const onNext = () => {
-    if (
-      algoBooks &&
-      currentPage === Math.ceil(algoBooks.length / ITEMS_PER_PAGE)
-    )
-      return;
-
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
 
   return (
     <div className='w-full h-full relative overflow-hidden'>
