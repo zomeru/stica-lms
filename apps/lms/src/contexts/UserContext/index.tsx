@@ -81,7 +81,7 @@ export const UserProvider: FC<UserProviderProps> = ({
           );
           userObject.givenName = newUser.givenName;
           userObject.surname = newUser.surname;
-          userObject.username = newUser.mailNickname;
+          // userObject.username = newUser.mailNickname;
           userObject.email = newUser.mail;
         }
 
@@ -123,19 +123,19 @@ export const UserProvider: FC<UserProviderProps> = ({
           } as IUserDoc;
         }
 
-        const photoRes = await fetch(
-          'https://graph.microsoft.com/v1.0/me/photo/$value',
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${instance.accessToken}`,
-            },
-          }
-        );
+        // const photoRes = await fetch(
+        //   'https://graph.microsoft.com/v1.0/me/photo/$value',
+        //   {
+        //     method: 'GET',
+        //     headers: {
+        //       Authorization: `Bearer ${instance.accessToken}`,
+        //     },
+        //   }
+        // );
 
-        const photo = await photoRes.blob();
-        const photoUrl = URL.createObjectURL(photo);
-        if (photoUrl && newUserDoc) newUserDoc.photo = photoUrl;
+        // const photo = await photoRes.blob();
+        // const photoUrl = URL.createObjectURL(photo);
+        // if (photoUrl && newUserDoc) newUserDoc.photo = photoUrl;
 
         setUser(newUserDoc);
       }

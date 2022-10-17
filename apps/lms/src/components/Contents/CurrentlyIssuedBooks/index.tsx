@@ -7,12 +7,12 @@ import { formatDate, navigateToBook } from '@src/utils';
 import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 import { db } from '@lms/db';
 import { useClientPagination } from '@lms/ui';
 
 const CurrentlyIssuedBooks = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [issuedBooks, issueLoading] = useCol<IBorrowDoc>(
     query(

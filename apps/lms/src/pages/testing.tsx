@@ -1,9 +1,7 @@
 const Testing = () => {
   return (
     <div>
-      <button type='button' onClick={() => {}}>
-        Sign in MS
-      </button>
+      <button type='button'>Sign out</button>
     </div>
   );
 };

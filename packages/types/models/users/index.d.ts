@@ -3,7 +3,6 @@ export interface IUser {
   givenName: string;
   surname: string;
   email: string;
-  username: string;
   numSuccessBookRequest: number;
   numFailedBookRequest: number;
   numSuccessRenewalRequest: number;
@@ -12,7 +11,10 @@ export interface IUser {
   numFailedBookReturnRequest: number;
   createdAt: any;
   updatedAt: any;
-  photo?: string;
+  photo: {
+    url: string;
+    ref: string;
+  };
 }
 
 export interface IUserDoc extends IUser {

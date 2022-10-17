@@ -11,7 +11,6 @@ import {
 import { BsArrowLeft } from 'react-icons/bs';
 import Image from 'next/image';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
-import { useIsAuthenticated } from '@azure/msal-react';
 import ReactTooltip from 'react-tooltip';
 
 import { db } from '@lms/db';
@@ -29,14 +28,13 @@ import {
   IBorrowDoc,
   ILikedBookDoc,
 } from '@lms/types';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 
 import { formatDate } from '@src/utils';
 import { useNextQuery } from '@lms/ui';
 
 const BookDetails = () => {
-  const { user } = useUser();
-  const isAuthenticated = useIsAuthenticated();
+  const { user } = useAuth();
   const router = useRouter();
   const bookId = useNextQuery('bookId');
 
@@ -188,7 +186,7 @@ const BookDetails = () => {
                 onClick={() => {
                   borrowBook(
                     book,
-                    isAuthenticated,
+                    !!user,
                     user?.id || '',
                     user?.displayName || '',
                     () => setIsBorrowing(false)
@@ -233,11 +231,11 @@ const BookDetails = () => {
                     if (likedBook)
                       removeFromLikedBooks(
                         likedBook.id,
-                        isAuthenticated,
+                        !!user,
                         user?.id || ''
                       );
                   } else if (bookId) {
-                    addToLikedBooks(book, isAuthenticated, user?.id || '');
+                    addToLikedBooks(book, !!user, user?.id || '');
                   }
                 }}
               >

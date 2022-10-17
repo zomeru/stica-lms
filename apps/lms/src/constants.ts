@@ -184,6 +184,8 @@ export const historyStatus = [
   'Lost',
 ];
 
+export const LMS_PREVIOUS_LOGGED_IN_KEY = 'IS_LMS_PREVIOUSLY_LOGGED_IN';
+
 export const BOOK_GENRES_FICTION = [
   'Action and adventure',
   'Alternate history',

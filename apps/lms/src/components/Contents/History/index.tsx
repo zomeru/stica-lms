@@ -8,11 +8,11 @@ import { historyTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 import { useClientPagination } from '@lms/ui';
 
 const History = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [borrowHistory, historyLoading] = useCol<IBorrowDoc>(
     query(

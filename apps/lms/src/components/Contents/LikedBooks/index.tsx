@@ -2,19 +2,17 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { useIsAuthenticated } from '@azure/msal-react';
 
 import { navigateToBook } from '@src/utils';
 import { likedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { removeFromLikedBooks, useCol } from '@src/services';
 import { ILikedBookDoc } from '@lms/types';
 import { db } from '@lms/db';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 import { useClientPagination } from '@lms/ui';
 
 const History = () => {
-  const isAuthenticated = useIsAuthenticated();
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [likedBooks, likeLoading] = useCol<ILikedBookDoc>(
     query(
@@ -184,7 +182,7 @@ const History = () => {
                             onClick={() => {
                               removeFromLikedBooks(
                                 like.id,
-                                isAuthenticated,
+                                !!user,
                                 user?.id || ''
                               );
                             }}

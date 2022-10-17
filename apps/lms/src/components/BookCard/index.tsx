@@ -3,11 +3,10 @@ import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { collection, query, where } from 'firebase/firestore';
-import { useIsAuthenticated } from '@azure/msal-react';
 
 import { AlgoBookDoc, IBorrowDoc, ILikedBookDoc } from '@lms/types';
 import { db } from '@lms/db';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 import {
   addToLikedBooks,
   borrowBook,
@@ -31,8 +30,7 @@ const BookCard = ({ book }: BookCardProps) => {
     views,
     imageCover,
   } = book;
-  const isAuthenticated = useIsAuthenticated();
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [isBorrowing, setIsBorrowing] = React.useState(false);
 
@@ -104,7 +102,7 @@ const BookCard = ({ book }: BookCardProps) => {
             onClick={() =>
               borrowBook(
                 book,
-                isAuthenticated,
+                !!user,
                 user?.id || '',
                 user?.displayName || '',
                 () => setIsBorrowing(false)
@@ -143,11 +141,11 @@ const BookCard = ({ book }: BookCardProps) => {
                 if (likedBook)
                   removeFromLikedBooks(
                     likedBook.id,
-                    isAuthenticated,
+                    !!user,
                     user?.id || ''
                   );
               } else {
-                addToLikedBooks(book, isAuthenticated, user?.id || '');
+                addToLikedBooks(book, !!user, user?.id || '');
               }
             }}
           >

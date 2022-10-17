@@ -11,11 +11,11 @@ import {
 import { cancelBorrowRequest, useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
-import { useUser } from '@src/contexts';
+import { useAuth } from '@src/contexts';
 import { useClientPagination } from '@lms/ui';
 
 const PendingRequests = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [userBorrows, borrowLoading] = useCol<IBorrowDoc>(
     query(
