@@ -30,8 +30,6 @@ const Home: NextPage = () => {
   const router = useRouter();
   const { user, login, logout } = useAuth();
 
-  console.log('user asdadasd', user);
-
   useEffect(() => {
     const authenticatedPages = [
       'notifications',
