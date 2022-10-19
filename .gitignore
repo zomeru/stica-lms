@@ -33,3 +33,16 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# firebase
+ui-debug.log
+firestore-debug.log
+firebase-debug.log
+.runtimeconfig.json
+pubsub-debug.log
+database-debug.log
+seed
+
+# configs
+sticalms-sa.json
+

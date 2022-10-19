@@ -1,4 +1,3 @@
-import { FieldValue } from 'firebase/firestore';
 import { IconType } from 'react-icons';
 
 export interface SideBarItemsType {
@@ -6,20 +5,25 @@ export interface SideBarItemsType {
   Icon: IconType;
 }
 
-export interface IUser {
-  id: string;
-  displayName: string;
-  givenName: string;
-  surname: string;
-  email: string;
-  username: string;
-  numSuccessBookRequest: number;
-  numFailedBookRequest: number;
-  numSuccessRenewalRequest: number;
-  numFailedRenewalRequest: number;
-  numSuccessBookReturnRequest: number;
-  numFailedBookReturnRequest: number;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
-  photo?: string;
-}
+export type DayType =
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday';
+
+export type MonthType =
+  | 'Jan'
+  | 'Feb'
+  | 'Mar'
+  | 'Apr'
+  | 'May'
+  | 'June'
+  | 'July'
+  | 'Aug'
+  | 'Sep'
+  | 'Oct'
+  | 'Nov'
+  | 'Dec';

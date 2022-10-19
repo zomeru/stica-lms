@@ -1,46 +1,43 @@
 import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
 import { Layout } from '@lms/ui';
-import { usePhoto } from '@src/hooks';
 import {
   loggedInSidebarItems,
   loggedOutSidebarItems,
 } from '@src/constants';
-import { loginRequest } from '@src/config';
 import {
   Home as HomeComp,
-  Messages,
+  Notifications,
   CurrentlyIssuedBooks,
   PendingRequests,
   History,
   Contact,
   Search,
   BookDetails,
+  LikedBooks,
+  About,
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
+import { useAuth } from '@src/contexts';
 
 const sidebarItems = loggedInSidebarItems.map((item) =>
   item.name.toLowerCase()
 );
 
 const Home: NextPage = () => {
-  const isAuthenticated = useIsAuthenticated();
-  const { accounts, instance } = useMsal();
-  const { photo } = usePhoto();
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
-
-  const loggedIn = isAuthenticated && accounts.length > 0;
+  const { user, login, logout } = useAuth();
 
   useEffect(() => {
     const authenticatedPages = [
-      'messages',
+      'notifications',
       'currently issued books',
-      'pending requests',
+      'borrow requests',
       'history',
+      'my likes',
     ];
 
     function checkPage() {
@@ -49,7 +46,7 @@ const Home: NextPage = () => {
           decodeURIComponent(router.query.page as string)
         )
       ) {
-        if (!isAuthenticated) {
+        if (!user) {
           router.push(
             {
               pathname: '/',
@@ -66,17 +63,17 @@ const Home: NextPage = () => {
     }
 
     checkPage();
-  }, [isAuthenticated, router.query]);
+  }, [user, router.query]);
 
-  const loginHandler = () => {
-    instance.loginRedirect(loginRequest);
-  };
+  // const loginHandler = () => {
+  //   instance.loginRedirect(loginRequest);
+  // };
 
-  const logoutHandler = () => {
-    instance.logoutPopup({
-      postLogoutRedirectUri: '/',
-    });
-  };
+  // const logoutHandler = () => {
+  //   instance.logoutPopup({
+  //     postLogoutRedirectUri: '/',
+  //   });
+  // };
 
   const renderContent = () => {
     if (
@@ -102,15 +99,15 @@ const Home: NextPage = () => {
           page === 'home' ||
           !router.query.page) && <HomeComp />}
         {page === 'search' && !router.query.bookId && <Search />}
-        {isAuthenticated && page === 'messages' && <Messages />}
-        {isAuthenticated && page === 'currently issued books' && (
+        {!!user && page === 'notifications' && <Notifications />}
+        {!!user && page === 'currently issued books' && (
           <CurrentlyIssuedBooks />
         )}
-        {isAuthenticated && page === 'borrow requests' && (
-          <PendingRequests />
-        )}
-        {isAuthenticated && page === 'history' && <History />}
+        {!!user && page === 'borrow requests' && <PendingRequests />}
+        {!!user && page === 'history' && <History />}
+        {!!user && page === 'my likes' && <LikedBooks />}
         {page === 'contact' && <Contact />}
+        {page === 'about' && <About />}
       </>
     );
   };
@@ -119,13 +116,14 @@ const Home: NextPage = () => {
     <Layout
       sidebarOpen={sidebarOpen}
       showHideSidebar={showHideSidebar}
-      isAuthenticated={isAuthenticated}
-      sidebarItems={
-        loggedIn ? loggedInSidebarItems : loggedOutSidebarItems
-      }
-      authAction={loggedIn ? logoutHandler : loginHandler}
-      username={accounts[0]?.name?.replace(' (Student)', '')}
-      userPhoto={photo || undefined}
+      isAuthenticated={!!user}
+      sidebarItems={user ? loggedInSidebarItems : loggedOutSidebarItems}
+      authAction={user ? logout : login}
+      username={user?.displayName}
+      userPhoto={user?.photo.url}
+      showNotification
+      // TODO: dynamic notification
+      hasNewNotification={false}
     >
       {renderContent()}
     </Layout>

@@ -1,5 +1,3 @@
-import { FieldValue } from 'firebase/firestore';
-
 export type GenreType = 'Fiction' | 'Non-Fiction';
 
 export interface IBooks {
@@ -17,8 +15,8 @@ export interface IBooks {
   };
   views: number;
   totalBorrow: number;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
+  createdAt: any;
+  updatedAt: any;
   isbns: ISBNType[];
 }
 
@@ -26,14 +24,13 @@ export interface IBookDoc extends IBooks {
   id: string;
 }
 
+export type AlgoBookDoc = IBookDoc & { objectID: string };
+
 export interface ISBNType {
   isbn: string;
-  isAvailable: boolean;
+  // isAvailable: boolean;
+  status: 'Lost' | 'Damaged' | 'Available' | 'Borrowed';
   issuedBy?: string;
-}
-
-export interface IISBNDoc extends IISBN {
-  id: string;
 }
 
 export type GenreTypes = FictionType | NonFictionType;
@@ -78,6 +75,7 @@ export type NonFictionType =
   | 'Diary'
   | 'Dictionary'
   | 'Encyclopedia'
+  | 'Finance'
   | 'Food'
   | 'Guide'
   | 'Health/fitness'
@@ -87,6 +85,7 @@ export type NonFictionType =
   | 'Journal'
   | 'Math'
   | 'Memoir'
+  | 'Personal finance'
   | 'Philosophy'
   | 'Politics'
   | 'Prayer'

@@ -1,58 +1,49 @@
-import React from 'react';
-import { collection, doc, updateDoc } from 'firebase/firestore';
-
-import { useCol } from '@src/services';
-import { db } from '@lms/db';
+import { useEffect } from 'react';
+import {
+  // getRedirectResult,
+  // OAuthProvider,
+  // onAuthStateChanged,
+  // signInWithRedirect,
+  signOut,
+} from 'firebase/auth';
+import { auth } from '@lms/db';
 
 const Testing = () => {
-  const [testData] = useCol<any>(collection(db, 'test'));
-
-  console.log('testData', testData);
-
-  const updateTestData = async () => {
-    if (!testData) return;
-
-    const docRef = doc(db, 'test', testData[0].id);
-
-    // testData structure
-    // {
-    //   id: 'testId',
-    //   str: 'some string',
-    //   someArr: [
-    //     {
-    //       available: true,
-    //       isbn: '123'
+  useEffect(() => {
+    // onAuthStateChanged(auth, async (currentUser) => {
+    //   console.log('currentUser', currentUser);
+    // });
+    // getRedirectResult(auth)
+    //   .then((result) => {
+    //     console.log('result', result);
+    //     if (result) {
+    //       const credential = OAuthProvider.credentialFromResult(result);
+    //       console.log('credential', credential);
     //     }
-    //   ]
-    // }
+    //   })
+    //   .catch((error) => {
+    //     // Handle error.
+    //     console.log('error', error);
+    //   });
+  }, []);
 
-    // get item where isnb === '123'
-    const item = testData[0].someArr.find((el: any) => el.isbn === '123');
-
-    // get new arr without item
-    const newArr = testData[0].someArr.filter(
-      (el: any) => el.isbn !== '123'
-    );
-
-    const newSomeArr = [
-      ...newArr,
-      {
-        isbn: item.isbn,
-        available: true,
-      },
-    ];
-
-    await updateDoc(docRef, {
-      someArr: newSomeArr,
-    });
-
-    console.log('updated');
+  const handleLogin = () => {
+    // const provider = new OAuthProvider('microsoft.com');
+    // provider.setCustomParameters({
+    //   prompt: 'select_account',
+    //   tenant: process.env.NEXT_PUBLIC_AZURE_STICA_TENANT_ID!,
+    //   // redirect_uri: '/testing',
+    // });
+    // provider.addScope('user.read');
+    // signInWithRedirect(auth, provider);
   };
-
   return (
     <div>
-      <button type='button' onClick={updateTestData}>
-        Update
+      <button type='button' onClick={handleLogin}>
+        Sign in
+      </button>
+      <button type='button' onClick={() => signOut(auth)}>
+        Sign out
       </button>
     </div>
   );

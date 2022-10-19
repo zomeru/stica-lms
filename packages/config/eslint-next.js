@@ -39,12 +39,15 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/function-component-definition': 'off',
     'react/require-default-props': 'off',
+    'react/jsx-no-useless-fragment': 'off',
 
     'import/no-extraneous-dependencies': 'off',
     'arrow-body-style': 'off',
     'import/prefer-default-export': 'off',
     'no-nested-ternary': 'off',
     'import/no-cycle': 'off',
+    'no-underscore-dangle': 'off',
+    '@typescript-eslint/naming-convention': 'off',
 
     // next
     '@next/next/no-html-link-for-pages': 'off',

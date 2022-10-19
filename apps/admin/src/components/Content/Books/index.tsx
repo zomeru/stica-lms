@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { collection, orderBy, query } from 'firebase/firestore';
 
-import { db } from '@lms/db';
-import { IBookDoc } from '@lms/types';
-import { useCol } from '@src/services';
-import { SORT_ITEMS } from '@src/constants';
+import { AlgoBookDoc } from '@lms/types';
+import { ITEMS_PER_PAGE, SORT_ITEMS } from '@src/constants';
 
+import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import AddBook from './AddBook';
 import BookDetails from './BookDetails';
 import BookList from './BookList';
@@ -13,45 +11,64 @@ import BookList from './BookList';
 export type OrderType = 'asc' | 'desc';
 
 const Books = () => {
+  const bookSearchKey = useNextQuery('bookSearchKey');
+  const bookId = useNextQuery('bookId');
+
   const [addBook, setAddBook] = useState(false);
-  const [selectedBook, setSelectedBook] = useState('');
+
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
 
-  const [books, setBooks] = useState<IBookDoc[]>([]);
-
-  const [bookData, bookLoading, bookError] = useCol<IBookDoc>(
-    query(collection(db, 'books'), orderBy(sortBy, sortOrder))
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [algoBooks, setAlgoBooks, _, bookLoading] =
+    useAlgoData<AlgoBookDoc>('books', bookSearchKey);
 
   useEffect(() => {
     const orderIndex = SORT_ITEMS.findIndex(
       (el) => el.sort.field === sortBy
     );
-    setSortOrder(SORT_ITEMS[orderIndex].order[0].value as OrderType);
+
+    setSortBy(SORT_ITEMS[orderIndex].sort.field);
   }, [sortBy]);
 
-  const selectedBookData = useMemo(() => {
-    return books.find((book) => book.id === selectedBook);
-  }, [books, selectedBook]);
-
   useEffect(() => {
-    if (!bookLoading && bookData) {
-      setBooks(bookData);
+    const orderIndex = SORT_ITEMS.findIndex(
+      (el) => el.sort.field === sortBy
+    );
+
+    const newOrder =
+      orderIndex > -1
+        ? (SORT_ITEMS[orderIndex].order[0].value as OrderType)
+        : 'desc';
+
+    setSortOrder(newOrder);
+  }, [sortBy]);
+
+  const [currentBooks, currentPage, onNext, onPrev] = useClientPagination(
+    algoBooks,
+    ITEMS_PER_PAGE,
+    {
+      sortBy,
+      sortOrder,
     }
-  }, [bookLoading]);
+  );
+
+  const selectedBookData = useMemo(() => {
+    return algoBooks.find((book) => book.objectID === bookId);
+  }, [algoBooks, bookId]);
 
   return (
     <div className='w-full h-full relative overflow-hidden'>
       {/* Book list */}
       <BookList
-        books={books}
+        onNext={onNext}
+        onPrev={onPrev}
+        currentPage={currentPage}
+        books={algoBooks}
+        currentBooks={currentBooks}
         bookLoading={bookLoading}
-        bookError={bookError}
-        selectedBook={selectedBook}
         addBook={addBook}
         setAddBook={setAddBook}
-        setSelectedBook={setSelectedBook}
         setSortBy={setSortBy}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -60,19 +77,17 @@ const Books = () => {
 
       {/* Book details */}
       <BookDetails
-        selectedBook={selectedBook}
-        setSelectedBook={setSelectedBook}
         bookDetails={selectedBookData!}
-        books={books}
-        setBooks={setBooks}
+        books={algoBooks}
+        setBooks={setAlgoBooks}
       />
 
       {/* Add book section */}
       <AddBook
         addBook={addBook}
         setAddBook={setAddBook}
-        books={books}
-        setBooks={setBooks}
+        books={algoBooks}
+        setBooks={setAlgoBooks}
       />
     </div>
   );

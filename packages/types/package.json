@@ -7,9 +7,6 @@
   "scripts": {
     "lint": "eslint *.ts*"
   },
-  "dependencies": {
-    "firebase": "^9.9.4"
-  },
   "devDependencies": {
     "@lms/config": "*",
     "@lms/tsconfig": "*",

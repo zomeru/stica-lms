@@ -1,0 +1,35 @@
+import { useState, useEffect } from 'react';
+
+type WindowDimensions = {
+  width: number;
+  height: number;
+};
+
+const getWindowDimensions = (): WindowDimensions => {
+  const { innerWidth, innerHeight } = window;
+
+  return {
+    width: innerWidth,
+    height: innerHeight,
+  };
+};
+
+export const useWindowDimensions = (): WindowDimensions => {
+  const [windowDimensions, setWindowDimensions] =
+    useState<WindowDimensions>({
+      width: 0,
+      height: 0,
+    });
+
+  const handleResize = () => {
+    setWindowDimensions(getWindowDimensions());
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+};

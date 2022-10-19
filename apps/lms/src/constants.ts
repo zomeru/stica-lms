@@ -1,10 +1,15 @@
 import {
   AiOutlineHistory,
   AiOutlineHome,
-  AiOutlineMessage,
   AiOutlineSearch,
+  AiOutlineHeart,
+  AiOutlineInfoCircle,
 } from 'react-icons/ai';
-import { MdOutlineContactPage, MdPendingActions } from 'react-icons/md';
+import {
+  MdOutlineContactPage,
+  MdPendingActions,
+  MdOutlineNotificationsNone,
+} from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
 
 import { SideBarItemsType } from './types';
@@ -19,8 +24,12 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineSearch,
   },
   {
-    name: 'Messages',
-    Icon: AiOutlineMessage,
+    name: 'Notifications',
+    Icon: MdOutlineNotificationsNone,
+  },
+  {
+    name: 'My Likes',
+    Icon: AiOutlineHeart,
   },
   {
     name: 'Currently Issued Books',
@@ -38,6 +47,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     name: 'Contact',
     Icon: MdOutlineContactPage,
   },
+  {
+    name: 'About',
+    Icon: AiOutlineInfoCircle,
+  },
 ];
 
 export const loggedOutSidebarItems: SideBarItemsType[] = [
@@ -52,6 +65,33 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
   {
     name: 'Contact',
     Icon: MdOutlineContactPage,
+  },
+  {
+    name: 'About',
+    Icon: AiOutlineInfoCircle,
+  },
+];
+
+export const capstone_team = [
+  {
+    name: 'Zomer Gregorio',
+    photo: '/assets/images/team/zoms.PNG',
+    role: 'Team Lead & Lead Developer',
+  },
+  {
+    name: 'Mark Joseph Yoldi',
+    photo: '/assets/images/team/marky.jpg',
+    role: 'UI/UX Designer',
+  },
+  {
+    name: 'Joshua Pamisa',
+    photo: '/assets/images/team/josh.jpeg',
+    role: 'Research Specialist',
+  },
+  {
+    name: 'Lourence Jacaba',
+    photo: '/assets/images/team/lourence.png',
+    role: 'Research Specialist',
   },
 ];
 
@@ -124,6 +164,8 @@ export const SORT_ITEMS = [
 
 export const sortItems = ['Relevance', 'Latest'];
 
+export const ITEMS_PER_PAGE = 10;
+
 export const pendingRequestTableHeaders = [
   // 'Book ID',
   'Title',
@@ -131,22 +173,31 @@ export const pendingRequestTableHeaders = [
   'Accession No',
   'Request Date',
   'Pick-up Due Date',
-  'Status',
+  // 'Status',
 ];
 
 export const issuedBooksTableHeaders = [
   // 'Book ID',
-  'ISBN',
   'Title',
+  'ISBN',
   'Issued Date',
   'Due Date',
   'Penalty',
 ];
 
+export const likedBooksTableHeaders = [
+  // 'Book ID',
+  'Cover',
+  'Title',
+  'Author',
+  'Genre',
+  'Accession No',
+];
+
 export const historyTableHeaders = [
   // 'Book ID',
-  'ISBN',
   'Title',
+  'ISBN',
   // 'Requested Date',
   'Issued Date',
   'Due Date',
@@ -163,6 +214,8 @@ export const historyStatus = [
   'Returned with damage',
   'Lost',
 ];
+
+export const LMS_PREVIOUS_LOGGED_IN_KEY = 'IS_LMS_PREVIOUSLY_LOGGED_IN';
 
 export const BOOK_GENRES_FICTION = [
   'Action and adventure',
@@ -205,6 +258,8 @@ export const BOOK_GENRES_NONFICTION = [
   'Diary',
   'Dictionary',
   'Encyclopedia',
+  'Finance',
+  'Personal finance',
   'Food',
   'Guide',
   'Health/fitness',

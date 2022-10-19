@@ -11,6 +11,7 @@ import {
   arrayUnion,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
+import nProgress from 'nprogress';
 
 import { db, storage } from '@lms/db';
 import { useFileHandler, useUploadImage } from '@src/hooks';
@@ -21,10 +22,11 @@ import {
   BOOK_GENRES_NONFICTION,
   GENRE_TYPES,
 } from '@src/constants';
-import { GenreType, GenreTypes, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBookDoc, GenreType, GenreTypes, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
-import nProgress from 'nprogress';
 import Loader from '@src/components/Loader';
+import { useNextQuery } from '@lms/ui';
+import { useRouter } from 'next/router';
 
 Modal.setAppElement('#__next');
 
@@ -116,23 +118,17 @@ const ISBNModal = ({
 };
 
 interface AddBookProps {
-  bookDetails: IBookDoc;
-  selectedBook: string;
-  setSelectedBook: React.Dispatch<React.SetStateAction<string>>;
-  books: IBookDoc[];
-  setBooks: React.Dispatch<React.SetStateAction<IBookDoc[]>>;
+  bookDetails: AlgoBookDoc;
+  books: AlgoBookDoc[];
+  setBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
 }
 
-const BookDetails = ({
-  bookDetails,
-  selectedBook,
-  setSelectedBook,
-  books,
-  setBooks,
-}: AddBookProps) => {
+const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [handleBookImage, bookFile, bookImage, clearImage] =
     useFileHandler();
   const { uploadImage } = useUploadImage();
+  const bookId = useNextQuery('bookId');
+  const router = useRouter();
 
   const bookImageRef = useRef<HTMLInputElement>(null);
 
@@ -261,8 +257,9 @@ const BookDetails = ({
         addedISBNs.forEach((isbn) => {
           const newISBN = {
             isbn,
-            isAvailable: true,
-          };
+            // isAvailable: true,
+            status: 'Available',
+          } as ISBNType;
 
           newISBNsToAdd.push(newISBN);
         });
@@ -280,16 +277,16 @@ const BookDetails = ({
         }
       }
 
-      const bookRef = doc(db, 'books', selectedBook);
+      const bookRef = doc(db, 'books', bookId || '');
       // const updatedBook = await updateDoc(bookRef, {...payload});
       await updateDoc(bookRef, { ...payload });
 
       const filteredBooks = books.filter(
-        (book) => book.id !== selectedBook
+        (book) => book.id !== bookId || ''
       );
       const updatedBooks = [
         {
-          id: selectedBook,
+          id: bookId || '',
           title,
           author,
           publisher,
@@ -303,7 +300,7 @@ const BookDetails = ({
           isbns: [...bookDetails.isbns, ...newISBNsToAdd],
         },
         ...filteredBooks,
-      ] as IBookDoc[];
+      ] as AlgoBookDoc[];
       setBooks(updatedBooks);
 
       toast.success('Book updated successfully');
@@ -337,11 +334,11 @@ const BookDetails = ({
   return (
     <div
       className={`w-full h-full absolute top-0 duration-300 overflow-y-scroll transition-all custom-scrollbar space-y-4 ${
-        selectedBook ? 'translate-x-0' : 'translate-x-[100%]'
+        bookId ? 'translate-x-0' : 'translate-x-[100%]'
       }`}
     >
       <div className='flex space-x-3 items-center'>
-        <button type='button' onClick={() => setSelectedBook('')}>
+        <button type='button' onClick={() => router.back()}>
           <BsArrowLeft className='h-8 w-8 text-primary' />
         </button>
         <div className='text-3xl font-semibold text-primary'>

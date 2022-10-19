@@ -10,6 +10,8 @@
   "dependencies": {
     "@lms/db": "*",
     "@lms/ui": "*",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "algoliasearch": "^4.14.2",
     "compressorjs": "^1.1.1",
     "firebase": "^9.9.4",
     "next": "latest",
@@ -19,6 +21,7 @@
     "react-firebase-hooks": "^5.0.3",
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.4.0",
+    "react-instantsearch-hooks-web": "^6.36.0",
     "react-modal": "^3.15.1",
     "react-tooltip": "^4.2.21"
   },

@@ -4,7 +4,7 @@ import { useIsAuthenticated } from '@azure/msal-react';
 import { msalInstance } from '@src/pages/_app';
 import { loginRequest } from '@src/config';
 
-const usePhoto = () => {
+const useUserPhoto = () => {
   const isAuthenticated = useIsAuthenticated();
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,4 +52,4 @@ const usePhoto = () => {
   };
 };
 
-export default usePhoto;
+export default useUserPhoto;

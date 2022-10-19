@@ -1,13 +1,32 @@
-import { FieldValue } from 'firebase/firestore';
+export type BorrowStatus =
+  | 'Pending'
+  | 'Issued'
+  | 'Returned'
+  | 'Returned with damage'
+  | 'Lost'
+  | 'Cancelled';
 
-export type PendingStatus = 'Pending' | 'Approved';
-
-export interface IBooks {
+export interface IBorrow {
+  userId: string;
+  studentName: string;
   bookId: string;
   title: string;
+  author: string;
+  genre: string;
   isbn: string;
   accessionNumber: string;
-  requestDate: FieldValue;
-  pickUpDueDate: FieldValue | undefined;
-  status: PendingStatus;
+  requestDate: any;
+  status: BorrowStatus;
+  penalty: number;
+  updatedAt: any;
+  pickUpDueDate: any;
+  issuedDate?: any;
+  returnedDate?: any;
+  dueDate?: any;
 }
+
+export interface IBorrowDoc extends IBorrow {
+  id: string;
+}
+
+export type AlgoBorrowDoc = IBorrowDoc & { objectID: string };

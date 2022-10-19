@@ -1,21 +1,32 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState, useRef, Fragment } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
-import { Layout } from '@lms/ui';
+import { useNextQuery, Layout } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';
-import { Books } from '@src/components/Content';
+import {
+  Books,
+  BorrowRequest,
+  LoanedBooks,
+  Users,
+} from '@src/components/Content';
 
 const Home: NextPage = () => {
   const { user, loading } = useUser();
   const { login, error, logout } = useAuth();
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
+  const page = useNextQuery('page');
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const [searchPlaceholder, setSearchPlaceholder] = useState('');
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,16 +34,84 @@ const Home: NextPage = () => {
     login(username, password);
   };
 
-  const renderContent = () => {
-    const page = decodeURIComponent(router.query.page as string);
+  const handleAdminSearch = () => {
+    if (!searchInputRef.current) return;
+    if (!searchInputRef.current.value) {
+      toast.error('Please enter a search term');
+      return;
+    }
 
+    const routerArg: any = {
+      pathname: '/',
+      query: {
+        ...router.query,
+      },
+    };
+
+    if (!page || page === 'books') {
+      routerArg.query.bookSearchKey = encodeURIComponent(
+        searchInputRef.current.value
+      );
+      router.push(routerArg, undefined, { shallow: true });
+    }
+
+    if (
+      [
+        'currently loaned books',
+        'borrow requests',
+        'renewal requests',
+      ].some((el) => el === page)
+    ) {
+      if (page === 'currently loaned books') {
+        routerArg.query.loanedSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      if (page === 'borrow requests') {
+        routerArg.query.borrowSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      if (page === 'renewal requests') {
+        routerArg.query.renewalSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
+      router.push(routerArg, undefined, { shallow: true });
+    }
+  };
+
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = '';
+    }
+
+    if (!page || page === 'books') {
+      setSearchPlaceholder('Search for books');
+    } else if (page === 'users') {
+      setSearchPlaceholder('Search for users');
+    } else if (
+      ['borrow', 'loaned', 'renew'].some((p) => page.includes(p))
+    ) {
+      setSearchPlaceholder('Search for records');
+    } else {
+      setSearchPlaceholder('Search disabled');
+    }
+  }, [page]);
+
+  const renderContent = () => {
     return (
       <>
         {(router.asPath === '/' ||
           router.asPath.includes('/?page=books') ||
           page === 'books' ||
-          !router.query.page) && <Books />}
-        {/* {<div>asdadad</div>} */}
+          !page) && <Books />}
+        {page === 'users' && <Users />}
+        {page === 'currently loaned books' && <LoanedBooks />}
+        {page === 'borrow requests' && <BorrowRequest />}
       </>
     );
   };
@@ -46,12 +125,22 @@ const Home: NextPage = () => {
         sidebarItems={adminSidebarItems}
         authAction={logout}
         username='Admin'
-        // showSearch={false}
-        searchDisabled
-        searchPlaceholder='Search disabled'
+        onAdminSearch={handleAdminSearch}
+        searchPlaceholder={searchPlaceholder}
         user='admin'
         userPhoto='/assets/images/STI_LOGO.png'
-        // topBar={<div>top bar</div>}
+        adminInput={
+          <input
+            ref={searchInputRef}
+            disabled={searchPlaceholder === 'Search disabled'}
+            placeholder={searchPlaceholder}
+            type='text'
+            className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
+              searchPlaceholder === 'Search disabled' &&
+              'cursor-not-allowed'
+            }`}
+          />
+        }
       >
         {renderContent()}
       </Layout>

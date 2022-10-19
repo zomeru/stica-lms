@@ -1,26 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import algoliasearch from 'algoliasearch/lite';
-import { InstantSearch, Configure } from 'react-instantsearch-hooks-web';
 
 import { BookCard } from '@src/components';
 import { useSidebar } from '@src/contexts';
 import { SORT_ITEMS } from '@src/constants';
-import { IBookDoc } from '@lms/types';
-import { useNextQuery } from '@src/hooks';
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY as string
-);
-
-const searchIndex = searchClient.initIndex('books');
-
-const HITS_PER_PAGE = 12;
+import { AlgoBookDoc } from '@lms/types';
+import {
+  useAlgoData,
+  useClientPagination,
+  useNextQuery,
+  useWindowDimensions,
+} from '@lms/ui';
+import Image from 'next/image';
 
 export type OrderType = 'asc' | 'desc';
-
-export type ABookDoc = IBookDoc & { objectID: string };
 
 const Search = () => {
   const router = useRouter();
@@ -28,22 +21,27 @@ const Search = () => {
   const searchKeyword = useNextQuery('searchKeyword');
   const currentPage = useNextQuery('searchPage');
 
-  const [books, setBooks] = useState<ABookDoc[]>([]);
+  const { width } = useWindowDimensions();
 
-  // TODO: comment this out later
-  useEffect(() => {
-    const getResult = async () => {
-      const result = await searchIndex.search(searchKeyword || '');
-      if (result.hits) {
-        setBooks(result.hits as ABookDoc[]);
-      }
-    };
-
-    getResult();
-  }, [searchKeyword]);
+  const [books] = useAlgoData<AlgoBookDoc>('books', searchKeyword);
 
   const [sortBy, setSortBy] = useState('views');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
+
+  const HITS_PER_PAGE = useMemo(
+    () => (width < 1665 ? 12 : width < 1965 ? 20 : 30),
+    [width]
+  );
+
+  const [currentBooks] = useClientPagination(
+    books,
+    HITS_PER_PAGE,
+    {
+      sortBy,
+      sortOrder,
+    },
+    currentPage ? Number(currentPage) : 1
+  );
 
   useEffect(() => {
     if (!router.query.sortBy) {
@@ -70,29 +68,25 @@ const Search = () => {
     setSortOrder(newOrder);
   }, [sortBy]);
 
-  const indexOfLastItem = useMemo(
-    () => (currentPage ? Number(currentPage) : 1) * HITS_PER_PAGE,
-    [currentPage]
-  );
-  const indexOfFirstItem = useMemo(
-    () => indexOfLastItem - HITS_PER_PAGE,
-    [indexOfLastItem]
-  );
-  const currentBooks = useMemo(
-    () =>
-      books
-        .sort((a, b) => {
-          const newA = a[sortBy as keyof ABookDoc];
-          const newB = b[sortBy as keyof ABookDoc];
-          if (newA > newB) return sortOrder === 'desc' ? -1 : 1;
-          if (newA < newB) return sortOrder === 'desc' ? 1 : -1;
-          return 0;
-        })
-        .slice(indexOfFirstItem, indexOfLastItem),
-    [books, currentPage, sortBy, sortOrder]
-  );
+  useEffect(() => {
+    if (books && books.length > 0) {
+      const numPages = Math.ceil(books.length / HITS_PER_PAGE);
 
-  console.log('currentBooks', currentBooks);
+      if (currentPage && Number(currentPage) > numPages) {
+        router.push(
+          {
+            pathname: '/',
+            query: {
+              ...router.query,
+              searchPage: 1,
+            },
+          },
+          undefined,
+          { shallow: true }
+        );
+      }
+    }
+  }, [width, HITS_PER_PAGE, books, currentPage]);
 
   const handleSort = (sortName: string) => {
     router.push(
@@ -128,7 +122,11 @@ const Search = () => {
         { shallow: true }
       );
     } else {
-      if (Number(router.query.searchPage) === 10) return;
+      if (
+        Number(router.query.searchPage) ===
+        Math.ceil(books.length / HITS_PER_PAGE)
+      )
+        return;
 
       router.push(
         {
@@ -151,10 +149,39 @@ const Search = () => {
     [sortBy]
   );
 
+  const rowSideOpen =
+    width < 1665
+      ? 'grid-cols-3'
+      : width < 1965
+      ? 'grid-cols-4'
+      : 'grid-cols-5';
+
+  const rowSideClose =
+    width < 1665
+      ? 'grid-cols-4'
+      : width < 1965
+      ? 'grid-cols-5'
+      : 'grid-cols-6';
+
   return (
-    <InstantSearch searchClient={searchClient} indexName='books'>
-      <Configure hitsPerPage={HITS_PER_PAGE} />
-      <div className='w-full h-full flex justify-between'>
+    <div className='w-full h-full flex justify-between'>
+      {(!books || (books && books.length === 0)) && (
+        <div className='w-full h-full flex flex-col justify-center space-y-3'>
+          <div className='relative w-[75%] h-[75%] mx-auto'>
+            <Image
+              src='/assets/images/books_empty.png'
+              layout='fill'
+              objectFit='contain'
+              blurDataURL='/assets/images/books_empty.png'
+              placeholder='blur'
+            />
+          </div>
+          <h1 className='text-cGray-300 text-2xl text-center'>
+            No books found.
+          </h1>
+        </div>
+      )}
+      {books && books.length > 0 && (
         <div className='w-[calc(100%)] 2xl:w-[calc(100%)] space-y-3 h-full'>
           <div className='flex justify-between'>
             <div className='flex space-x-5 items-center'>
@@ -178,7 +205,7 @@ const Search = () => {
                       <button
                         type='button'
                         key={sort.name}
-                        className={`px-3 py-2  rounded-lg text-sm ${
+                        className={`px-3 py-2 rounded-lg text-sm ${
                           isActiveSort
                             ? 'bg-primary text-white'
                             : 'bg-neutral-200 text-cGray-300'
@@ -212,17 +239,11 @@ const Search = () => {
                 </div>
               </div>
             </div>
-            {/* <Pagination
-              showLast={false}
-              showFirst={false}
-              padding={1}
-              totalPages={Math.round(books.length / HITS_PER_PAGE)}
-            /> */}
-            {books.length > 0 && books.length / HITS_PER_PAGE > 1 && (
+            {books.length / HITS_PER_PAGE > 1 && (
               <div className='flex items-center space-x-3'>
                 <div>
                   {Number(router.query.searchPage as string) || 1}/
-                  {Math.round(books.length / HITS_PER_PAGE)}
+                  {Math.ceil(books.length / HITS_PER_PAGE)}
                 </div>
                 <div className='space-x-1'>
                   <button
@@ -244,11 +265,11 @@ const Search = () => {
                     type='button'
                     disabled={
                       Number(router.query.searchPage as string) ===
-                      Math.round(books.length / HITS_PER_PAGE)
+                      Math.ceil(books.length / HITS_PER_PAGE)
                     }
                     className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
                       Number(router.query.searchPage as string) ===
-                        Math.round(books.length / HITS_PER_PAGE) &&
+                        Math.ceil(books.length / HITS_PER_PAGE) &&
                       'opacity-40 cursor-not-allowed'
                     }`}
                     onClick={() => handlePagination('next')}
@@ -260,18 +281,27 @@ const Search = () => {
             )}
           </div>
           <div
-            className={`w-full grid gap-y-5 justify-between place-items-left overflow-y-scroll h-full place-content-start pt-1 pb-4 2xl:grid-cols-5 ${
-              sidebarOpen ? 'grid-cols-3' : 'grid-cols-4'
+            style={{
+              height: `calc(100% - ${
+                books.length / HITS_PER_PAGE > 1 ? 36 : 0
+              }px)`,
+            }}
+            className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${
+              sidebarOpen ? rowSideOpen : rowSideClose
+            } ${
+              currentBooks &&
+              currentBooks.length > 0 &&
+              'overflow-y-scroll custom-scrollbar'
             }`}
           >
             {currentBooks &&
               currentBooks.map((book) => (
-                <BookCard key={book.objectID} {...book} />
+                <BookCard key={book.objectID} book={book} />
               ))}
           </div>
         </div>
-      </div>
-    </InstantSearch>
+      )}
+    </div>
   );
 };
 

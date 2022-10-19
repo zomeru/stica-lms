@@ -6,7 +6,7 @@ import { useMemo } from 'react';
  * @param key the query key
  * @returns the query value to the query key
  */
-const useNextQuery = (key: string): string | undefined => {
+export const useNextQuery = (key: string): string | undefined => {
   const { query } = useRouter();
 
   const value = useMemo(() => {
@@ -17,5 +17,3 @@ const useNextQuery = (key: string): string | undefined => {
 
   return value;
 };
-
-export default useNextQuery;

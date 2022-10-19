@@ -24,12 +24,13 @@ interface LayoutProps {
   username?: string;
   userPhoto?: string;
   children?: React.ReactNode;
-  showSearch?: boolean;
   searchPlaceholder?: string;
   searchDisabled?: boolean;
-  topBar?: React.ReactNode;
   user?: 'user' | 'admin';
   onAdminSearch?: () => void;
+  adminInput?: React.ReactNode;
+  showNotification?: boolean;
+  hasNewNotification?: boolean;
 }
 
 export const Layout = ({
@@ -41,12 +42,13 @@ export const Layout = ({
   sidebarItems,
   sidebarOpen = true,
   showHideSidebar,
-  showSearch = true,
   searchDisabled = false,
   searchPlaceholder = 'Search for books',
-  topBar,
   user = 'user',
   onAdminSearch,
+  adminInput,
+  showNotification,
+  hasNewNotification,
 }: LayoutProps) => {
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -116,8 +118,26 @@ export const Layout = ({
     );
   };
 
+  const handleNotificationClick = () => {
+    const allQueries = { ...router.query };
+    delete allQueries.bookId;
+
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          ...allQueries,
+          page: 'notifications',
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
-    <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'>
+    <div className='max-w-[1920px] mx-auto h-[calc(100vh)]'>
+      {/* <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'> */}
       <main className='flex w-full h-full'>
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
@@ -178,7 +198,7 @@ export const Layout = ({
                   return (
                     <button
                       type='button'
-                      className={`h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
+                      className={`h-[50px] 2xl:h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
                         isActive
                           ? 'before:h-full before:border-l-[6px] before:border-primary'
                           : 'before:h-0'
@@ -241,14 +261,16 @@ export const Layout = ({
         </div>
         <div className='h-full w-full'>
           <div className='w-full h-[100px] flex px-[40px]'>
-            {showSearch ? (
-              <form
-                // onSubmit={onSearch}
-                onSubmit={onSearch}
-                className='w-full h-full flex items-center space-x-3'
-              >
-                <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
-                  <AiOutlineSearch className='text-2xl text-cGray-300' />
+            <form
+              // onSubmit={onSearch}
+              onSubmit={onSearch}
+              className='w-full h-full flex items-center space-x-3'
+            >
+              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
+                <AiOutlineSearch className='text-2xl text-cGray-300' />
+                {user === 'admin' ? (
+                  adminInput
+                ) : (
                   <input
                     ref={searchInputRef}
                     disabled={searchDisabled}
@@ -257,27 +279,31 @@ export const Layout = ({
                     className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
                       searchDisabled && 'cursor-not-allowed'
                     }`}
-                    // onChange={(e) =>
-                    //   router.query.page === 'search' &&
-                    //   handleSearch(e.target.value)
-                    // }
                   />
-                </div>
-                {/* <button
+                )}
+              </div>
+              {/* <button
                 type='submit'
                 className='bg-primary text-white py-3 px-10 rounded-full'
               >
                 Search
               </button> */}
-              </form>
-            ) : (
-              topBar
-            )}
+            </form>
 
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
-              <button type='button'>
-                <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
-              </button>
+              {showNotification && (
+                <button
+                  type='button'
+                  className={`${
+                    hasNewNotification &&
+                    'relative after:content-[""] after:w-[10px] after:h-[10px] after:rounded-full after:absolute after:bg-red-600 after:top-[3px] after:right-[3px]'
+                  }`}
+                  onClick={handleNotificationClick}
+                >
+                  <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
+                </button>
+              )}
+
               {isAuthenticated ? (
                 <div className='flex items-center space-x-2'>
                   <div className='relative w-[40px] h-[40px] overflow-hidden rounded-full'>
@@ -314,14 +340,14 @@ export const Layout = ({
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
       </main>
-      <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
+      {/* <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
         <p className='text-sm text-neutral-300'>
           <span className='font-medium text-white'>
             &copy; 2022 Stica LMS.
           </span>{' '}
           All rights reserved.
         </p>
-      </footer>
+      </footer> */}
     </div>
   );
 };

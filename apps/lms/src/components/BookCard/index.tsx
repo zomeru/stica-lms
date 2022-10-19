@@ -2,43 +2,57 @@ import React from 'react';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
-import { useRouter } from 'next/router';
+import { collection, query, where } from 'firebase/firestore';
 
-import { IBookDoc } from '@lms/types';
+import { AlgoBookDoc, IBorrowDoc, ILikedBookDoc } from '@lms/types';
+import { db } from '@lms/db';
+import { useAuth } from '@src/contexts';
+import {
+  addToLikedBooks,
+  borrowBook,
+  removeFromLikedBooks,
+  useCol,
+} from '@src/services';
+import { navigateToBook } from '@src/utils';
 
-const BookCard = ({
-  // id,
-  objectID,
-  title,
-  author,
-  genre,
-  available,
-  views,
-  imageCover,
-}: IBookDoc & { objectID: string }) => {
-  const router = useRouter();
-  const [isFavorite, setIsFavorite] = React.useState(false);
+interface BookCardProps {
+  book: AlgoBookDoc;
+}
 
-  const handleBookDetailClick = (bookId: string) => {
-    router.push(
-      {
-        pathname: '/',
-        query: {
-          ...router.query,
-          bookId,
-        },
-      },
-      undefined,
-      { shallow: true }
-    );
-  };
+const BookCard = ({ book }: BookCardProps) => {
+  const {
+    // id,
+    objectID,
+    title,
+    author,
+    genre,
+    available,
+    views,
+    imageCover,
+  } = book;
+  const { user } = useAuth();
+
+  const [isBorrowing, setIsBorrowing] = React.useState(false);
+
+  const [userBorrows] = useCol<IBorrowDoc>(
+    query(
+      collection(db, 'borrows'),
+      where('userId', '==', user?.id || ''),
+      where('status', 'in', ['Pending', 'Issued'])
+    )
+  );
+
+  const [myLikes] = useCol<ILikedBookDoc>(
+    query(collection(db, `users/${user?.id || 'default'}/my-likes`))
+  );
 
   return (
-    <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%-2px)] before:top-[1px] before:rounded-2xl before:z-[-1]'>
+    <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%)] before:rounded-2xl before:z-[-1]'>
+      <ReactTooltip id={objectID} />
       <div
         data-tip={title}
         data-for={objectID}
-        className='w-[40%] h-full relative'
+        className='w-[40%] h-full relative overflow-hidden'
       >
         <Image
           src={imageCover.url}
@@ -52,7 +66,14 @@ const BookCard = ({
       </div>
       <div className='w-[60%] h-full px-[5px] py-[8px] flex flex-col justify-between'>
         <div className='space-y-0'>
-          <h1 className='text-ellipsis overflow-hidden text-blackText'>
+          {/* <h1 className='text-ellipsis overflow-hidden text-blackText truncate'>
+            {title}
+          </h1> */}
+          <h1
+            data-tip={title}
+            data-for={objectID}
+            className='line-clamp-2 overflow-hidden text-blackText'
+          >
             {title}
           </h1>
           <h2 className='text-sm mb-[5px] text-cGray-300'>{author}</h2>
@@ -65,26 +86,66 @@ const BookCard = ({
           <div className='text-xs text-cGray-300'>Views: {views}</div>
         </div>
 
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-evenly items-center'>
           <button
             type='button'
-            className='bg-cGray-200 px-2 py-1 rounded-md text-sm text-blackText hover:bg-neutral-400 duration-200 transition-all'
-            onClick={() => handleBookDetailClick(objectID)}
+            className='bg-cGray-200 px-2 py-1 rounded-md text-xs text-blackText hover:bg-neutral-400 duration-200 transition-all'
+            onClick={() => navigateToBook(objectID)}
           >
             Details
           </button>
           <button
+            disabled={
+              userBorrows?.some((el) => el.bookId === objectID) ||
+              isBorrowing
+            }
+            onClick={() => {
+              setIsBorrowing(true);
+              borrowBook(book, user);
+              setIsBorrowing(false);
+            }}
             type='button'
-            className='bg-cGray-200 px-2 py-1 rounded-md bg-primary text-white text-sm hover:bg-[#004c95] duration-200 transition-all'
+            className={` px-2 py-1 rounded-md text-white text-xs duration-200 transition-all ${
+              userBorrows?.some((el) => el.bookId === objectID) ||
+              isBorrowing
+                ? 'bg-neutral-500 cursor-not-allowed'
+                : 'bg-primary hover:bg-[#004c95] '
+            } `}
           >
-            Borrow
+            {userBorrows?.some(
+              (el) => el.status === 'Pending' && el.bookId === objectID
+            )
+              ? 'Pending'
+              : userBorrows?.some(
+                  (el) => el.status === 'Issued' && el.bookId === objectID
+                )
+              ? 'Issued'
+              : 'Borrow'}
           </button>
           <button
             type='button'
             className='mr-[10px]'
-            onClick={() => setIsFavorite((prev) => !prev)}
+            onClick={() => {
+              if (
+                myLikes &&
+                myLikes.some((el) => el.bookId === objectID)
+              ) {
+                const likedBook = myLikes.find(
+                  (el) => el.bookId === objectID
+                );
+
+                if (likedBook)
+                  removeFromLikedBooks(
+                    likedBook.id,
+                    !!user,
+                    user?.id || ''
+                  );
+              } else {
+                addToLikedBooks(book, !!user, user?.id || '');
+              }
+            }}
           >
-            {isFavorite ? (
+            {myLikes && myLikes.some((el) => el.bookId === objectID) ? (
               <AiFillHeart className='w-[20px] h-[20px] text-primary' />
             ) : (
               <AiOutlineHeart className='w-[20px] h-[20px] text-blackText' />
@@ -92,7 +153,6 @@ const BookCard = ({
           </button>
         </div>
       </div>
-      <ReactTooltip id={objectID} />
     </div>
   );
 };
