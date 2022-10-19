@@ -17,6 +17,7 @@ import {
   Search,
   BookDetails,
   LikedBooks,
+  About,
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 import { useAuth } from '@src/contexts';
@@ -106,6 +107,7 @@ const Home: NextPage = () => {
         {!!user && page === 'history' && <History />}
         {!!user && page === 'my likes' && <LikedBooks />}
         {page === 'contact' && <Contact />}
+        {page === 'about' && <About />}
       </>
     );
   };

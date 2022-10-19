@@ -102,10 +102,12 @@ const ReturnedModal = ({
 
       setIsConfirming(false);
       setSelectedBorrow('');
+      nProgress.done();
       setIsModalOpen(false);
       toast.success('Book returned successfully');
     } catch (error) {
       console.log(error);
+      nProgress.done();
       setIsConfirming(false);
       toast.error('Something went wrong! Please try again.');
     }

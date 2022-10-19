@@ -3,6 +3,7 @@ import {
   AiOutlineHome,
   AiOutlineSearch,
   AiOutlineHeart,
+  AiOutlineInfoCircle,
 } from 'react-icons/ai';
 import {
   MdOutlineContactPage,
@@ -38,7 +39,6 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     name: 'Borrow Requests',
     Icon: MdPendingActions,
   },
-
   {
     name: 'History',
     Icon: AiOutlineHistory,
@@ -46,6 +46,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
   {
     name: 'Contact',
     Icon: MdOutlineContactPage,
+  },
+  {
+    name: 'About',
+    Icon: AiOutlineInfoCircle,
   },
 ];
 
@@ -61,6 +65,33 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
   {
     name: 'Contact',
     Icon: MdOutlineContactPage,
+  },
+  {
+    name: 'About',
+    Icon: AiOutlineInfoCircle,
+  },
+];
+
+export const capstone_team = [
+  {
+    name: 'Zomer Gregorio',
+    photo: '/assets/images/team/zoms.PNG',
+    role: 'Team Lead & Lead Developer',
+  },
+  {
+    name: 'Mark Joseph Yoldi',
+    photo: '/assets/images/team/marky.jpg',
+    role: 'UI/UX Designer',
+  },
+  {
+    name: 'Joshua Pamisa',
+    photo: '/assets/images/team/josh.jpeg',
+    role: 'Research Specialist',
+  },
+  {
+    name: 'Lourence Jacaba',
+    photo: '/assets/images/team/lourence.png',
+    role: 'Research Specialist',
   },
 ];
 
