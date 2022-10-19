@@ -193,7 +193,7 @@ const AddBook = ({
       ISBNs.forEach((isbn) => {
         const newISBN: ISBNType = {
           isbn,
-          isAvailable: true,
+          status: 'Available',
         } as ISBNType;
 
         newISBNs.push(newISBN);
@@ -411,7 +411,7 @@ const AddBook = ({
                 ref={bookImageRef}
                 className='hidden'
                 // accept only jpg, jpeg, png
-                accept='image/jpeg, image/png, image/jpg'
+                accept='image/jpeg, image/png, image/jpg, image/webp, image/svg'
                 type='file'
                 onChange={handleBookImage}
                 required

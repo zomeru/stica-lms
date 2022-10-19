@@ -17,6 +17,7 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 import { auth, db } from '@lms/db';
 import { IUserDoc } from '@lms/types';
@@ -28,8 +29,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { blobToFile } from '@src/utils';
-import useUploadImage from '@lms/ui/hooks/useUploadImage';
-import toast from 'react-hot-toast';
+import { useUploadImage } from '@lms/ui/hooks';
 
 export interface MSAuthContextProps {
   user: IUserDoc | null;

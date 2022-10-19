@@ -10,23 +10,24 @@ import {
 } from 'firebase/firestore';
 import nProgress from 'nprogress';
 
-import { AlgoBookDoc, IBorrow, ILikedBooks } from '@lms/types';
+import { AlgoBookDoc, IBorrow, ILikedBooks, IUserDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { addDays, DAYS, simpleFormatDate } from '@src/utils';
 
 export const borrowBook = async (
   book: AlgoBookDoc,
-  isAuthenticated: boolean,
-  userId: string,
-  studentName: string,
-  cb?: () => void
+  user: IUserDoc | null
 ) => {
-  if (!isAuthenticated || !userId) {
+  if (!user) {
     toast.error('Please sign in to borrow a book.');
     return;
   }
 
-  const availableIsbn = book.isbns.find((el) => el.isAvailable)?.isbn;
+  const availableIsbn = book.isbns.find(
+    (el) => el.status === 'Available'
+  )?.isbn;
+
+  console.log('availableIsbn', availableIsbn);
 
   if (book.available === 0 || !availableIsbn) {
     toast.error('No available books, please try again later.');
@@ -114,8 +115,8 @@ export const borrowBook = async (
 
         const payload: IBorrow = {
           bookId: book.objectID,
-          userId,
-          studentName,
+          userId: user.id,
+          studentName: user.displayName,
           title: book.title,
           author: book.author,
           genre: book.genre,
@@ -130,38 +131,17 @@ export const borrowBook = async (
 
         await addDoc(collection(db, 'borrows'), payload);
 
-        // const bookRef = doc(db, 'books', objectID);
-
-        // const filterIsbn = isbns.filter((el) => el.isbn !== availableIsbn);
-
-        // await updateDoc(bookRef, {
-        //   available: increment(-1),
-        //   isbns: [
-        //     ...filterIsbn,
-        //     { isbn: availableIsbn, isAvailable: false, issuedBy: user.id },
-        //   ],
-        // });
-
         toast.success('Borrow request sent successfully.');
         nProgress.done();
-        if (cb) {
-          cb();
-        }
       })
       .catch((err) => {
         console.log('error borrow', err);
         toast.error('Something went wrong, please try again later.');
         nProgress.done();
-        if (cb) {
-          cb();
-        }
       });
   } catch (error) {
     console.log('error', error);
     toast.error('Something went wrong, please try again later.');
-    if (cb) {
-      cb();
-    }
   }
 };
 

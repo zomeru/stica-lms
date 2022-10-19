@@ -8,11 +8,14 @@ import { ITEMS_PER_PAGE, loanedBooksTableHeaders } from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
 import { formatDate, navigateToBook } from '@src/utils';
 import ReturnedModal from './ReturnedModal';
+import LostModal from './LostModal';
 
 const LoanedBooks = () => {
   const loanedSearchKey = useNextQuery('loanedSearchKey');
 
   const [selectedReturnBorrow, setSelectedReturnBorrow] = useState('');
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isLostModalOpen, setIsLostModalOpen] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
@@ -39,7 +42,18 @@ const LoanedBooks = () => {
   return (
     <section className='w-full h-full'>
       <ReturnedModal
-        isModalOpen={!!selectedReturnBorrow}
+        isModalOpen={!!selectedReturnBorrow && isReturnModalOpen}
+        setIsModalOpen={setIsReturnModalOpen}
+        setSelectedBorrow={setSelectedReturnBorrow}
+        borrowData={issuedBorrows.find(
+          (borrow) => borrow.objectID === selectedReturnBorrow
+        )}
+        borrows={algoBorrows}
+        setBorrows={setBorrows}
+      />
+      <LostModal
+        isModalOpen={!!selectedReturnBorrow && isLostModalOpen}
+        setIsModalOpen={setIsLostModalOpen}
         setSelectedBorrow={setSelectedReturnBorrow}
         borrowData={issuedBorrows.find(
           (borrow) => borrow.objectID === selectedReturnBorrow
@@ -224,16 +238,20 @@ const LoanedBooks = () => {
                           <button
                             type='button'
                             className='truncate bg-sky-600 text-white px-2 py-1 rounded-md text-xs'
-                            onClick={() =>
-                              setSelectedReturnBorrow(borrow.objectID)
-                            }
+                            onClick={() => {
+                              setIsReturnModalOpen(true);
+                              setSelectedReturnBorrow(borrow.objectID);
+                            }}
                           >
                             Returned
                           </button>
                           <button
                             type='button'
                             className='truncate bg-red-600 text-white px-2 py-1 rounded-md text-xs'
-                            onClick={() => {}}
+                            onClick={() => {
+                              setIsLostModalOpen(true);
+                              setSelectedReturnBorrow(borrow.objectID);
+                            }}
                           >
                             Lost
                           </button>

@@ -9,7 +9,7 @@ const keyGen = (diff?: string | number) => {
   ).toString();
 };
 
-const useUploadImage = () => {
+export const useUploadImage = () => {
   const [uploadError, setUploadError] = useState<string>(
     null as unknown as string
   );
@@ -45,5 +45,3 @@ const useUploadImage = () => {
 
   return { uploadImage, uploadError };
 };
-
-export default useUploadImage;

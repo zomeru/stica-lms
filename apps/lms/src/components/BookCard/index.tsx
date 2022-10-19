@@ -99,15 +99,11 @@ const BookCard = ({ book }: BookCardProps) => {
               userBorrows?.some((el) => el.bookId === objectID) ||
               isBorrowing
             }
-            onClick={() =>
-              borrowBook(
-                book,
-                !!user,
-                user?.id || '',
-                user?.displayName || '',
-                () => setIsBorrowing(false)
-              ).then(() => setIsBorrowing(true))
-            }
+            onClick={() => {
+              setIsBorrowing(true);
+              borrowBook(book, user);
+              setIsBorrowing(false);
+            }}
             type='button'
             className={` px-2 py-1 rounded-md text-white text-xs duration-200 transition-all ${
               userBorrows?.some((el) => el.bookId === objectID) ||

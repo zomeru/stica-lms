@@ -64,8 +64,11 @@ const PickedUpModal = ({
       const borrowRef = doc(db, 'borrows', borrowData?.objectID || '');
       const borrowSnap = await getDoc(borrowRef);
 
-      // check if borrow request still exists in db
-      if (!borrowSnap.exists()) {
+      // check if borrow request does not exist or has been cancelled
+      if (
+        !borrowSnap.exists() ||
+        borrowSnap.data()?.status !== 'Pending'
+      ) {
         toast.error('Borrow request no longer exists');
         nProgress.done();
         setIsConfirming(false);
@@ -97,7 +100,8 @@ const PickedUpModal = ({
         ...filteredISBNs,
         {
           isbn: borrowData?.isbn!,
-          isAvailable: false,
+          // isAvailable: false,
+          status: 'Borrowed',
           issuedBy: borrowData?.userId,
         },
       ];

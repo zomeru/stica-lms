@@ -257,8 +257,9 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
         addedISBNs.forEach((isbn) => {
           const newISBN = {
             isbn,
-            isAvailable: true,
-          };
+            // isAvailable: true,
+            status: 'Available',
+          } as ISBNType;
 
           newISBNsToAdd.push(newISBN);
         });

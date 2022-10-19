@@ -28,7 +28,8 @@ export type AlgoBookDoc = IBookDoc & { objectID: string };
 
 export interface ISBNType {
   isbn: string;
-  isAvailable: boolean;
+  // isAvailable: boolean;
+  status: 'Lost' | 'Damaged' | 'Available' | 'Borrowed';
   issuedBy?: string;
 }
 

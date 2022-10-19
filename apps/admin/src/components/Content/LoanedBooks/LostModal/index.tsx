@@ -8,7 +8,6 @@ import { FaCheck } from 'react-icons/fa';
 import {
   doc,
   getDoc,
-  increment,
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
@@ -17,12 +16,12 @@ import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
 
-interface ReturnedModalProps {
+interface LostModalProps {
   isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   borrows: AlgoBorrowDoc[];
   setBorrows: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
   setSelectedBorrow: React.Dispatch<React.SetStateAction<string>>;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   borrowData: AlgoBorrowDoc | undefined;
 }
 
@@ -41,18 +40,17 @@ const modalCustomStyle = {
   },
 };
 
-const ReturnedModal = ({
+const LostModal = ({
   isModalOpen,
   setSelectedBorrow,
   borrowData,
   borrows,
   setBorrows,
   setIsModalOpen,
-}: ReturnedModalProps) => {
+}: LostModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
   const [penalty, setPenalty] = useState(borrowData?.penalty || 0);
-  const [withDamage, setWithDamage] = useState(false);
 
   const handleConfirmBookPickup = async () => {
     try {
@@ -66,7 +64,7 @@ const ReturnedModal = ({
 
       await updateDoc(borrowRef, {
         penalty,
-        status: withDamage ? 'Returned with damage' : 'Returned',
+        status: 'Lost',
         updatedAt: timestamp,
         returnedDate: timestamp,
       });
@@ -85,14 +83,14 @@ const ReturnedModal = ({
       const updatedBorrowISBN: ISBNType = {
         isbn: borrowData?.isbn!,
         // isAvailable: true,
-        status: withDamage ? 'Damaged' : 'Available',
+        status: 'Lost',
       };
 
       const updatedISBNs = [...filteredISBNs, updatedBorrowISBN];
 
       await updateDoc(bookRef, {
         isbns: updatedISBNs,
-        available: increment(1),
+        // available: increment(1), // Do not increment available since it is lost
       });
 
       const newBorrows = borrows.filter(
@@ -102,10 +100,12 @@ const ReturnedModal = ({
 
       setIsConfirming(false);
       setSelectedBorrow('');
+      nProgress.done();
       setIsModalOpen(false);
-      toast.success('Book returned successfully');
+      toast.success('Book marked as lost');
     } catch (error) {
       console.log(error);
+      nProgress.done();
       setIsConfirming(false);
       toast.error('Something went wrong! Please try again.');
     }
@@ -117,7 +117,6 @@ const ReturnedModal = ({
     setTimeout(() => {
       setIsEditingPenalty(false);
       setPenalty(borrowData?.penalty || 0);
-      setWithDamage(false);
     }, 200);
   };
 
@@ -133,8 +132,8 @@ const ReturnedModal = ({
         <button type='button' onClick={handleBack}>
           <BsArrowLeft className='h-8 w-8 text-primary' />
         </button>
-        <div className='text-2xl font-semibold text-center text-primary'>
-          Are you sure the book has been returned?
+        <div className='text-2xl font-semibold text-center text-red-600'>
+          Are you sure the book has been lost?
         </div>
         <div className='max-w-[400px] text-neutral-700 text-lg space-y-1'>
           <div className='text-neutral-900'>
@@ -215,35 +214,6 @@ const ReturnedModal = ({
               </button>
             )}
           </div>
-          <div className='flex items-center'>
-            <p>With damage: </p>
-            <div className='flex items-center ml-1 space-x-1'>
-              <button
-                type='button'
-                className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
-                onClick={() => setWithDamage(false)}
-              >
-                <div
-                  className={`rounded-full w-[14px] h-[14px]  ${
-                    !withDamage ? 'bg-primary' : 'border border-primary'
-                  }`}
-                />
-                <p>No</p>
-              </button>
-              <button
-                type='button'
-                className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
-                onClick={() => setWithDamage(true)}
-              >
-                <div
-                  className={`rounded-full w-[14px] h-[14px]  ${
-                    withDamage ? 'bg-primary' : 'border border-primary'
-                  }`}
-                />
-                <p>Yes</p>
-              </button>
-            </div>
-          </div>
         </div>
         <div className='flex justify-end'>
           <button
@@ -252,7 +222,7 @@ const ReturnedModal = ({
             className={`text-white rounded-lg px-3 py-2 ${
               isConfirming
                 ? 'cursor-not-allowed bg-neutral-500'
-                : 'bg-primary'
+                : 'bg-red-600'
             }`}
             onClick={handleConfirmBookPickup}
           >
@@ -264,4 +234,4 @@ const ReturnedModal = ({
   );
 };
 
-export default ReturnedModal;
+export default LostModal;
