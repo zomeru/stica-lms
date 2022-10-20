@@ -14,7 +14,7 @@ export interface IBooks {
     ref: string;
   };
   views: number;
-  totalBorrow: number;
+  totalBorrowed: number;
   createdAt: any;
   updatedAt: any;
   isbns: ISBNType[];

@@ -119,6 +119,11 @@ export const Layout = ({
   };
 
   const handleNotificationClick = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to view notifications');
+      return;
+    }
+
     const allQueries = { ...router.query };
     delete allQueries.bookId;
 

@@ -3,12 +3,10 @@ export interface IUser {
   givenName: string;
   surname: string;
   email: string;
-  numSuccessBookRequest: number;
-  numFailedBookRequest: number;
-  numSuccessRenewalRequest: number;
-  numFailedRenewalRequest: number;
-  numSuccessBookReturnRequest: number;
-  numFailedBookReturnRequest: number;
+  totalBorrowedBooks: number;
+  totalRenewedBooks: number;
+  totalReturnedBooks: number;
+  totalLostBooks: number;
   createdAt: any;
   updatedAt: any;
   photo: {

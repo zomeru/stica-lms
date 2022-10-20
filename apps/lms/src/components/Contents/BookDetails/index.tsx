@@ -184,9 +184,7 @@ const BookDetails = () => {
                 }`}
                 type='button'
                 onClick={() => {
-                  setIsBorrowing(true);
-                  borrowBook(book, user);
-                  setIsBorrowing(false);
+                  borrowBook(book, user, setIsBorrowing);
                 }}
               >
                 {userBorrow?.some(

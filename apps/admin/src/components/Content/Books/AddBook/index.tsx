@@ -210,7 +210,7 @@ const AddBook = ({
           genreType,
           genre,
           quantity,
-          totalBorrow: 0,
+          totalBorrowed: 0,
           views: 0,
           available: quantity,
           createdAt: timestamp,

@@ -47,11 +47,6 @@ const BookListCard = ({ book }: BookListCardProps) => {
         </div>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
-        <p className='whitespace-no-wrap text-gray-900'>
-          {accessionNumber}
-        </p>
-      </td>
-      <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <button
           data-for={objectID}
           data-tip={title}
@@ -66,6 +61,11 @@ const BookListCard = ({ book }: BookListCardProps) => {
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>{genre}</p>
+      </td>
+      <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
+        <p className='whitespace-no-wrap text-gray-900'>
+          {accessionNumber}
+        </p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>{quantity}</p>

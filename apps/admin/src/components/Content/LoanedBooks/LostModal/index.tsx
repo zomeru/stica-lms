@@ -10,6 +10,7 @@ import {
   getDoc,
   serverTimestamp,
   updateDoc,
+  increment,
 } from 'firebase/firestore';
 
 import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
@@ -53,6 +54,8 @@ const LostModal = ({
   const [penalty, setPenalty] = useState(borrowData?.penalty || 0);
 
   const handleConfirmBookPickup = async () => {
+    setIsEditingPenalty(false);
+
     try {
       nProgress.configure({ showSpinner: true });
       nProgress.start();
@@ -66,7 +69,7 @@ const LostModal = ({
         penalty,
         status: 'Lost',
         updatedAt: timestamp,
-        returnedDate: timestamp,
+        // returnedDate: timestamp,
       });
 
       const bookRef = doc(db, 'books', borrowData?.bookId || '');
@@ -91,6 +94,11 @@ const LostModal = ({
       await updateDoc(bookRef, {
         isbns: updatedISBNs,
         // available: increment(1), // Do not increment available since it is lost
+      });
+
+      const userRef = doc(db, 'users', borrowData?.userId || '');
+      await updateDoc(userRef, {
+        totalLostBooks: increment(1),
       });
 
       const newBorrows = borrows.filter(

@@ -146,12 +146,10 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
 
             newUserDoc = await addDoc(collection(db, 'users'), {
               ...userObject,
-              numSuccessBookRequest: 0,
-              numFailedBookRequest: 0,
-              numSuccessRenewalRequest: 0,
-              numFailedRenewalRequest: 0,
-              numSuccessBookReturnRequest: 0,
-              numFailedBookReturnRequest: 0,
+              totalBorrowedBooks: 0,
+              totalReturnedBooks: 0,
+              totalRenewedBooks: 0,
+              totalLostBooks: 0,
               createdAt: timestamp,
               updatedAt: timestamp,
             }).then(async (docRef) => {

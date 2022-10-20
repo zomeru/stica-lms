@@ -136,6 +136,17 @@ export const borrowRequestBooksTableHeaders = [
   'Accession No',
 ];
 
+export const userTableHeaders = [
+  // 'Book ID',
+  'Photo',
+  'Student Name',
+  'Email',
+  'Borrowed',
+  'Renewed',
+  'Returned',
+  'Lost',
+];
+
 export const GENRE_TYPES: GenreType[] = ['Fiction', 'Non-Fiction'];
 
 export const BOOK_GENRES_FICTION: FictionType[] = [

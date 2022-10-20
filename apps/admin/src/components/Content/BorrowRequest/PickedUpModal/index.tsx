@@ -187,6 +187,7 @@ const PickedUpModal = ({
       await updateDoc(bookRef, {
         isbns: newIsbn,
         available: increment(-1),
+        totalBorrowed: increment(1),
       });
 
       // update borrow request
@@ -197,6 +198,11 @@ const PickedUpModal = ({
         // dueDate: sampleDueDateTimestamp,
         issuedDate: timestamp,
         updatedAt: timestamp,
+      });
+
+      const userRef = doc(db, 'users', borrowData?.userId || '');
+      await updateDoc(userRef, {
+        totalBorrowedBooks: increment(1),
       });
 
       const newBorrows = borrows.filter(
