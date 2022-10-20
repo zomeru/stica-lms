@@ -59,7 +59,7 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true);
+      // setLoading(true);
       if (currentUser) {
         const q = query(
           collection(db, 'users'),
@@ -77,7 +77,7 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
       } else {
         setUser(null);
       }
-      setLoading(false);
+      // setLoading(false);
     });
   }, []);
 
@@ -168,6 +168,7 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
           }
 
           setUser(newUserDoc);
+          setLoading(false);
         }
       })
       .catch((err) => {
@@ -176,8 +177,9 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
         if (err.message.includes('auth/popup-closed-by-user')) {
           toast.error('The log in window was closed');
         }
+
+        setLoading(false);
       });
-    setLoading(false);
   };
 
   // const loginRedirect = () => {
