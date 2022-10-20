@@ -6,3 +6,4 @@ export * from './useWindowDimensions';
 export * from './useCompressImage';
 export * from './useFileHandler';
 export * from './useUploadImage';
+export * from './useTabActive';

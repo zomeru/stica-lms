@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { Layout, NotFound, useNextQuery } from '@lms/ui';
+import { Layout, NotFound, useNextQuery, LoaderModal } from '@lms/ui';
 import {
   loggedInSidebarItems,
   loggedOutSidebarItems,
@@ -21,6 +21,8 @@ import {
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 import { useAuth } from '@src/contexts';
+import { AnimatePresence, motion } from 'framer-motion';
+import IntroLoader from '@src/components/IntroLoader';
 
 const sidebarItems = loggedInSidebarItems.map((item) =>
   item.name.toLowerCase()
@@ -30,7 +32,8 @@ const Home: NextPage = () => {
   const page = useNextQuery('page');
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, loading } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
     const authenticatedPages = [
@@ -99,20 +102,43 @@ const Home: NextPage = () => {
   };
 
   return (
-    <Layout
-      sidebarOpen={sidebarOpen}
-      showHideSidebar={showHideSidebar}
-      isAuthenticated={!!user}
-      sidebarItems={user ? loggedInSidebarItems : loggedOutSidebarItems}
-      authAction={user ? logout : login}
-      username={user?.displayName}
-      userPhoto={user?.photo.url}
-      showNotification
-      // TODO: dynamic notification
-      hasNewNotification={false}
-    >
-      {renderContent()}
-    </Layout>
+    <>
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            exit={{
+              opacity: 0,
+              transition: {
+                ease: 'easeInOut',
+                duration: 1,
+              },
+            }}
+            className='w-screen h-screen flex justify-center items-center overflow-hidden'
+          >
+            <IntroLoader finishLoading={() => setIsLoading(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {!isLoading && (
+        <Layout
+          sidebarOpen={sidebarOpen}
+          showHideSidebar={showHideSidebar}
+          isAuthenticated={!!user}
+          sidebarItems={
+            user ? loggedInSidebarItems : loggedOutSidebarItems
+          }
+          authAction={user ? logout : login}
+          username={user?.displayName}
+          userPhoto={user?.photo.url}
+          showNotification
+          // TODO: dynamic notification
+          hasNewNotification={false}
+        >
+          <LoaderModal isLoading={loading} />
+          {renderContent()}
+        </Layout>
+      )}
+    </>
   );
 };
 
