@@ -169,11 +169,12 @@ const Search = () => {
         <div className='w-full h-full flex flex-col justify-center space-y-3'>
           <div className='relative w-[75%] h-[75%] mx-auto'>
             <Image
-              src='/assets/images/books_empty.png'
+              src='/assets/images/empty.png'
               layout='fill'
               objectFit='contain'
-              blurDataURL='/assets/images/books_empty.png'
+              blurDataURL='/assets/images/empty.png'
               placeholder='blur'
+              quality={50}
             />
           </div>
           <h1 className='text-cGray-300 text-2xl text-center'>
@@ -283,7 +284,8 @@ const Search = () => {
           <div
             style={{
               height: `calc(100% - ${
-                books.length / HITS_PER_PAGE > 1 ? 36 : 0
+                // books.length / HITS_PER_PAGE > 1 ? 36 : 0
+                36
               }px)`,
             }}
             className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${

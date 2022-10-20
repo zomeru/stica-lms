@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import { useNextQuery, Layout } from '@lms/ui';
+import { useNextQuery, Layout, NotFound } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';
@@ -50,6 +50,13 @@ const Home: NextPage = () => {
 
     if (!page || page === 'books') {
       routerArg.query.bookSearchKey = encodeURIComponent(
+        searchInputRef.current.value
+      );
+      router.push(routerArg, undefined, { shallow: true });
+    }
+
+    if (!page || page === 'users') {
+      routerArg.query.userSearchKey = encodeURIComponent(
         searchInputRef.current.value
       );
       router.push(routerArg, undefined, { shallow: true });
@@ -103,6 +110,14 @@ const Home: NextPage = () => {
   }, [page]);
 
   const renderContent = () => {
+    const sidebarItems = adminSidebarItems.map((item) =>
+      item.name.toLowerCase()
+    );
+
+    if (page && !sidebarItems.includes(page)) {
+      return <NotFound />;
+    }
+
     return (
       <>
         {(router.asPath === '/' ||

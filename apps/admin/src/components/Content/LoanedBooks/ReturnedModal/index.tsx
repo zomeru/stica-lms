@@ -55,6 +55,8 @@ const ReturnedModal = ({
   const [withDamage, setWithDamage] = useState(false);
 
   const handleConfirmBookPickup = async () => {
+    setIsEditingPenalty(false);
+
     try {
       nProgress.configure({ showSpinner: true });
       nProgress.start();
@@ -93,6 +95,11 @@ const ReturnedModal = ({
       await updateDoc(bookRef, {
         isbns: updatedISBNs,
         available: increment(1),
+      });
+
+      const userRef = doc(db, 'users', borrowData?.userId || '');
+      await updateDoc(userRef, {
+        totalReturnedBooks: increment(1),
       });
 
       const newBorrows = borrows.filter(

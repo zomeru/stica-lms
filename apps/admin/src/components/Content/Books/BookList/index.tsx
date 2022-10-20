@@ -58,7 +58,7 @@ const BookList = ({
 
   return (
     <div
-      className={`w-full h-full duration-300 transition-all space-y-4 ${
+      className={`w-full h-full duration-300 transition-all space-y-2 ${
         bookId ? '-translate-x-[100%]' : 'translate-x-0'
       } ${addBook ? 'translate-y-[100%]' : 'translate-y-0'}`}
     >
@@ -119,9 +119,12 @@ const BookList = ({
         >
           <div className='relative h-[70%] w-full'>
             <Image
-              src='/assets/images/books_empty.png'
+              src='/assets/images/empty.png'
               layout='fill'
               objectFit='contain'
+              blurDataURL='/assets/images/empty.png'
+              placeholder='blur'
+              quality={50}
             />
           </div>
           <div className='text-xl text-neutral-600'>
@@ -134,7 +137,7 @@ const BookList = ({
           style={{
             height: `calc(100% - ${headerHeight}px)`,
           }}
-          className='overflow-y-scroll w-full custom-scrollbar'
+          className='overflow-y-scroll w-full custom-scrollbar space-y-2'
         >
           <div className='flex justify-between items-center'>
             <div className='flex space-x-5 items-center'>
@@ -172,34 +175,35 @@ const BookList = ({
             </div>
             {/* <div>asdasdasd</div> */}
           </div>
-          <table className='min-w-full leading-normal overflow-y-scroll'>
+          <table className='min-w-full leading-normal'>
             <thead>
               <tr>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Image
                 </th>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 truncate'>
-                  Accession No
-                </th>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Title
                 </th>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Author
                 </th>
 
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Genre
                 </th>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white truncate'>
+                  Accession No
+                </th>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Quantity
                 </th>
-                <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700'>
+                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Available
                 </th>
                 {
                   // eslint-disable-next-line jsx-a11y/control-has-associated-label
-                  <th className='border-b-2 border-gray-200 bg-gray-100 px-5 py-3' />
+                  <th className='border-b-2 border-gray-200 bg-primary px-5 py-3' />
                 }
               </tr>
             </thead>

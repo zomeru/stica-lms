@@ -92,11 +92,12 @@ const History = () => {
             <div className='w-full h-full flex flex-col justify-center space-y-3'>
               <div className='relative w-[75%] h-[75%] mx-auto'>
                 <Image
-                  src='/assets/images/books_empty.png'
+                  src='/assets/images/empty.png'
                   layout='fill'
                   objectFit='contain'
-                  blurDataURL='/assets/images/books_empty.png'
+                  blurDataURL='/assets/images/empty.png'
                   placeholder='blur'
+                  quality={50}
                 />
               </div>
               <h1 className='text-cGray-300 text-2xl text-center'>

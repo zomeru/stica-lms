@@ -16,7 +16,8 @@ import { addDays, DAYS, simpleFormatDate } from '@src/utils';
 
 export const borrowBook = async (
   book: AlgoBookDoc,
-  user: IUserDoc | null
+  user: IUserDoc | null,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (!user) {
     toast.error('Please sign in to borrow a book.');
@@ -34,6 +35,8 @@ export const borrowBook = async (
     return;
   }
   try {
+    setLoading(true);
+
     const calRes = await fetch(
       `https://www.googleapis.com/calendar/v3/calendars/en.philippines%23holiday%40group.v.calendar.google.com/events?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
       {
@@ -132,15 +135,18 @@ export const borrowBook = async (
         await addDoc(collection(db, 'borrows'), payload);
 
         toast.success('Borrow request sent successfully.');
+        setLoading(false);
         nProgress.done();
       })
       .catch((err) => {
         console.log('error borrow', err);
         toast.error('Something went wrong, please try again later.');
+        setLoading(false);
         nProgress.done();
       });
   } catch (error) {
     console.log('error', error);
+    setLoading(false);
     toast.error('Something went wrong, please try again later.');
   }
 };

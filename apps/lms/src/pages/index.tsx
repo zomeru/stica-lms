@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { Layout } from '@lms/ui';
+import { Layout, NotFound, useNextQuery } from '@lms/ui';
 import {
   loggedInSidebarItems,
   loggedOutSidebarItems,
@@ -27,6 +27,7 @@ const sidebarItems = loggedInSidebarItems.map((item) =>
 );
 
 const Home: NextPage = () => {
+  const page = useNextQuery('page');
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
   const { user, login, logout } = useAuth();
@@ -41,11 +42,7 @@ const Home: NextPage = () => {
     ];
 
     function checkPage() {
-      if (
-        authenticatedPages.includes(
-          decodeURIComponent(router.query.page as string)
-        )
-      ) {
+      if (authenticatedPages.includes(page || '')) {
         if (!user) {
           router.push(
             {
@@ -63,7 +60,7 @@ const Home: NextPage = () => {
     }
 
     checkPage();
-  }, [user, router.query]);
+  }, [user, page]);
 
   // const loginHandler = () => {
   //   instance.loginRedirect(loginRequest);
@@ -76,20 +73,9 @@ const Home: NextPage = () => {
   // };
 
   const renderContent = () => {
-    if (
-      router.query.page &&
-      !sidebarItems.includes(
-        decodeURIComponent(router.query.page as string)
-      )
-    ) {
-      return (
-        <section className='w-full h-full flex justify-center items-center'>
-          <h1 className='text-3xl font-medium'>Page Not Found</h1>
-        </section>
-      );
+    if (page && !sidebarItems.includes(page)) {
+      return <NotFound />;
     }
-
-    const page = decodeURIComponent(router.query.page as string);
 
     return (
       <>

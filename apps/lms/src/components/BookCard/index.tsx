@@ -100,9 +100,7 @@ const BookCard = ({ book }: BookCardProps) => {
               isBorrowing
             }
             onClick={() => {
-              setIsBorrowing(true);
-              borrowBook(book, user);
-              setIsBorrowing(false);
+              borrowBook(book, user, setIsBorrowing);
             }}
             type='button'
             className={` px-2 py-1 rounded-md text-white text-xs duration-200 transition-all ${
