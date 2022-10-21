@@ -11,6 +11,7 @@ import { MdNotificationsNone } from 'react-icons/md';
 import { AiOutlineLeft } from 'react-icons/ai';
 import { IconType } from 'react-icons';
 import { toast } from 'react-hot-toast';
+import { motion, Variants } from 'framer-motion';
 
 interface LayoutProps {
   isAuthenticated: boolean;
@@ -140,10 +141,48 @@ export const Layout = ({
     );
   };
 
+  //? ANIMATIONS
+  const menuVariants: Variants = {
+    // hidden: { opacity: isHome ? 0 : 1 },
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 1,
+        staggerChildren: 0.1,
+        when: 'beforeChildren',
+      },
+    },
+  };
+
+  const menuItemVariants: Variants = {
+    // hidden: {
+    //   y: isHome ? -20 : 0,
+    //   opacity: isHome ? 0 : 1,
+    // },
+    hidden: {
+      y: -20,
+      opacity: 0,
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        ease: 'easeInOut',
+        duration: 0.2,
+      },
+    },
+  };
+
   return (
     <div className='max-w-[1920px] mx-auto h-[calc(100vh)]'>
       {/* <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'> */}
-      <main className='flex w-full h-full'>
+      <motion.main
+        variants={menuVariants}
+        initial='hidden'
+        animate='visible'
+        className='flex w-full h-full'
+      >
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
         <div
@@ -157,7 +196,10 @@ export const Layout = ({
           }}
           className={`h-full`}
         >
-          <div className='h-[100px] flex justify-center items-center pb-[5px] italic duration-75'>
+          <motion.div
+            variants={menuItemVariants}
+            className='h-[100px] flex justify-center items-center pb-[5px] italic duration-75'
+          >
             <Link href='/'>
               <div
                 className={`cursor-pointer flex flex-col items-center space-y-1`}
@@ -176,7 +218,7 @@ export const Layout = ({
                 </h1>
               </div>
             </Link>
-          </div>
+          </motion.div>
           <div
             className={`h-[calc(100%-100px)] w-full flex flex-col ${
               isAuthenticated && 'justify-between pb-[30px]'
@@ -201,7 +243,8 @@ export const Layout = ({
                         decodeURIComponent(router.query.page as string);
 
                   return (
-                    <button
+                    <motion.button
+                      variants={menuItemVariants}
                       type='button'
                       className={`h-[50px] 2xl:h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
                         isActive
@@ -228,11 +271,12 @@ export const Layout = ({
                           {name}
                         </p>
                       </div>
-                    </button>
+                    </motion.button>
                   );
                 })}
             </div>
-            <button
+            <motion.button
+              variants={menuItemVariants}
               type='button'
               className='h-[60px]'
               onClick={authAction}
@@ -247,7 +291,7 @@ export const Layout = ({
                   {isAuthenticated ? 'Log out' : 'Log in'}
                 </p>
               </div>
-            </button>
+            </motion.button>
           </div>
         </div>
         {/* Separator */}
@@ -264,14 +308,22 @@ export const Layout = ({
             <AiOutlineLeft className='w-[20px] h-[20px] text-blackText' />
           </button>
         </div>
-        <div className='h-full w-full'>
+        <motion.div
+          variants={menuVariants}
+          initial='hidden'
+          animate='visible'
+          className='h-full w-full'
+        >
           <div className='w-full h-[100px] flex px-[40px]'>
             <form
               // onSubmit={onSearch}
               onSubmit={onSearch}
               className='w-full h-full flex items-center space-x-3'
             >
-              <div className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'>
+              <motion.div
+                variants={menuItemVariants}
+                className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'
+              >
                 <AiOutlineSearch className='text-2xl text-cGray-300' />
                 {user === 'admin' ? (
                   adminInput
@@ -286,7 +338,7 @@ export const Layout = ({
                     }`}
                   />
                 )}
-              </div>
+              </motion.div>
               {/* <button
                 type='submit'
                 className='bg-primary text-white py-3 px-10 rounded-full'
@@ -297,7 +349,8 @@ export const Layout = ({
 
             <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
               {showNotification && (
-                <button
+                <motion.button
+                  variants={menuItemVariants}
                   type='button'
                   className={`${
                     hasNewNotification &&
@@ -306,11 +359,14 @@ export const Layout = ({
                   onClick={handleNotificationClick}
                 >
                   <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
-                </button>
+                </motion.button>
               )}
 
               {isAuthenticated ? (
-                <div className='flex items-center space-x-2'>
+                <motion.div
+                  variants={menuItemVariants}
+                  className='flex items-center space-x-2'
+                >
                   <div className='relative w-[40px] h-[40px] overflow-hidden rounded-full'>
                     <Image
                       src={userPhoto || 'https://i.imgur.com/N7EmcCY.jpg'}
@@ -324,15 +380,16 @@ export const Layout = ({
                   <div className='text-blackText font-medium'>
                     {username}
                   </div>
-                </div>
+                </motion.div>
               ) : (
-                <button
+                <motion.button
+                  variants={menuItemVariants}
                   type='button'
                   className='text-base font-medium text-blackText links'
                   onClick={authAction}
                 >
                   Log in
-                </button>
+                </motion.button>
               )}
             </div>
           </div>
@@ -341,10 +398,10 @@ export const Layout = ({
           <div className='w-full h-[calc(100%-101px)] px-[40px] pt-[30px] pb-[40px] overflow-hidden'>
             {children}
           </div>
-        </div>
+        </motion.div>
         {/* Separator */}
         <div className='h-full w-[1px] bg-cGray-200' />
-      </main>
+      </motion.main>
       {/* <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
         <p className='text-sm text-neutral-300'>
           <span className='font-medium text-white'>
