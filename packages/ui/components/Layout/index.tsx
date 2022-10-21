@@ -392,6 +392,7 @@ export const Layout = ({
                       objectPosition='center'
                       alt='User avatar'
                       priority
+                      quality={50}
                     />
                   </div>
                   <div className='text-blackText font-medium'>

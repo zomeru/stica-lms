@@ -134,7 +134,11 @@ const Users = () => {
                     <tr key={user.objectID} className='font-medium'>
                       <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                         <div className='relative w-[40px] h-[40px] rounded-full overflow-hidden'>
-                          <Image src={user.photo.url} layout='fill' />
+                          <Image
+                            src={user.photo.url}
+                            layout='fill'
+                            quality={10}
+                          />
                         </div>
                       </td>
 

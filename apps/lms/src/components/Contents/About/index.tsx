@@ -26,7 +26,11 @@ const About = () => {
           <div className='space-y-5'>
             <div>
               <div className='relative w-[120px] h-[120px] mx-auto rounded-full overflow-hidden'>
-                <Image src={capstone_team[0].photo} layout='fill' />
+                <Image
+                  src={capstone_team[0].photo}
+                  layout='fill'
+                  quality={50}
+                />
               </div>
               <div className='text-sm'>
                 <p>{capstone_team[0].name}</p>
@@ -37,7 +41,7 @@ const About = () => {
               {capstone_team.slice(1).map((member) => (
                 <div key={member.name}>
                   <div className='relative w-[120px] h-[120px] mx-auto rounded-full overflow-hidden'>
-                    <Image src={member.photo} layout='fill' />
+                    <Image src={member.photo} layout='fill' quality={50} />
                   </div>
                   <div className='text-sm'>
                     <p>{member.name}</p>

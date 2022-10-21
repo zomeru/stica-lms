@@ -17,6 +17,8 @@
     "dev:lms": "turbo run dev --filter=lms",
     "dev:admin": "turbo run dev --filter=admin",
     "dev:mobile": "turbo run dev --filter=mobile",
+    "firestore:sync": "firebase firestore:indexes > firestore.indexes.json",
+    "fire-em:start": "firebase emulators:start --import ./seed",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start": "turbo run start --parallel",

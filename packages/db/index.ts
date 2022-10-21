@@ -1,5 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import {
+  getFirestore,
+  // connectFirestoreEmulator,
+} from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 
@@ -15,5 +18,9 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// if (process.env.NODE_ENV === 'development') {
+//   connectFirestoreEmulator(db, 'localhost', 8080);
+// }
 
 export { db, auth, storage };
