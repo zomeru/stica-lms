@@ -17,8 +17,6 @@ const Users = () => {
   const [users, setUsers, refreshUsers, userLoading] =
     useAlgoData<AlgoUserDoc>('users', userSearchKey);
 
-  console.log('users', users);
-
   const [currentUsers, currentPage, next, prev] =
     useClientPagination<AlgoUserDoc>(users, ITEMS_PER_PAGE);
 

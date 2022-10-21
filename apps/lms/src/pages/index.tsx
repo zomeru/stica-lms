@@ -23,6 +23,7 @@ import { useSidebar } from '@src/contexts/SidebarContext';
 import { useAuth } from '@src/contexts';
 import { AnimatePresence, motion } from 'framer-motion';
 import IntroLoader from '@src/components/IntroLoader';
+import LostBooks from '@src/components/Contents/LostBooks';
 
 const sidebarItems = loggedInSidebarItems.map((item) =>
   item.name.toLowerCase()
@@ -95,6 +96,7 @@ const Home: NextPage = () => {
         {!!user && page === 'borrow requests' && <PendingRequests />}
         {!!user && page === 'history' && <History />}
         {!!user && page === 'my likes' && <LikedBooks />}
+        {!!user && page === 'lost books' && <LostBooks />}
         {page === 'contact' && <Contact />}
         {page === 'about' && <About />}
       </>

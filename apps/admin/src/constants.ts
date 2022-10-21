@@ -3,6 +3,7 @@ import {
   MdLoop,
   MdOutlineLibraryBooks,
   MdOutlineNotificationsNone,
+  MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
@@ -31,6 +32,10 @@ export const adminSidebarItems = [
   {
     name: 'Renewal Requests',
     Icon: MdLoop,
+  },
+  {
+    name: 'Lost Books',
+    Icon: MdSearchOff,
   },
   {
     name: 'History',
@@ -105,6 +110,11 @@ export const SORT_ITEMS = [
   },
 ];
 
+export const DEFAULT_SORT_ITEM = {
+  sortBy: 'updatedAt',
+  sortOrder: 'desc' as 'desc' | 'asc',
+};
+
 export const ADD_BOOK_TEXT_INPUTS = [
   'Title',
   'Author',
@@ -145,6 +155,16 @@ export const userTableHeaders = [
   'Renewed',
   'Returned',
   'Lost',
+];
+
+export const lostBooksTableHeaders = [
+  // 'Book ID',
+  'Student Name',
+  'Title',
+  'ISBN',
+  'Accession No',
+  'Penalty',
+  'Replacement status',
 ];
 
 export const GENRE_TYPES: GenreType[] = ['Fiction', 'Non-Fiction'];

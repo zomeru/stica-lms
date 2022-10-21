@@ -4,7 +4,11 @@ import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
-import { ITEMS_PER_PAGE, loanedBooksTableHeaders } from '@src/constants';
+import {
+  DEFAULT_SORT_ITEM,
+  ITEMS_PER_PAGE,
+  loanedBooksTableHeaders,
+} from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
 import { formatDate, navigateToBook } from '@src/utils';
 import ReturnedModal from './ReturnedModal';
@@ -29,7 +33,8 @@ const LoanedBooks = () => {
 
   const [currentBorrows, currentPage, next, prev] = useClientPagination(
     issuedBorrows || [],
-    ITEMS_PER_PAGE
+    ITEMS_PER_PAGE,
+    DEFAULT_SORT_ITEM
   );
 
   const handleUpdate = () => {

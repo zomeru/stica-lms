@@ -17,13 +17,12 @@ import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
 
-interface LostModalProps {
+interface UpdateLostModalProps {
   isModalOpen: boolean;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  borrows: AlgoBorrowDoc[];
-  setBorrows: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
-  setSelectedBorrow: React.Dispatch<React.SetStateAction<string>>;
-  borrowData: AlgoBorrowDoc | undefined;
+  lostBooks: AlgoBorrowDoc[];
+  setLostBooks: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
+  setSelectedLostBook: React.Dispatch<React.SetStateAction<string>>;
+  lostBookData: AlgoBorrowDoc | undefined;
 }
 
 Modal.setAppElement('#__next');
@@ -41,26 +40,29 @@ const modalCustomStyle = {
   },
 };
 
-const LostModal = ({
+const UpdateLostModal = ({
   isModalOpen,
-  setSelectedBorrow,
-  borrowData,
-  borrows,
-  setBorrows,
-  setIsModalOpen,
-}: LostModalProps) => {
+  setSelectedLostBook,
+  lostBookData,
+  lostBooks,
+  setLostBooks,
+}: UpdateLostModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
-  const [penalty, setPenalty] = useState(borrowData?.penalty || 0);
-  const [hasBeenReplaced, setHasBeenReplaced] = useState(false);
+  const [penalty, setPenalty] = useState(lostBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
 
   const handleConfirmBookPickup = async () => {
-    if (hasBeenReplaced) {
-      if (!newISBN) {
-        toast.error("Please enter the replacement book's ISBN");
-        return;
-      }
+    if (!newISBN.trim()) {
+      toast.error("Please enter the replacement book's ISBN");
+      return;
+    }
+
+    if (newISBN.trim() === lostBookData?.isbn) {
+      toast.error(
+        "The replacement book's ISBN cannot be the same as the lost book's ISBN"
+      );
+      return;
     }
 
     setIsEditingPenalty(false);
@@ -70,7 +72,7 @@ const LostModal = ({
       nProgress.start();
       setIsConfirming(true);
 
-      const borrowRef = doc(db, 'borrows', borrowData?.objectID || '');
+      const borrowRef = doc(db, 'borrows', lostBookData?.objectID || '');
 
       const timestamp = serverTimestamp();
 
@@ -79,10 +81,10 @@ const LostModal = ({
         status: 'Lost',
         updatedAt: timestamp,
         // returnedDate: timestamp,
-        replaceStatus: hasBeenReplaced ? 'Replaced' : 'Pending',
+        replaceStatus: 'Replaced',
       });
 
-      const bookRef = doc(db, 'books', borrowData?.bookId || '');
+      const bookRef = doc(db, 'books', lostBookData?.bookId || '');
       const bookSnap = await getDoc(bookRef);
       const bookData = {
         ...bookSnap.data(),
@@ -90,45 +92,39 @@ const LostModal = ({
       } as IBookDoc;
 
       const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== borrowData?.isbn
+        (el) => el.isbn !== lostBookData?.isbn
       );
 
-      const updatedBorrowISBN: ISBNType = {
-        isbn: borrowData?.isbn!,
-        // isAvailable: true,
-        status: 'Lost',
+      const newISBNType: ISBNType = {
+        isbn: newISBN,
+        status: 'Available',
       };
 
-      const updatedISBNs = [...filteredISBNs, updatedBorrowISBN];
-
-      if (hasBeenReplaced) {
-        const newISBNType: ISBNType = {
-          isbn: newISBN,
-          status: 'Available',
-        };
-
-        updatedISBNs.push(newISBNType);
-      }
+      const updatedISBNs = [...filteredISBNs, newISBNType];
 
       await updateDoc(bookRef, {
         isbns: updatedISBNs,
-        available: increment(hasBeenReplaced ? 1 : 0),
+        available: increment(1),
       });
 
-      const userRef = doc(db, 'users', borrowData?.userId || '');
-      await updateDoc(userRef, {
-        totalLostBooks: increment(1),
-      });
-
-      const newBorrows = borrows.filter(
-        (el) => el.objectID !== borrowData?.objectID
+      const newLostBooks = lostBooks.filter(
+        (el) => el.objectID !== lostBookData?.objectID
       );
-      setBorrows(newBorrows);
+
+      const updatedLostBook = {
+        ...lostBookData,
+        penalty,
+        // status: 'Lost',
+        replaceStatus: 'Replaced',
+        updatedAt: new Date().getTime(),
+      } as AlgoBorrowDoc;
+
+      setLostBooks([...newLostBooks, updatedLostBook]);
 
       setIsConfirming(false);
-      setSelectedBorrow('');
+      setSelectedLostBook('');
+      setNewISBN('');
       nProgress.done();
-      setIsModalOpen(false);
       toast.success('Book marked as lost');
     } catch (error) {
       console.log(error);
@@ -139,11 +135,10 @@ const LostModal = ({
   };
 
   const handleBack = () => {
-    setSelectedBorrow('');
-    setIsModalOpen(false);
+    setSelectedLostBook('');
     setTimeout(() => {
       setIsEditingPenalty(false);
-      setPenalty(borrowData?.penalty || 0);
+      setPenalty(lostBookData?.penalty || 0);
     }, 200);
   };
 
@@ -159,38 +154,41 @@ const LostModal = ({
         <button type='button' onClick={handleBack}>
           <BsArrowLeft className='h-8 w-8 text-primary' />
         </button>
-        <div className='text-2xl font-semibold text-center text-red-600'>
-          Are you sure the book has been lost?
+        <div className='text-2xl font-semibold text-center text-primary'>
+          Are you sure the book has been replaced?
         </div>
         <div className='max-w-fit text-neutral-700 text-lg space-y-1'>
           <div className='text-neutral-900'>
             Student name:{' '}
-            <span className='text-sky-600'>{borrowData?.studentName}</span>
+            <span className='text-sky-600'>
+              {lostBookData?.studentName}
+            </span>
           </div>
-          <ReactTooltip id={borrowData?.objectID} />
+          <ReactTooltip id={lostBookData?.objectID} />
           <div
             className='line-clamp-2'
-            data-for={borrowData?.objectID}
-            data-tip={borrowData?.title}
+            data-for={lostBookData?.objectID}
+            data-tip={lostBookData?.title}
           >
             Title:{' '}
-            <span className='text-sky-600'>{borrowData?.title}</span>
+            <span className='text-sky-600'>{lostBookData?.title}</span>
           </div>
           <div>
             Author:{' '}
-            <span className='text-sky-600'>{borrowData?.author}</span>
+            <span className='text-sky-600'>{lostBookData?.author}</span>
           </div>
           <div>
             Genre:{' '}
-            <span className='text-sky-600'>{borrowData?.genre}</span>
+            <span className='text-sky-600'>{lostBookData?.genre}</span>
           </div>
           <div>
-            ISBN: <span className='text-sky-600'>{borrowData?.isbn}</span>
+            Lost ISBN:{' '}
+            <span className='text-sky-600'>{lostBookData?.isbn}</span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {borrowData?.accessionNumber}
+              {lostBookData?.accessionNumber}
             </span>
           </div>
           <div className='flex items-center'>
@@ -241,56 +239,16 @@ const LostModal = ({
               </button>
             )}
           </div>
-          <div className='space-y-1'>
-            <div className='flex items-center'>
-              <p>Has the book been replaced? </p>
-              <div className='flex items-center ml-1 space-x-1'>
-                <button
-                  type='button'
-                  className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
-                  onClick={() => setHasBeenReplaced(false)}
-                >
-                  <div
-                    className={`rounded-full w-[14px] h-[14px]  ${
-                      !hasBeenReplaced
-                        ? 'bg-primary'
-                        : 'border border-primary'
-                    }`}
-                  />
-                  <p>No</p>
-                </button>
-                <button
-                  type='button'
-                  className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
-                  onClick={() => setHasBeenReplaced(true)}
-                >
-                  <div
-                    className={`rounded-full w-[14px] h-[14px]  ${
-                      hasBeenReplaced
-                        ? 'bg-primary'
-                        : 'border border-primary'
-                    }`}
-                  />
-                  <p>Yes</p>
-                </button>
-              </div>
-            </div>
-            <p className='text-orange-500 text-xs'>
-              If no, the replacement status will be set to
-              &quot;Pending&quot;
-            </p>
+
+          <div className='flex flex-col w-full text-sm lg:items-center lg:flex-row lg:text-base space-x-2'>
+            <p className='mb-2 font-normal lg:mb-0 flex-none'>ISBN:</p>
+            <input
+              placeholder='Enter the ISBN of the book'
+              className="focus:border-primary max-w-[400px] w-full outline-none border h-[40px] px-[10px] rounded border-neutral-300"
+              value={newISBN}
+              onChange={(e) => setNewISBN(e.target.value)}
+            />
           </div>
-          {hasBeenReplaced && (
-            <div className='flex flex-col w-full text-sm lg:items-center lg:flex-row lg:text-base space-x-2'>
-              <p className='mb-2 font-normal lg:mb-0 flex-none'>ISBN:</p>
-              <input
-                placeholder='Enter the ISBN of the book'
-                className="focus:border-primary max-w-[400px] w-full outline-none border h-[40px] px-[10px] rounded border-neutral-300"
-                value={newISBN}
-                onChange={(e) => setNewISBN(e.target.value)}
-              />
-            </div>
-          )}
         </div>
         <div className='flex justify-end'>
           <button
@@ -299,7 +257,7 @@ const LostModal = ({
             className={`text-white rounded-lg px-3 py-2 ${
               isConfirming
                 ? 'cursor-not-allowed bg-neutral-500'
-                : 'bg-red-600'
+                : 'bg-primary'
             }`}
             onClick={handleConfirmBookPickup}
           >
@@ -311,4 +269,4 @@ const LostModal = ({
   );
 };
 
-export default LostModal;
+export default UpdateLostModal;
