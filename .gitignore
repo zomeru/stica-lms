@@ -41,7 +41,10 @@ firebase-debug.log
 .runtimeconfig.json
 pubsub-debug.log
 database-debug.log
+
+# dummy data
 seed
+sampleData
 
 # configs
 sticalms-sa.json

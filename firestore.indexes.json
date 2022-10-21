@@ -113,29 +113,19 @@
       ]
     },
     {
-      "collectionGroup": "isbns",
+      "collectionGroup": "borrows",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "book",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "isbn",
+          "fieldPath": "userId",
           "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "givenName",
-          "order": "DESCENDING"
         },
         {
-          "fieldPath": "username",
+          "fieldPath": "updatedAt",
           "order": "DESCENDING"
         }
       ]

@@ -458,6 +458,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                   layout='fill'
                   objectFit='cover'
                   objectPosition='center'
+                  quality={50}
                 />
               </div>
               <button

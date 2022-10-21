@@ -133,6 +133,7 @@ const LoanedBooks = () => {
                   objectFit='contain'
                   blurDataURL='/assets/images/empty.png'
                   placeholder='blur'
+                  quality={50}
                 />
               </div>
               <h1 className='text-cGray-300 text-2xl text-center'>
