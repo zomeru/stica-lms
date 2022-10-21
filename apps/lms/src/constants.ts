@@ -9,6 +9,7 @@ import {
   MdOutlineContactPage,
   MdPendingActions,
   MdOutlineNotificationsNone,
+  MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
 
@@ -38,6 +39,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
   {
     name: 'Borrow Requests',
     Icon: MdPendingActions,
+  },
+  {
+    name: 'Lost Books',
+    Icon: MdSearchOff,
   },
   {
     name: 'History',
@@ -180,6 +185,7 @@ export const issuedBooksTableHeaders = [
   // 'Book ID',
   'Title',
   'ISBN',
+  'Accession No',
   'Issued Date',
   'Due Date',
   'Penalty',
@@ -204,6 +210,17 @@ export const historyTableHeaders = [
   'Returned Date',
   'Penalty',
   'Status',
+];
+
+export const lostBooksTableHeaders = [
+  // 'Book ID',
+  // 'Student Name',
+  'Title',
+  'Author',
+  'ISBN',
+  'Accession No',
+  'Penalty',
+  'Replacement status',
 ];
 
 export const requestStatus = ['Pending', 'Approved'];

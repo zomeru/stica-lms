@@ -23,6 +23,7 @@ export interface IBorrow {
   issuedDate?: any;
   returnedDate?: any;
   dueDate?: any;
+  replaceStatus?: 'Pending' | 'Replaced';
 }
 
 export interface IBorrowDoc extends IBorrow {

@@ -39,10 +39,6 @@ export function formatDate(
   date: Date | number | string,
   showTime: boolean = false
 ) {
-  // const dateStr = `${addZero(
-  //   date.getMonth() + 1
-  // )}/${date.getDate()}/${date.getFullYear()}`;
-
   const dateObj = new Date(date);
 
   // show time in 12 hour format
@@ -55,9 +51,6 @@ export function formatDate(
   }. ${dateObj.getDate()}, ${dateObj.getFullYear()}${
     showTime ? ` ${time}` : ''
   }`;
-
-  // console.log(dateObj.getHours(), '-', dateObj.getMinutes());
-  // , ${DAYS[date.getDay()]}
 
   return dateStr;
 }

@@ -274,14 +274,31 @@ export const Layout = ({
                     </motion.button>
                   );
                 })}
+              <motion.button
+                variants={menuItemVariants}
+                type='button'
+                className='h-[50px] 2xl:h-[60px]'
+                onClick={authAction}
+              >
+                <div className='2xl:hidden cursor-pointer w-full flex items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
+                  {isAuthenticated ? (
+                    <AiOutlineLogout className='text-lg mb-[1px]' />
+                  ) : (
+                    <AiOutlineLogin className='text-lg mb-[1px]' />
+                  )}
+                  <p className='font-medium text-base'>
+                    {isAuthenticated ? 'Log out' : 'Log in'}
+                  </p>
+                </div>
+              </motion.button>
             </div>
             <motion.button
               variants={menuItemVariants}
               type='button'
-              className='h-[60px]'
+              className='h-[50px] 2xl:h-[60px]'
               onClick={authAction}
             >
-              <div className='cursor-pointer w-full flex items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
+              <div className='hidden 2xl:flex cursor-pointer w-full  items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
                 {isAuthenticated ? (
                   <AiOutlineLogout className='text-lg mb-[1px]' />
                 ) : (

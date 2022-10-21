@@ -11,6 +11,7 @@ import {
   Books,
   BorrowRequest,
   LoanedBooks,
+  LostBooks,
   Users,
 } from '@src/components/Content';
 
@@ -67,6 +68,7 @@ const Home: NextPage = () => {
         'currently loaned books',
         'borrow requests',
         'renewal requests',
+        'lost books',
       ].some((el) => el === page)
     ) {
       if (page === 'currently loaned books') {
@@ -87,6 +89,12 @@ const Home: NextPage = () => {
         );
       }
 
+      if (page === 'lost books') {
+        routerArg.query.lostBookSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
       router.push(routerArg, undefined, { shallow: true });
     }
   };
@@ -101,7 +109,9 @@ const Home: NextPage = () => {
     } else if (page === 'users') {
       setSearchPlaceholder('Search for users');
     } else if (
-      ['borrow', 'loaned', 'renew'].some((p) => page.includes(p))
+      ['borrow', 'loaned', 'renew', 'lost', 'history'].some((p) =>
+        page.includes(p)
+      )
     ) {
       setSearchPlaceholder('Search for records');
     } else {
@@ -127,6 +137,7 @@ const Home: NextPage = () => {
         {page === 'users' && <Users />}
         {page === 'currently loaned books' && <LoanedBooks />}
         {page === 'borrow requests' && <BorrowRequest />}
+        {page === 'lost books' && <LostBooks />}
       </>
     );
   };
