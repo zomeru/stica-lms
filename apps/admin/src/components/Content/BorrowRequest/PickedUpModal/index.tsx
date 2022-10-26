@@ -103,7 +103,7 @@ const PickedUpModal = ({
           // isAvailable: false,
           status: 'Borrowed',
           borrowedBy: borrowData?.userId,
-        },
+        } as ISBNType,
       ];
 
       const holidayApiUrl = `https://www.googleapis.com/calendar/v3/calendars/en.philippines%23holiday%40group.v.calendar.google.com/events?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`;
