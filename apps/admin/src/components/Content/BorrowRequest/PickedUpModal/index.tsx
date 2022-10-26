@@ -102,7 +102,7 @@ const PickedUpModal = ({
           isbn: borrowData?.isbn!,
           // isAvailable: false,
           status: 'Borrowed',
-          issuedBy: borrowData?.userId,
+          borrowedBy: borrowData?.userId,
         },
       ];
 

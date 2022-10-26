@@ -173,6 +173,7 @@ export const addToLikedBooks = async (
 ) => {
   if (!isAuthenticated || !userId) {
     toast.error('Please login to add to your liked books');
+    return;
   }
 
   try {
