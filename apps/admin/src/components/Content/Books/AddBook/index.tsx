@@ -296,7 +296,7 @@ const AddBook = ({
             />
           ))}
           <Select
-            title='Genre Type'
+            title='Category'
             options={GENRE_TYPES}
             setValue={setGenreType}
             inputProps={{
@@ -388,6 +388,7 @@ const AddBook = ({
                   layout='fill'
                   objectFit='cover'
                   objectPosition='center'
+                  quality={50}
                 />
               </div>
               <button
