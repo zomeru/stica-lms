@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3001",
+    "dev:tailwind": "concurrently 'next dev --port 3001 --turbo' 'npm run tailwind --watch'",
+    "tailwind": "tailwindcss -i src/styles/globals.css -o src/styles/dist.css",
     "build": "next build",
     "start": "next start"
   },
@@ -14,9 +16,10 @@
     "@lms/ui": "*",
     "@tailwindcss/line-clamp": "^0.4.2",
     "algoliasearch": "^4.14.2",
+    "concurrently": "^7.5.0",
     "firebase": "^9.9.4",
     "framer-motion": "^7.6.1",
-    "next": "latest",
+    "next": "12.3.2",
     "next-seo": "^5.5.0",
     "next-sitemap": "^3.1.22",
     "nprogress": "^0.2.0",

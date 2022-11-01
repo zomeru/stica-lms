@@ -175,16 +175,16 @@ export const Layout = ({
   };
 
   return (
-    <div className='max-w-[1920px] mx-auto h-[calc(100vh)]'>
+    <div className='mx-auto h-[calc(100vh)] max-w-[1920px]'>
       {/* <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'> */}
       <motion.main
         variants={menuVariants}
         initial='hidden'
         animate='visible'
-        className='flex w-full h-full'
+        className='flex h-full w-full'
       >
         {/* Separator */}
-        <div className='h-full w-[1px] bg-cGray-200' />
+        <div className='bg-cGray-200 h-full w-[1px]' />
         <div
           style={{
             maxWidth: sidebarOpen ? '100%' : '0px',
@@ -198,11 +198,11 @@ export const Layout = ({
         >
           <motion.div
             variants={menuItemVariants}
-            className='h-[100px] flex justify-center items-center pb-[5px] italic duration-75'
+            className='flex h-[100px] items-center justify-center pb-[5px] italic duration-75'
           >
             <Link href='/'>
               <div
-                className={`cursor-pointer flex flex-col items-center space-y-1`}
+                className={`flex cursor-pointer flex-col items-center space-y-1`}
               >
                 {/* <div className='h-[40px] w-[70px] relative'>
                   <Image
@@ -213,14 +213,14 @@ export const Layout = ({
                     objectPosition='center'
                   />
                 </div> */}
-                <h1 className='text-primary font-black text-3xl w-[185px] px-[10px]'>
+                <h1 className='text-primary w-[185px] px-[10px] text-3xl font-black'>
                   STICA LMS
                 </h1>
               </div>
             </Link>
           </motion.div>
           <div
-            className={`h-[calc(100%-100px)] w-full flex flex-col ${
+            className={`flex h-[calc(100%-100px)] w-full flex-col ${
               isAuthenticated && 'justify-between pb-[30px]'
             }`}
           >
@@ -246,9 +246,9 @@ export const Layout = ({
                     <motion.button
                       variants={menuItemVariants}
                       type='button'
-                      className={`h-[50px] 2xl:h-[60px] pr-6 before:transition-all before:duration-300 before:ease-int-out before:content-[""] before:absolute before:top-0 before:left-0 before:w-full relative ${
+                      className={`before:ease-int-out relative h-[50px] pr-6 before:absolute before:top-0 before:left-0 before:w-full before:transition-all before:duration-300 before:content-[""] 2xl:h-[60px] ${
                         isActive
-                          ? 'before:h-full before:border-l-[6px] before:border-primary'
+                          ? 'before:border-primary before:h-full before:border-l-[6px]'
                           : 'before:h-0'
                       } hover:text-primary text-cGray-300`}
                       key={name}
@@ -257,16 +257,16 @@ export const Layout = ({
                         handleSidebarItemClick(name);
                       }}
                     >
-                      <div className='cursor-pointer h-[50px] w-full flex items-center pl-6 space-x-2'>
+                      <div className='flex h-[50px] w-full cursor-pointer items-center space-x-2 pl-6'>
                         <Icon
                           className={`${
                             isActive && 'text-primary'
-                          } text-lg transition-colors h-[60px] duration-300 ease-int-out mb-[1px]`}
+                          } ease-int-out mb-[1px] h-[60px] text-lg transition-colors duration-300`}
                         />
                         <p
                           className={`${
                             isActive && 'text-primary'
-                          } transition-colors duration-300 ease-int-out font-medium text-base truncate`}
+                          } ease-int-out truncate text-base font-medium transition-colors duration-300`}
                         >
                           {name}
                         </p>
@@ -280,13 +280,13 @@ export const Layout = ({
                 className='h-[50px] 2xl:h-[60px]'
                 onClick={authAction}
               >
-                <div className='2xl:hidden cursor-pointer w-full flex items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
+                <div className='text-cGray-300 hover:text-primary ease-int-out flex w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300 2xl:hidden'>
                   {isAuthenticated ? (
-                    <AiOutlineLogout className='text-lg mb-[1px]' />
+                    <AiOutlineLogout className='mb-[1px] text-lg' />
                   ) : (
-                    <AiOutlineLogin className='text-lg mb-[1px]' />
+                    <AiOutlineLogin className='mb-[1px] text-lg' />
                   )}
-                  <p className='font-medium text-base'>
+                  <p className='text-base font-medium'>
                     {isAuthenticated ? 'Log out' : 'Log in'}
                   </p>
                 </div>
@@ -298,13 +298,13 @@ export const Layout = ({
               className='h-[50px] 2xl:h-[60px]'
               onClick={authAction}
             >
-              <div className='hidden 2xl:flex cursor-pointer w-full  items-center pl-6 space-x-2 text-cGray-300 hover:text-primary transition-colors duration-300 ease-int-out'>
+              <div className='text-cGray-300 hover:text-primary ease-int-out hidden  w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300 2xl:flex'>
                 {isAuthenticated ? (
-                  <AiOutlineLogout className='text-lg mb-[1px]' />
+                  <AiOutlineLogout className='mb-[1px] text-lg' />
                 ) : (
-                  <AiOutlineLogin className='text-lg mb-[1px]' />
+                  <AiOutlineLogin className='mb-[1px] text-lg' />
                 )}
-                <p className='font-medium text-base'>
+                <p className='text-base font-medium'>
                   {isAuthenticated ? 'Log out' : 'Log in'}
                 </p>
               </div>
@@ -312,17 +312,17 @@ export const Layout = ({
           </div>
         </div>
         {/* Separator */}
-        <div className='h-full w-[1px] bg-cGray-200 relative'>
+        <div className='bg-cGray-200 relative h-full w-[1px]'>
           <button
             type='button'
-            className={`bg-cGray-100 rounded-full h-[30px] w-[30px] flex items-center justify-center absolute top-[85px]  transform  duration-300 transition-all ease-in-out ${
+            className={`bg-cGray-100 absolute top-[85px] flex h-[30px] w-[30px] transform items-center justify-center  rounded-full  transition-all duration-300 ease-in-out ${
               sidebarOpen
-                ? 'rotate-0 left-[50%] -translate-x-1/2'
+                ? 'left-[50%] -translate-x-1/2 rotate-0'
                 : 'rotate-180'
             }`}
             onClick={showHideSidebar}
           >
-            <AiOutlineLeft className='w-[20px] h-[20px] text-blackText' />
+            <AiOutlineLeft className='text-blackText h-[20px] w-[20px]' />
           </button>
         </div>
         <motion.div
@@ -331,17 +331,17 @@ export const Layout = ({
           animate='visible'
           className='h-full w-full'
         >
-          <div className='w-full h-[100px] flex px-[40px]'>
+          <div className='flex h-[100px] w-full px-[40px]'>
             <form
               // onSubmit={onSearch}
               onSubmit={onSearch}
-              className='w-full h-full flex items-center space-x-3'
+              className='flex h-full w-full items-center space-x-3'
             >
               <motion.div
                 variants={menuItemVariants}
-                className='w-full flex items-center bg-neutral-200 pl-4 rounded-full'
+                className='flex w-full items-center rounded-full bg-neutral-200 pl-4'
               >
-                <AiOutlineSearch className='text-2xl text-cGray-300' />
+                <AiOutlineSearch className='text-cGray-300 text-2xl' />
                 {user === 'admin' ? (
                   adminInput
                 ) : (
@@ -350,7 +350,7 @@ export const Layout = ({
                     disabled={searchDisabled}
                     placeholder={searchPlaceholder}
                     type='text'
-                    className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
+                    className={`w-full rounded-full bg-neutral-200 py-3 pl-2 pr-4 outline-none ${
                       searchDisabled && 'cursor-not-allowed'
                     }`}
                   />
@@ -364,18 +364,18 @@ export const Layout = ({
               </button> */}
             </form>
 
-            <div className='w-[500px] h-full flex items-center space-x-4 justify-end'>
+            <div className='flex h-full w-[500px] items-center justify-end space-x-4'>
               {showNotification && (
                 <motion.button
                   variants={menuItemVariants}
                   type='button'
                   className={`${
                     hasNewNotification &&
-                    'relative after:content-[""] after:w-[10px] after:h-[10px] after:rounded-full after:absolute after:bg-red-600 after:top-[3px] after:right-[3px]'
+                    'relative after:absolute after:top-[3px] after:right-[3px] after:h-[10px] after:w-[10px] after:rounded-full after:bg-red-600 after:content-[""]'
                   }`}
                   onClick={handleNotificationClick}
                 >
-                  <MdNotificationsNone className='w-[25px] h-[25px] text-blackText' />
+                  <MdNotificationsNone className='text-blackText h-[25px] w-[25px]' />
                 </motion.button>
               )}
 
@@ -384,15 +384,15 @@ export const Layout = ({
                   variants={menuItemVariants}
                   className='flex items-center space-x-2'
                 >
-                  <div className='relative w-[40px] h-[40px] overflow-hidden rounded-full'>
+                  <div className='relative h-[40px] w-[40px] overflow-hidden rounded-full'>
                     <Image
                       src={userPhoto || 'https://i.imgur.com/N7EmcCY.jpg'}
-                      layout='fill'
                       objectFit='cover'
                       objectPosition='center'
                       alt='User avatar'
                       priority
                       quality={50}
+                      layout='fill'
                     />
                   </div>
                   <div className='text-blackText font-medium'>
@@ -403,7 +403,7 @@ export const Layout = ({
                 <motion.button
                   variants={menuItemVariants}
                   type='button'
-                  className='text-base font-medium text-blackText links'
+                  className='text-blackText links text-base font-medium'
                   onClick={authAction}
                 >
                   Log in
@@ -412,13 +412,13 @@ export const Layout = ({
             </div>
           </div>
           {/* Separator */}
-          <div className='w-full h-[1px] bg-cGray-200' />
-          <div className='w-full h-[calc(100%-101px)] px-[40px] pt-[30px] pb-[40px] overflow-hidden'>
+          <div className='bg-cGray-200 h-[1px] w-full' />
+          <div className='h-[calc(100%-101px)] w-full overflow-hidden px-[40px] pt-[30px] pb-[40px]'>
             {children}
           </div>
         </motion.div>
         {/* Separator */}
-        <div className='h-full w-[1px] bg-cGray-200' />
+        <div className='bg-cGray-200 h-full w-[1px]' />
       </motion.main>
       {/* <footer className='w-full h-[25px] bg-primary text-white flex justify-center items-center'>
         <p className='text-sm text-neutral-300'>

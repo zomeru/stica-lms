@@ -29,11 +29,11 @@ const LostBooks = () => {
   );
 
   return (
-    <section className='w-full h-full'>
+    <section className='h-full w-full'>
       {lostBorrows &&
         lostBorrows.length > 0 &&
         lostBorrows.length / ITEMS_PER_PAGE > 1 && (
-          <div className='flex justify-end mb-[10px]'>
+          <div className='mb-[10px] flex justify-end'>
             <div className='flex items-center space-x-3'>
               <div>
                 {currentPage}/
@@ -43,8 +43,8 @@ const LostBooks = () => {
                 <button
                   type='button'
                   disabled={currentPage === 1}
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                    currentPage === 1 && 'opacity-40 cursor-not-allowed'
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                    currentPage === 1 && 'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => prev()}
                 >
@@ -56,10 +56,10 @@ const LostBooks = () => {
                     currentPage ===
                     Math.ceil(lostBorrows.length / ITEMS_PER_PAGE)
                   }
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
                       Math.ceil(lostBorrows.length / ITEMS_PER_PAGE) &&
-                    'opacity-40 cursor-not-allowed'
+                    'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
                 >
@@ -79,14 +79,14 @@ const LostBooks = () => {
               : 0
           }px)`,
         }}
-        className={`w-full custom-scrollbar ${
+        className={`custom-scrollbar w-full ${
           lostBorrows && lostBorrows.length > 0 && 'overflow-y-scroll'
         }`}
       >
         {!borrowLoading &&
           (!lostBorrows || (lostBorrows && lostBorrows.length === 0)) && (
-            <div className='w-full h-full flex flex-col justify-center space-y-3'>
-              <div className='relative w-[75%] h-[75%] mx-auto'>
+            <div className='flex h-full w-full flex-col justify-center space-y-3'>
+              <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
                   src='/assets/images/empty.png'
                   layout='fill'
@@ -96,8 +96,8 @@ const LostBooks = () => {
                   quality={50}
                 />
               </div>
-              <h1 className='text-cGray-300 text-2xl text-center'>
-                You currently have no borrow request.
+              <h1 className='text-cGray-300 text-center text-2xl'>
+                You haven&apos;t lost any books yet.
               </h1>
             </div>
           )}
@@ -108,7 +108,7 @@ const LostBooks = () => {
                 {lostBooksTableHeaders.map((header) => (
                   <th
                     key={header}
-                    className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
+                    className='bg-primary border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                   >
                     {' '}
                     {header}{' '}
@@ -122,13 +122,13 @@ const LostBooks = () => {
                   <React.Fragment key={borrow.id}>
                     <ReactTooltip id={borrow.title} />
                     <tr key={borrow.id} className='font-medium'>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'
                           onClick={() => navigateToBook(borrow.bookId)}
                         >
                           <p
-                            className='max-w-[200px] overflow-hidden text-primary line-clamp-2 text-left'
+                            className='text-primary line-clamp-2 max-w-[200px] overflow-hidden text-left'
                             data-for={borrow.title}
                             data-tip={borrow.title}
                           >
@@ -136,24 +136,24 @@ const LostBooks = () => {
                           </p>
                         </button>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
                           {borrow.author}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
                           {borrow.isbn}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='whitespace-no-wrap text-gray-900'>
                           {borrow.accessionNumber}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
                           className={`whitespace-no-wrap ${
                             borrow.penalty > 0
@@ -164,7 +164,7 @@ const LostBooks = () => {
                           ₱{borrow.penalty}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
                           className={`whitespace-no-wrap ${
                             borrow.replaceStatus === 'Pending'

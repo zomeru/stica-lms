@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "firebase": "^9.9.4",
-    "next": "latest"
+    "next": "12.3.2"
   },
   "devDependencies": {
     "@lms/config": "*",
