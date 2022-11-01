@@ -33,6 +33,7 @@ yarn-error.log*
 
 # turbo
 .turbo
+dist.css
 
 # firebase
 ui-debug.log
