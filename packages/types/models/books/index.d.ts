@@ -5,8 +5,8 @@ export interface IBooks {
   author: string;
   publisher: string;
   accessionNumber: string;
-  genreType: GenreType;
-  genre: GenreTypes;
+  genreType: string;
+  genre: string;
   quantity: number;
   available: number;
   imageCover: {
@@ -30,10 +30,22 @@ export interface ISBNType {
   isbn: string;
   // isAvailable: boolean;
   status: 'Lost' | 'Damaged' | 'Available' | 'Borrowed';
-  issuedBy?: string;
+  borrowedBy?: string;
 }
 
 export type GenreTypes = FictionType | NonFictionType;
+
+export interface GenreDoc {
+  id: string;
+  genre: string;
+  categoryId: string;
+}
+
+export interface CategoryDoc {
+  id: string;
+  category: string;
+  active: boolean;
+}
 
 export type FictionType =
   | 'Action and adventure'

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { BiBook } from 'react-icons/bi';
+import { collection, query } from 'firebase/firestore';
+
 import { useCol } from '@src/services';
 import { db } from '@lms/db';
-import { collection, query } from 'firebase/firestore';
 
 type Category = {
   category: string;
@@ -76,8 +77,8 @@ const Home = () => {
   return (
     <section className='custom-scrollbar h-full w-full overflow-y-scroll'>
       <div className='flex items-center'>
-        <div className='space-y-3'>
-          <div className='text-primary text-7xl font-semibold'>
+        <div className='space-y-3 text-center md:text-left'>
+          <div className='text-primary mt-[20px] text-7xl font-semibold md:mt-0'>
             Discover the book treasure
           </div>
           <p className='w-[90%]'>
@@ -93,7 +94,7 @@ const Home = () => {
             Search books now
           </button>
         </div>
-        <div className='relative h-[350px] w-[650px]'>
+        <div className='relative hidden h-[350px] w-[650px] md:block'>
           <Image src='/assets/images/reading_book.jpg' layout='fill' />
         </div>
       </div>

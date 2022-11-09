@@ -5,17 +5,17 @@ import { capstone_team } from '@src/constants';
 
 const About = () => {
   return (
-    <section className='w-full h-full flex justify-center items-center'>
+    <section className='flex h-full w-full items-center justify-center'>
       <div className='space-y-5'>
         <div className='text-center'>
-          <h1 className='text-4xl font-black text-primary italic mb-1'>
+          <h1 className='text-primary mb-1 text-4xl font-black italic'>
             STICA LMS
           </h1>
-          <p className='max-w-[700px] mx-auto text-neutral-700'>
+          <p className='mx-auto max-w-[700px] text-neutral-700'>
             Stica LMS is an online library management system that helps
             students from STI College Alabang to make a borrow request and
-            view their history in the library, it also helps the librarian
-            to manage books and library reports easily.
+            view their history from the library, it also helps the
+            librarian to manage books and library reports easily.
           </p>
         </div>
 
@@ -25,7 +25,7 @@ const About = () => {
           </p>
           <div className='space-y-5'>
             <div>
-              <div className='relative w-[120px] h-[120px] mx-auto rounded-full overflow-hidden'>
+              <div className='relative mx-auto h-[120px] w-[120px] overflow-hidden rounded-full'>
                 <Image
                   src={capstone_team[0].photo}
                   layout='fill'
@@ -40,7 +40,7 @@ const About = () => {
             <div className='flex justify-center space-x-10'>
               {capstone_team.slice(1).map((member) => (
                 <div key={member.name}>
-                  <div className='relative w-[120px] h-[120px] mx-auto rounded-full overflow-hidden'>
+                  <div className='relative mx-auto h-[120px] w-[120px] overflow-hidden rounded-full'>
                     <Image src={member.photo} layout='fill' quality={50} />
                   </div>
                   <div className='text-sm'>

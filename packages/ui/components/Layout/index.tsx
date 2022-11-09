@@ -13,6 +13,8 @@ import { IconType } from 'react-icons';
 import { toast } from 'react-hot-toast';
 import { motion, Variants } from 'framer-motion';
 
+import Menu from '../Menu';
+
 interface LayoutProps {
   isAuthenticated: boolean;
   authAction: () => void;
@@ -143,7 +145,6 @@ export const Layout = ({
 
   //? ANIMATIONS
   const menuVariants: Variants = {
-    // hidden: { opacity: isHome ? 0 : 1 },
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -156,10 +157,6 @@ export const Layout = ({
   };
 
   const menuItemVariants: Variants = {
-    // hidden: {
-    //   y: isHome ? -20 : 0,
-    //   opacity: isHome ? 0 : 1,
-    // },
     hidden: {
       y: -20,
       opacity: 0,
@@ -184,7 +181,7 @@ export const Layout = ({
         className='flex h-full w-full'
       >
         {/* Separator */}
-        <div className='bg-cGray-200 h-full w-[1px]' />
+        <div className='bg-cGray-200 hidden h-full w-[1px] md:block' />
         <div
           style={{
             maxWidth: sidebarOpen ? '100%' : '0px',
@@ -194,7 +191,7 @@ export const Layout = ({
             transition:
               'max-width 0.2s ease-in-out, transform 0.3s ease-in-out',
           }}
-          className={`h-full`}
+          className={`hidden h-full md:block`}
         >
           <motion.div
             variants={menuItemVariants}
@@ -315,7 +312,7 @@ export const Layout = ({
         <div className='bg-cGray-200 relative h-full w-[1px]'>
           <button
             type='button'
-            className={`bg-cGray-100 absolute top-[85px] flex h-[30px] w-[30px] transform items-center justify-center  rounded-full  transition-all duration-300 ease-in-out ${
+            className={`bg-cGray-100 absolute top-[85px] hidden h-[30px] w-[30px] transform items-center justify-center  rounded-full  transition-all duration-300 ease-in-out md:flex ${
               sidebarOpen
                 ? 'left-[50%] -translate-x-1/2 rotate-0'
                 : 'rotate-180'
@@ -409,11 +406,13 @@ export const Layout = ({
                   Log in
                 </motion.button>
               )}
+
+              <Menu sidebarItems={sidebarItems} />
             </div>
           </div>
           {/* Separator */}
           <div className='bg-cGray-200 h-[1px] w-full' />
-          <div className='h-[calc(100%-101px)] w-full overflow-hidden px-[40px] pt-[30px] pb-[40px]'>
+          <div className='h-[calc(100%-101px)] w-full overflow-hidden md:px-[40px] md:pt-[30px] md:pb-[40px]'>
             {children}
           </div>
         </motion.div>
