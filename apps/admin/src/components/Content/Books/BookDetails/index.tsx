@@ -22,7 +22,7 @@ import {
   BOOK_GENRES_NONFICTION,
   GENRE_TYPES,
 } from '@src/constants';
-import { AlgoBookDoc, GenreType, GenreTypes, ISBNType } from '@lms/types';
+import { AlgoBookDoc, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import Loader from '@src/components/Loader';
 import { useNextQuery } from '@lms/ui';
@@ -77,11 +77,11 @@ const ISBNModal = ({
       closeTimeoutMS={200}
     >
       <div className='space-y-3'>
-        <div className='flex space-x-3 items-center'>
+        <div className='flex items-center space-x-3'>
           <button type='button' onClick={handleClose}>
-            <BsArrowLeft className='h-8 w-8 text-primary' />
+            <BsArrowLeft className='text-primary h-8 w-8' />
           </button>
-          <div className='text-3xl font-semibold text-primary'>ISBNs</div>
+          <div className='text-primary text-3xl font-semibold'>ISBNs</div>
         </div>
         <div className='space-y-3'>
           {inputs.map((input, i) => {
@@ -106,7 +106,7 @@ const ISBNModal = ({
         <div className='flex justify-end'>
           <button
             type='button'
-            className='bg-primary text-white rounded-lg px-3 py-2'
+            className='bg-primary rounded-lg px-3 py-2 text-white'
             onClick={handleClose}
           >
             Confirm
@@ -139,8 +139,8 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [author, setAuthor] = useState('');
   const [publisher, setPublisher] = useState('');
   const [accessionNumber, setAccessionNumber] = useState('');
-  const [genreType, setGenreType] = useState<GenreType>('' as GenreType);
-  const [genre, setGenre] = useState<GenreTypes>('' as GenreTypes);
+  const [genreType, setGenreType] = useState('');
+  const [genre, setGenre] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [ISBNs, setISBNs] = useState<string[]>([]);
   const [image, setImage] = useState('');
@@ -333,19 +333,19 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
 
   return (
     <div
-      className={`w-full h-full absolute top-0 duration-300 overflow-y-scroll transition-all custom-scrollbar space-y-4 ${
+      className={`custom-scrollbar absolute top-0 h-full w-full space-y-4 overflow-y-scroll transition-all duration-300 ${
         bookId ? 'translate-x-0' : 'translate-x-[100%]'
       }`}
     >
-      <div className='flex space-x-3 items-center'>
+      <div className='flex items-center space-x-3'>
         <button type='button' onClick={() => router.back()}>
-          <BsArrowLeft className='h-8 w-8 text-primary' />
+          <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
-        <div className='text-3xl font-semibold text-primary'>
+        <div className='text-primary text-3xl font-semibold'>
           Book details
         </div>
       </div>
-      <div className='w-full min-h-auto flex space-x-10'>
+      <div className='min-h-auto flex w-full space-x-10'>
         <form className='space-y-3' onSubmit={handleUpdateBook}>
           {ADD_BOOK_TEXT_INPUTS.map((text, i) => (
             <TextInput
@@ -403,13 +403,13 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               },
             }}
           />
-          <div className='flex flex-col w-full text-sm lg:items-center lg:flex-row lg:text-base lg:space-x-3'>
-            <div className='mb-2 font-normal lg:mb-0 w-[120px] flex-none text-gray-500'>
+          <div className='flex w-full flex-col text-sm lg:flex-row lg:items-center lg:space-x-3 lg:text-base'>
+            <div className='mb-2 w-[120px] flex-none font-normal text-gray-500 lg:mb-0'>
               ISBN
             </div>
             <button
               type='button'
-              className='bg-primary text-white rounded-lg px-3 py-1'
+              className='bg-primary rounded-lg px-3 py-1 text-white'
               onClick={() => setIsISBNModalOpen(true)}
             >
               Enter ISBNs
@@ -426,9 +426,9 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
           <button
             disabled={noChanges() || isUploading}
             type='submit'
-            className={`w-full mt-6 text-white rounded-lg px-5 py-3 ${
+            className={`mt-6 w-full rounded-lg px-5 py-3 text-white ${
               noChanges() || isUploading
-                ? 'bg-neutral-600 cursor-not-allowed'
+                ? 'cursor-not-allowed bg-neutral-600'
                 : 'bg-primary'
             }`}
           >
@@ -452,7 +452,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
         <div>
           {bookImage || image ? (
             <div className='space-y-2'>
-              <div className='relative h-[250px] w-[200px] rounded-xl overflow-hidden'>
+              <div className='relative h-[250px] w-[200px] overflow-hidden rounded-xl'>
                 <Image
                   src={bookImage || image}
                   layout='fill'
@@ -467,7 +467,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                   if (image) setImage('');
                   if (bookImage || bookFile) clearImage();
                 }}
-                className='bg-primary text-white w-full py-[2px] rounded-md'
+                className='bg-primary w-full rounded-md py-[2px] text-white'
               >
                 Clear image
               </button>
@@ -476,7 +476,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
             <>
               <button
                 type='button'
-                className='w-[200px] h-[250px] bg-primary text-white rounded-2xl'
+                className='bg-primary h-[250px] w-[200px] rounded-2xl text-white'
                 onClick={() => bookImageRef.current?.click()}
               >
                 + Add Book Cover
