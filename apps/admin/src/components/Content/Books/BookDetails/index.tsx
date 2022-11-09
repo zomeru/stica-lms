@@ -9,6 +9,10 @@ import {
   updateDoc,
   increment,
   arrayUnion,
+  query,
+  collection,
+  orderBy,
+  addDoc,
 } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import nProgress from 'nprogress';
@@ -16,17 +20,14 @@ import nProgress from 'nprogress';
 import { db, storage } from '@lms/db';
 import { useFileHandler, useUploadImage } from '@src/hooks';
 import { Select, TextInput } from '@src/components/Inputs';
-import {
-  ADD_BOOK_TEXT_INPUTS,
-  BOOK_GENRES_FICTION,
-  BOOK_GENRES_NONFICTION,
-  GENRE_TYPES,
-} from '@src/constants';
-import { AlgoBookDoc, ISBNType } from '@lms/types';
+import { ADD_BOOK_TEXT_INPUTS } from '@src/constants';
+import { AlgoBookDoc, CategoryDoc, GenreDoc, ISBNType } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import Loader from '@src/components/Loader';
 import { useNextQuery } from '@lms/ui';
 import { useRouter } from 'next/router';
+import { useCol } from '@src/services';
+import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 
 Modal.setAppElement('#__next');
 
@@ -145,6 +146,16 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [ISBNs, setISBNs] = useState<string[]>([]);
   const [image, setImage] = useState('');
 
+  const [isCustomGenre, setIsCustomGenre] = useState(false);
+
+  const [allGenres] = useCol<GenreDoc>(
+    query(collection(db, 'genres'), orderBy('genre', 'asc'))
+  );
+
+  const [categories] = useCol<CategoryDoc>(
+    query(collection(db, 'categories'), orderBy('category', 'asc'))
+  );
+
   useEffect(() => {
     const setDetails = () => {
       setTitle(bookDetails.title);
@@ -236,6 +247,25 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       nProgress.configure({ showSpinner: true });
       nProgress.start();
 
+      if (isCustomGenre) {
+        const newCategory = {
+          active: true,
+          category: genreType,
+        };
+
+        const categ = await addDoc(
+          collection(db, 'categories'),
+          newCategory
+        );
+
+        const newGenre = {
+          categoryId: categ.id,
+          genre,
+        };
+
+        await addDoc(collection(db, 'genres'), newGenre);
+      }
+
       const timestamp = serverTimestamp();
       const payload: any = {
         title,
@@ -307,6 +337,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
 
       nProgress.done();
       setIsUploading(false);
+      setIsCustomGenre(false);
     } catch (error) {
       console.log('error updating', error);
       toast.error('Something went wrong! Please try again later.');
@@ -360,7 +391,55 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               }}
             />
           ))}
-          <Select
+          {!isCustomGenre ? (
+            <div className='flex space-x-2'>
+              <Select
+                title='Category'
+                options={
+                  categories?.map((category) => category.category) || []
+                }
+                setValue={setGenreType}
+                inputProps={{
+                  required: true,
+                }}
+                value={genreType}
+              />
+              <button
+                type='button'
+                onClick={() => {
+                  setIsCustomGenre(true);
+                  setGenreType('');
+                }}
+              >
+                <AiFillEdit className='h-[25px] w-[25px]' />
+              </button>
+            </div>
+          ) : (
+            <div className='flex space-x-2'>
+              <TextInput
+                title='Category'
+                inputProps={{
+                  type: 'text',
+                  required: true,
+                  value: genreType,
+                  placeholder: 'Enter category',
+                  onChange(e) {
+                    setGenreType(e.target.value);
+                  },
+                }}
+              />
+              <button
+                type='button'
+                onClick={() => {
+                  setIsCustomGenre(false);
+                  setGenreType('');
+                }}
+              >
+                <AiOutlineClose className='h-[25px] w-[25px] text-red-600' />
+              </button>
+            </div>
+          )}
+          {/* <Select
             title='Genre Type'
             options={GENRE_TYPES}
             setValue={setGenreType}
@@ -368,8 +447,49 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               required: true,
             }}
             value={genreType}
-          />
-          <Select
+          /> */}
+
+          {!isCustomGenre ? (
+            <Select
+              title='Genre'
+              options={
+                // genreType === 'Fiction'
+                //   ? BOOK_GENRES_FICTION
+                //   : BOOK_GENRES_NONFICTION
+
+                allGenres
+                  ?.filter(
+                    (gnr) =>
+                      gnr.categoryId ===
+                      categories?.find(
+                        (cate) => cate.category === genreType
+                      )?.id
+                  )
+                  .map((gnre) => gnre.genre) || []
+              }
+              setValue={setGenre}
+              value={genre}
+              inputProps={{
+                disabled: !genreType,
+                required: true,
+              }}
+              dep={genreType}
+            />
+          ) : (
+            <TextInput
+              title='Genre'
+              inputProps={{
+                type: 'text',
+                required: true,
+                value: genre,
+                placeholder: 'Enter genre',
+                onChange(e) {
+                  setGenre(e.target.value);
+                },
+              }}
+            />
+          )}
+          {/* <Select
             title='Genre'
             options={
               genreType === 'Fiction'
@@ -383,7 +503,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
             }}
             value={genre}
             // dep={genreType}
-          />
+          /> */}
           <TextInput
             title='Quantity'
             inputProps={{
