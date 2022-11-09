@@ -150,24 +150,30 @@ const Search = () => {
   );
 
   const rowSideOpen =
-    width < 1665
+    width < 1330
+      ? 'grid-cols-2'
+      : width < 1665
       ? 'grid-cols-3'
       : width < 1965
       ? 'grid-cols-4'
       : 'grid-cols-5';
 
   const rowSideClose =
-    width < 1665
+    width < 1000
+      ? 'grid-cols-2'
+      : width < 1330
+      ? 'grid-cols-3'
+      : width < 1665
       ? 'grid-cols-4'
       : width < 1965
       ? 'grid-cols-5'
       : 'grid-cols-6';
 
   return (
-    <div className='w-full h-full flex justify-between'>
+    <div className='flex h-full w-full justify-between'>
       {(!books || (books && books.length === 0)) && (
-        <div className='w-full h-full flex flex-col justify-center space-y-3'>
-          <div className='relative w-[75%] h-[75%] mx-auto'>
+        <div className='flex h-full w-full flex-col justify-center space-y-3'>
+          <div className='relative mx-auto h-[75%] w-[75%]'>
             <Image
               src='/assets/images/empty.png'
               layout='fill'
@@ -177,16 +183,16 @@ const Search = () => {
               quality={50}
             />
           </div>
-          <h1 className='text-cGray-300 text-2xl text-center'>
+          <h1 className='text-cGray-300 text-center text-2xl'>
             No books found.
           </h1>
         </div>
       )}
       {books && books.length > 0 && (
-        <div className='w-[calc(100%)] 2xl:w-[calc(100%)] space-y-3 h-full'>
+        <div className='h-full w-[calc(100%)] space-y-3 2xl:w-[calc(100%)]'>
           <div className='flex justify-between'>
-            <div className='flex space-x-5 items-center'>
-              <div className='flex space-x-3 items-center'>
+            <div className='flex items-center space-x-5'>
+              <div className='flex items-center space-x-3'>
                 <div className='text-cGray-300'>Sort by:</div>
                 <div className='flex space-x-2'>
                   {SORT_ITEMS.map(({ sort }) => {
@@ -206,10 +212,10 @@ const Search = () => {
                       <button
                         type='button'
                         key={sort.name}
-                        className={`px-3 py-2 rounded-lg text-sm ${
+                        className={`rounded-lg px-3 py-2 text-sm ${
                           isActiveSort
                             ? 'bg-primary text-white'
-                            : 'bg-neutral-200 text-cGray-300'
+                            : 'text-cGray-300 bg-neutral-200'
                         }`}
                         onClick={() => handleSort(sort.name)}
                       >
@@ -220,11 +226,11 @@ const Search = () => {
                 </div>
               </div>
 
-              <div className='flex space-x-3 items-center'>
+              <div className='flex items-center space-x-3'>
                 <div className='text-cGray-300'>Order by:</div>
-                <div className='pr-3 bg-neutral-200 rounded-lg'>
+                <div className='rounded-lg bg-neutral-200 pr-3'>
                   <select
-                    className='outline-none border-none rounded-lg text-cGray-300 bg-neutral-200 px-2 py-[3px] '
+                    className='text-cGray-300 rounded-lg border-none bg-neutral-200 px-2 py-[3px] outline-none '
                     onChange={(e) =>
                       setSortOrder(e.target.value as OrderType)
                     }
@@ -253,10 +259,10 @@ const Search = () => {
                       !router.query.searchPage ||
                       Number(router.query.searchPage as string) === 1
                     }
-                    className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                    className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                       (!router.query.searchPage ||
                         Number(router.query.searchPage as string) === 1) &&
-                      'opacity-40 cursor-not-allowed'
+                      'cursor-not-allowed opacity-40'
                     }`}
                     onClick={() => handlePagination('prev')}
                   >
@@ -268,10 +274,10 @@ const Search = () => {
                       Number(router.query.searchPage as string) ===
                       Math.ceil(books.length / HITS_PER_PAGE)
                     }
-                    className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                    className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                       Number(router.query.searchPage as string) ===
                         Math.ceil(books.length / HITS_PER_PAGE) &&
-                      'opacity-40 cursor-not-allowed'
+                      'cursor-not-allowed opacity-40'
                     }`}
                     onClick={() => handlePagination('next')}
                   >
@@ -288,12 +294,12 @@ const Search = () => {
                 36
               }px)`,
             }}
-            className={`w-full grid gap-y-5 justify-between place-items-left place-content-start pt-1 pb-4  ${
+            className={`place-items-left grid w-full place-content-start justify-between gap-y-5 pt-1 pb-4  ${
               sidebarOpen ? rowSideOpen : rowSideClose
             } ${
               currentBooks &&
               currentBooks.length > 0 &&
-              'overflow-y-scroll custom-scrollbar'
+              'custom-scrollbar overflow-y-scroll'
             }`}
           >
             {currentBooks &&

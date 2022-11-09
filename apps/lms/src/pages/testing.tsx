@@ -83,8 +83,24 @@ const Testing = () => {
     // provider.addScope('user.read');
     // signInWithRedirect(auth, provider);
   };
+
+  const addDocument = async () => {
+    // try {
+    //   const testDoc = {
+    //     test: 123,
+    //   };
+    //   const test = await addDoc(collection(db, 'tests'), testDoc);
+    //   console.log('test', test);
+    // } catch (error) {
+    //   console.log('error', error);
+    // }
+  };
+
   return (
     <div>
+      <button type='button' onClick={addDocument}>
+        Add Doc
+      </button>
       <button type='button' onClick={handleLogin}>
         Sign in
       </button>
