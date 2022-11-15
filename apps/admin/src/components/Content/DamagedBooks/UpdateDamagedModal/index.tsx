@@ -19,10 +19,10 @@ import toast from 'react-hot-toast';
 
 interface UpdateLostModalProps {
   isModalOpen: boolean;
-  lostBooks: AlgoBorrowDoc[];
-  setLostBooks: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
-  setSelectedLostBook: React.Dispatch<React.SetStateAction<string>>;
-  lostBookData: AlgoBorrowDoc | undefined;
+  damagedBooks: AlgoBorrowDoc[];
+  setDamagedBooks: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
+  setSelectedDamagedBook: React.Dispatch<React.SetStateAction<string>>;
+  damagedBookData: AlgoBorrowDoc | undefined;
 }
 
 Modal.setAppElement('#__next');
@@ -40,16 +40,16 @@ const modalCustomStyle = {
   },
 };
 
-const UpdateLostModal = ({
+const UpdateDamagedModal = ({
   isModalOpen,
-  setSelectedLostBook,
-  lostBookData,
-  lostBooks,
-  setLostBooks,
+  setSelectedDamagedBook,
+  damagedBookData,
+  damagedBooks,
+  setDamagedBooks,
 }: UpdateLostModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
-  const [penalty, setPenalty] = useState(lostBookData?.penalty || 0);
+  const [penalty, setPenalty] = useState(damagedBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
 
   const handleConfirmBookPickup = async () => {
@@ -58,7 +58,7 @@ const UpdateLostModal = ({
       return;
     }
 
-    if (newISBN.trim() === lostBookData?.isbn) {
+    if (newISBN.trim() === damagedBookData?.isbn) {
       toast.error(
         "The replacement book's ISBN cannot be the same as the lost book's ISBN"
       );
@@ -72,7 +72,11 @@ const UpdateLostModal = ({
       nProgress.start();
       setIsConfirming(true);
 
-      const borrowRef = doc(db, 'borrows', lostBookData?.objectID || '');
+      const borrowRef = doc(
+        db,
+        'borrows',
+        damagedBookData?.objectID || ''
+      );
 
       const timestamp = serverTimestamp();
 
@@ -83,7 +87,7 @@ const UpdateLostModal = ({
         replaceStatus: 'Replaced',
       });
 
-      const bookRef = doc(db, 'books', lostBookData?.bookId || '');
+      const bookRef = doc(db, 'books', damagedBookData?.bookId || '');
       const bookSnap = await getDoc(bookRef);
       const bookData = {
         ...bookSnap.data(),
@@ -91,7 +95,7 @@ const UpdateLostModal = ({
       } as IBookDoc;
 
       const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== lostBookData?.isbn
+        (el) => el.isbn !== damagedBookData?.isbn
       );
 
       const newISBNType: ISBNType = {
@@ -106,25 +110,30 @@ const UpdateLostModal = ({
         available: increment(1),
       });
 
-      const newLostBooks = lostBooks.filter(
-        (el) => el.objectID !== lostBookData?.objectID
+      const userRef = doc(db, 'users', damagedBookData?.userId || '');
+      await updateDoc(userRef, {
+        totalReturnedBooks: increment(1),
+      });
+
+      const newDamagedBooks = damagedBooks.filter(
+        (el) => el.objectID !== damagedBookData?.objectID
       );
 
-      const updatedLostBook = {
-        ...lostBookData,
+      const updatedDamagedBook = {
+        ...damagedBookData,
         penalty,
         // status: 'Lost',
         replaceStatus: 'Replaced',
         updatedAt: new Date().getTime(),
       } as AlgoBorrowDoc;
 
-      setLostBooks([...newLostBooks, updatedLostBook]);
+      setDamagedBooks([...newDamagedBooks, updatedDamagedBook]);
 
       setIsConfirming(false);
-      setSelectedLostBook('');
+      setSelectedDamagedBook('');
       setNewISBN('');
       nProgress.done();
-      toast.success('Book marked as lost');
+      toast.success('Book marked as Returned with damage');
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -134,10 +143,10 @@ const UpdateLostModal = ({
   };
 
   const handleBack = () => {
-    setSelectedLostBook('');
+    setSelectedDamagedBook('');
     setTimeout(() => {
       setIsEditingPenalty(false);
-      setPenalty(lostBookData?.penalty || 0);
+      setPenalty(damagedBookData?.penalty || 0);
     }, 200);
   };
 
@@ -160,34 +169,34 @@ const UpdateLostModal = ({
           <div className='text-neutral-900'>
             Student name:{' '}
             <span className='text-sky-600'>
-              {lostBookData?.studentName}
+              {damagedBookData?.studentName}
             </span>
           </div>
-          <ReactTooltip id={lostBookData?.objectID} />
+          <ReactTooltip id={damagedBookData?.objectID} />
           <div
             className='line-clamp-2'
-            data-for={lostBookData?.objectID}
-            data-tip={lostBookData?.title}
+            data-for={damagedBookData?.objectID}
+            data-tip={damagedBookData?.title}
           >
             Title:{' '}
-            <span className='text-sky-600'>{lostBookData?.title}</span>
+            <span className='text-sky-600'>{damagedBookData?.title}</span>
           </div>
           <div>
             Author:{' '}
-            <span className='text-sky-600'>{lostBookData?.author}</span>
+            <span className='text-sky-600'>{damagedBookData?.author}</span>
           </div>
           <div>
             Genre:{' '}
-            <span className='text-sky-600'>{lostBookData?.genre}</span>
+            <span className='text-sky-600'>{damagedBookData?.genre}</span>
           </div>
           <div>
-            Lost ISBN:{' '}
-            <span className='text-sky-600'>{lostBookData?.isbn}</span>
+            Damaged book&apos;s ISBN:{' '}
+            <span className='text-sky-600'>{damagedBookData?.isbn}</span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {lostBookData?.accessionNumber}
+              {damagedBookData?.accessionNumber}
             </span>
           </div>
           <div className='flex items-center'>
@@ -268,4 +277,4 @@ const UpdateLostModal = ({
   );
 };
 
-export default UpdateLostModal;
+export default UpdateDamagedModal;

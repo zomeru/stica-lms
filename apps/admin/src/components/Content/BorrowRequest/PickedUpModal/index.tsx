@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   doc,
   getDoc,
@@ -9,19 +10,12 @@ import {
 import toast from 'react-hot-toast';
 import { BsArrowLeft } from 'react-icons/bs';
 import Modal from 'react-modal';
-
-import {
-  AlgoBorrowDoc,
-  FictionType,
-  IBookDoc,
-  ISBNType,
-} from '@lms/types';
-import { addDays, DAYS, simpleFormatDate } from '@src/utils';
-import { db } from '@lms/db';
 import nProgress from 'nprogress';
 import ReactTooltip from 'react-tooltip';
-import { BOOK_GENRES_FICTION } from '@src/constants';
-import { useState } from 'react';
+
+import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { addDays, DAYS, simpleFormatDate } from '@src/utils';
+import { db } from '@lms/db';
 
 interface PickedUpModalProps {
   isModalOpen: boolean;
@@ -134,11 +128,14 @@ const PickedUpModal = ({
 
       const date = new Date(timeData.datetime);
 
-      const daysToAddToDueDate = BOOK_GENRES_FICTION.includes(
-        (borrowData?.genre as FictionType) || ('' as FictionType)
-      )
-        ? 7
-        : 3;
+      // const daysToAddToDueDate = BOOK_GENRES_FICTION.includes(
+      //   (borrowData?.genre as FictionType) || ('' as FictionType)
+      // )
+      //   ? 7
+      //   : 3;
+
+      const daysToAddToDueDate =
+        borrowData?.category === 'Fiction' ? 7 : 3;
 
       const dueDate = addDays(date, daysToAddToDueDate);
 
@@ -232,12 +229,12 @@ const PickedUpModal = ({
     >
       <div className='space-y-3'>
         <button type='button' onClick={() => setSelectedBorrow('')}>
-          <BsArrowLeft className='h-8 w-8 text-primary' />
+          <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
-        <div className='text-2xl font-semibold text-center text-primary'>
+        <div className='text-primary text-center text-2xl font-semibold'>
           Are you sure the book has been picked up?
         </div>
-        <div className='max-w-[400px] text-neutral-700 text-lg space-y-1'>
+        <div className='max-w-[400px] space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>
             Student name:{' '}
             <span className='text-sky-600'>{borrowData?.studentName}</span>
@@ -273,7 +270,7 @@ const PickedUpModal = ({
           <button
             disabled={isConfirming}
             type='button'
-            className={`text-white rounded-lg px-3 py-2 ${
+            className={`rounded-lg px-3 py-2 text-white ${
               isConfirming
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary'

@@ -51,11 +51,11 @@ const LostModal = ({
 }: LostModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
-  const [penalty, setPenalty] = useState(borrowData?.penalty || 0);
+  const [penalty, setPenalty] = useState(0);
   const [hasBeenReplaced, setHasBeenReplaced] = useState(false);
   const [newISBN, setNewISBN] = useState('');
 
-  const handleConfirmBookPickup = async () => {
+  const handleConfirmLostBook = async () => {
     if (hasBeenReplaced) {
       if (!newISBN) {
         toast.error("Please enter the replacement book's ISBN");
@@ -75,7 +75,7 @@ const LostModal = ({
       const timestamp = serverTimestamp();
 
       await updateDoc(borrowRef, {
-        penalty,
+        penalty: penalty > 0 ? penalty : borrowData?.penalty,
         status: 'Lost',
         updatedAt: timestamp,
         // returnedDate: timestamp,
@@ -157,12 +157,12 @@ const LostModal = ({
     >
       <div className='space-y-3'>
         <button type='button' onClick={handleBack}>
-          <BsArrowLeft className='h-8 w-8 text-primary' />
+          <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
-        <div className='text-2xl font-semibold text-center text-red-600'>
+        <div className='text-center text-2xl font-semibold text-red-600'>
           Are you sure the book has been lost?
         </div>
-        <div className='max-w-fit text-neutral-700 text-lg space-y-1'>
+        <div className='max-w-fit space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>
             Student name:{' '}
             <span className='text-sky-600'>{borrowData?.studentName}</span>
@@ -198,14 +198,18 @@ const LostModal = ({
               Penalty:{' '}
               <span
                 className={`${
-                  penalty > 0 ? 'text-orange-600' : 'text-green-600'
+                  (borrowData && borrowData.penalty > 0) || penalty > 0
+                    ? 'text-orange-600'
+                    : 'text-green-600'
                 }`}
               >
-                ₱{!isEditingPenalty && penalty}
+                ₱
+                {!isEditingPenalty &&
+                  (penalty > 0 ? penalty : borrowData?.penalty)}
               </span>
               {isEditingPenalty && (
                 <input
-                  className='w-[70px] outline-none border border-neutral-400'
+                  className='w-[70px] border border-neutral-400 outline-none'
                   type='number'
                   min={0}
                   value={penalty}
@@ -223,7 +227,7 @@ const LostModal = ({
             {!isEditingPenalty && (
               <button
                 type='button'
-                className='ml-2 text-xs flex items-center space-x-1'
+                className='ml-2 flex items-center space-x-1 text-xs'
                 onClick={() => setIsEditingPenalty(true)}
               >
                 <AiFillEdit className='text-xl' />
@@ -234,7 +238,7 @@ const LostModal = ({
             {isEditingPenalty && (
               <button
                 type='button'
-                className='ml-4 text-lg flex items-center text-green-600 '
+                className='ml-4 flex items-center text-lg text-green-600 '
                 onClick={() => setIsEditingPenalty(false)}
               >
                 <FaCheck />
@@ -244,48 +248,48 @@ const LostModal = ({
           <div className='space-y-1'>
             <div className='flex items-center'>
               <p>Has the book been replaced? </p>
-              <div className='flex items-center ml-1 space-x-1'>
+              <div className='ml-1 flex items-center space-x-1'>
                 <button
                   type='button'
-                  className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
+                  className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
                   onClick={() => setHasBeenReplaced(false)}
                 >
                   <div
-                    className={`rounded-full w-[14px] h-[14px]  ${
+                    className={`h-[14px] w-[14px] rounded-full  ${
                       !hasBeenReplaced
                         ? 'bg-primary'
-                        : 'border border-primary'
+                        : 'border-primary border'
                     }`}
                   />
                   <p>No</p>
                 </button>
                 <button
                   type='button'
-                  className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
+                  className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
                   onClick={() => setHasBeenReplaced(true)}
                 >
                   <div
-                    className={`rounded-full w-[14px] h-[14px]  ${
+                    className={`h-[14px] w-[14px] rounded-full  ${
                       hasBeenReplaced
                         ? 'bg-primary'
-                        : 'border border-primary'
+                        : 'border-primary border'
                     }`}
                   />
                   <p>Yes</p>
                 </button>
               </div>
             </div>
-            <p className='text-orange-500 text-xs'>
+            <p className='text-xs text-orange-500'>
               If no, the replacement status will be set to
               &quot;Pending&quot;
             </p>
           </div>
           {hasBeenReplaced && (
-            <div className='flex flex-col w-full text-sm lg:items-center lg:flex-row lg:text-base space-x-2'>
-              <p className='mb-2 font-normal lg:mb-0 flex-none'>ISBN:</p>
+            <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+              <p className='mb-2 flex-none font-normal lg:mb-0'>ISBN:</p>
               <input
                 placeholder='Enter the ISBN of the book'
-                className="focus:border-primary max-w-[400px] w-full outline-none border h-[40px] px-[10px] rounded border-neutral-300"
+                className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
                 value={newISBN}
                 onChange={(e) => setNewISBN(e.target.value)}
               />
@@ -296,12 +300,12 @@ const LostModal = ({
           <button
             disabled={isConfirming}
             type='button'
-            className={`text-white rounded-lg px-3 py-2 ${
+            className={`rounded-lg px-3 py-2 text-white ${
               isConfirming
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-red-600'
             }`}
-            onClick={handleConfirmBookPickup}
+            onClick={handleConfirmLostBook}
           >
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>
