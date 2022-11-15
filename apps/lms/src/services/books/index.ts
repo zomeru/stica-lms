@@ -28,8 +28,6 @@ export const borrowBook = async (
     (el) => el.status === 'Available'
   )?.isbn;
 
-  console.log('availableIsbn', availableIsbn);
-
   if (book.available === 0 || !availableIsbn) {
     toast.error('No available books, please try again later.');
     return;
@@ -61,8 +59,12 @@ export const borrowBook = async (
         const requestDateTimestamp = serverTimestamp();
         const date = new Date(timeData.datetime);
 
+        const dawnAdd =
+          date.getHours() >= 0 && date.getHours() < 8 ? 0 : 1;
+
         const day = DAYS[date.getDay()];
-        const dayToAdd = day === 'Friday' ? 3 : day === 'Saturday' ? 2 : 1;
+        const dayToAdd =
+          day === 'Friday' ? 3 : day === 'Saturday' ? 2 : dawnAdd;
 
         const holidayItems: any = [];
 
@@ -82,6 +84,7 @@ export const borrowBook = async (
         let increment = 0;
 
         while (true) {
+          console.log('');
           const tom = addDays(date, increment + 1);
           const tomDay = DAYS[tom.getDay()];
 
@@ -123,6 +126,7 @@ export const borrowBook = async (
           title: book.title,
           author: book.author,
           genre: book.genre,
+          category: book.genreType,
           isbn: availableIsbn,
           accessionNumber: book.accessionNumber,
           requestDate: requestDateTimestamp,

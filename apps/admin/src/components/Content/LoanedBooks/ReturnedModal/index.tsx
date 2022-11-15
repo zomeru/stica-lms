@@ -51,10 +51,19 @@ const ReturnedModal = ({
 }: ReturnedModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
-  const [penalty, setPenalty] = useState(borrowData?.penalty || 0);
+  const [penalty, setPenalty] = useState(0);
   const [withDamage, setWithDamage] = useState(false);
+  const [hasBeenReplaced, setHasBeenReplaced] = useState(false);
+  const [newISBN, setNewISBN] = useState('');
 
-  const handleConfirmBookPickup = async () => {
+  const handleConfirmBookReturn = async () => {
+    if (hasBeenReplaced) {
+      if (!newISBN) {
+        toast.error("Please enter the replacement book's ISBN");
+        return;
+      }
+    }
+
     setIsEditingPenalty(false);
 
     try {
@@ -66,12 +75,20 @@ const ReturnedModal = ({
 
       const timestamp = serverTimestamp();
 
-      await updateDoc(borrowRef, {
-        penalty,
+      const updatedData: any = {
+        penalty: penalty > 0 ? penalty : borrowData?.penalty,
         status: withDamage ? 'Returned with damage' : 'Returned',
         updatedAt: timestamp,
         returnedDate: timestamp,
-      });
+      };
+
+      if (withDamage) {
+        updatedData.replaceStatus = hasBeenReplaced
+          ? 'Replaced'
+          : 'Pending';
+      }
+
+      await updateDoc(borrowRef, updatedData);
 
       const bookRef = doc(db, 'books', borrowData?.bookId || '');
       const bookSnap = await getDoc(bookRef);
@@ -92,15 +109,26 @@ const ReturnedModal = ({
 
       const updatedISBNs = [...filteredISBNs, updatedBorrowISBN];
 
+      if (hasBeenReplaced) {
+        const newISBNType: ISBNType = {
+          isbn: newISBN,
+          status: 'Available',
+        };
+
+        updatedISBNs.push(newISBNType);
+      }
+
       await updateDoc(bookRef, {
         isbns: updatedISBNs,
-        available: increment(1),
+        available: increment(withDamage && !hasBeenReplaced ? 0 : 1),
       });
 
-      const userRef = doc(db, 'users', borrowData?.userId || '');
-      await updateDoc(userRef, {
-        totalReturnedBooks: increment(1),
-      });
+      if (!withDamage || hasBeenReplaced) {
+        const userRef = doc(db, 'users', borrowData?.userId || '');
+        await updateDoc(userRef, {
+          totalReturnedBooks: increment(1),
+        });
+      }
 
       const newBorrows = borrows.filter(
         (el) => el.objectID !== borrowData?.objectID
@@ -126,7 +154,8 @@ const ReturnedModal = ({
     setTimeout(() => {
       setIsEditingPenalty(false);
       setPenalty(borrowData?.penalty || 0);
-      setWithDamage(false);
+      // setWithDamage(false);
+      // setHasBeenReplaced(false);
     }, 200);
   };
 
@@ -140,12 +169,17 @@ const ReturnedModal = ({
     >
       <div className='space-y-3'>
         <button type='button' onClick={handleBack}>
-          <BsArrowLeft className='h-8 w-8 text-primary' />
+          <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
-        <div className='text-2xl font-semibold text-center text-primary'>
-          Are you sure the book has been returned?
+        <div
+          className={`text-primary text-center text-2xl font-semibold ${
+            withDamage && 'text-red-600'
+          }`}
+        >
+          Are you sure the book has been returned
+          {withDamage && ' with damage'}?
         </div>
-        <div className='max-w-[400px] text-neutral-700 text-lg space-y-1'>
+        <div className='max-w-[500px] space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>
             Student name:{' '}
             <span className='text-sky-600'>{borrowData?.studentName}</span>
@@ -181,14 +215,18 @@ const ReturnedModal = ({
               Penalty:{' '}
               <span
                 className={`${
-                  penalty > 0 ? 'text-orange-600' : 'text-green-600'
+                  (borrowData && borrowData.penalty > 0) || penalty > 0
+                    ? 'text-orange-600'
+                    : 'text-green-600'
                 }`}
               >
-                ₱{!isEditingPenalty && penalty}
+                ₱
+                {!isEditingPenalty &&
+                  (penalty > 0 ? penalty : borrowData?.penalty)}
               </span>
               {isEditingPenalty && (
                 <input
-                  className='w-[70px] outline-none border border-neutral-400'
+                  className='w-[70px] border border-neutral-400 outline-none'
                   type='number'
                   min={0}
                   value={penalty}
@@ -206,7 +244,7 @@ const ReturnedModal = ({
             {!isEditingPenalty && (
               <button
                 type='button'
-                className='ml-2 text-xs flex items-center space-x-1'
+                className='ml-2 flex items-center space-x-1 text-xs'
                 onClick={() => setIsEditingPenalty(true)}
               >
                 <AiFillEdit className='text-xl' />
@@ -217,7 +255,7 @@ const ReturnedModal = ({
             {isEditingPenalty && (
               <button
                 type='button'
-                className='ml-4 text-lg flex items-center text-green-600 '
+                className='ml-4 flex items-center text-lg text-green-600 '
                 onClick={() => setIsEditingPenalty(false)}
               >
                 <FaCheck />
@@ -226,44 +264,104 @@ const ReturnedModal = ({
           </div>
           <div className='flex items-center'>
             <p>With damage: </p>
-            <div className='flex items-center ml-1 space-x-1'>
+            <div className='ml-1 flex items-center space-x-1'>
               <button
                 type='button'
-                className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
-                onClick={() => setWithDamage(false)}
+                className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
+                onClick={() => {
+                  setWithDamage(false);
+                  setHasBeenReplaced(false);
+                }}
               >
                 <div
-                  className={`rounded-full w-[14px] h-[14px]  ${
-                    !withDamage ? 'bg-primary' : 'border border-primary'
+                  className={`h-[14px] w-[14px] rounded-full  ${
+                    !withDamage ? 'bg-primary' : 'border-primary border'
                   }`}
                 />
                 <p>No</p>
               </button>
               <button
                 type='button'
-                className='rounded-md border border-neutral-400 flex items-center px-3 space-x-1 text-sm py-[3px]'
+                className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
                 onClick={() => setWithDamage(true)}
               >
                 <div
-                  className={`rounded-full w-[14px] h-[14px]  ${
-                    withDamage ? 'bg-primary' : 'border border-primary'
+                  className={`h-[14px] w-[14px] rounded-full  ${
+                    withDamage ? 'bg-primary' : 'border-primary border'
                   }`}
                 />
                 <p>Yes</p>
               </button>
             </div>
           </div>
+
+          <div
+            style={{
+              height: withDamage ? 'auto' : '0px',
+              opacity: withDamage ? 1 : 0,
+            }}
+            className='w-full space-y-1 transition-all duration-300'
+          >
+            <div className='flex items-center'>
+              <p>Has the book been replaced? </p>
+              <div className='ml-1 flex items-center space-x-1'>
+                <button
+                  type='button'
+                  className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
+                  onClick={() => setHasBeenReplaced(false)}
+                >
+                  <div
+                    className={`h-[14px] w-[14px] rounded-full  ${
+                      !hasBeenReplaced
+                        ? 'bg-primary'
+                        : 'border-primary border'
+                    }`}
+                  />
+                  <p>No</p>
+                </button>
+                <button
+                  type='button'
+                  className='flex items-center space-x-1 rounded-md border border-neutral-400 px-3 py-[3px] text-sm'
+                  onClick={() => setHasBeenReplaced(true)}
+                >
+                  <div
+                    className={`h-[14px] w-[14px] rounded-full  ${
+                      hasBeenReplaced
+                        ? 'bg-primary'
+                        : 'border-primary border'
+                    }`}
+                  />
+                  <p>Yes</p>
+                </button>
+              </div>
+            </div>
+            <p className='text-xs text-orange-500'>
+              If no, the replacement status will be set to
+              &quot;Pending&quot;
+            </p>
+          </div>
+          {hasBeenReplaced && (
+            <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+              <p className='mb-2 flex-none font-normal lg:mb-0'>ISBN:</p>
+              <input
+                placeholder='Enter the ISBN of the book'
+                className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
+                value={newISBN}
+                onChange={(e) => setNewISBN(e.target.value)}
+              />
+            </div>
+          )}
         </div>
         <div className='flex justify-end'>
           <button
             disabled={isConfirming}
             type='button'
-            className={`text-white rounded-lg px-3 py-2 ${
+            className={`rounded-lg px-3 py-2 text-white ${
               isConfirming
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary'
-            }`}
-            onClick={handleConfirmBookPickup}
+            } ${withDamage && 'bg-red-600'}`}
+            onClick={handleConfirmBookReturn}
           >
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>

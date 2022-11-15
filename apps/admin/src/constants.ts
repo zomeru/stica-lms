@@ -6,6 +6,7 @@ import {
   MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
+import { RiFileDamageFill } from 'react-icons/ri';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
 
 export const adminSidebarItems = [
@@ -36,6 +37,10 @@ export const adminSidebarItems = [
   {
     name: 'Lost Books',
     Icon: MdSearchOff,
+  },
+  {
+    name: 'Damaged Books',
+    Icon: RiFileDamageFill,
   },
   {
     name: 'History',
@@ -163,7 +168,7 @@ export const lostBooksTableHeaders = [
   'Title',
   'ISBN',
   'Accession No',
-  'Penalty',
+  // 'Penalty',
   'Replacement status',
 ];
 

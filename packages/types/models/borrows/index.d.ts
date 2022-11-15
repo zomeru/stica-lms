@@ -13,6 +13,7 @@ export interface IBorrow {
   title: string;
   author: string;
   genre: string;
+  category: string;
   isbn: string;
   accessionNumber: string;
   requestDate: any;

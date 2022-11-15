@@ -40,7 +40,7 @@ const LostBooks = () => {
   };
 
   return (
-    <section className='w-full h-full'>
+    <section className='h-full w-full'>
       <UpdateLostModal
         isModalOpen={!!selectedLostBook}
         setSelectedLostBook={setSelectedLostBook}
@@ -51,10 +51,10 @@ const LostBooks = () => {
         setLostBooks={setLostBooks}
       />
       {lostBooks && lostBooks.length > 0 && (
-        <div className='flex justify-between mb-[10px]'>
+        <div className='mb-[10px] flex justify-between'>
           <button
             type='button'
-            className='bg-primary hover:bg-sky-800 duration-200 text-white text-sm px-3 py-1 rounded-md'
+            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
             onClick={handleUpdate}
           >
             Refresh records
@@ -69,8 +69,8 @@ const LostBooks = () => {
                 <button
                   type='button'
                   disabled={currentPage === 1}
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                    currentPage === 1 && 'opacity-40 cursor-not-allowed'
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                    currentPage === 1 && 'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => prev()}
                 >
@@ -82,10 +82,10 @@ const LostBooks = () => {
                     currentPage ===
                     Math.ceil(lostBooks.length / ITEMS_PER_PAGE)
                   }
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
                       Math.ceil(lostBooks.length / ITEMS_PER_PAGE) &&
-                    'opacity-40 cursor-not-allowed'
+                    'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
                 >
@@ -102,14 +102,14 @@ const LostBooks = () => {
             lostBooks && lostBooks.length > 0 ? 30 : 0
           }px)`,
         }}
-        className={`w-full custom-scrollbar ${
+        className={`custom-scrollbar w-full ${
           lostBooks && lostBooks.length > 0 && 'overflow-y-scroll'
         }`}
       >
         {!lostBooksLoading &&
           (!lostBooks || (lostBooks && lostBooks.length === 0)) && (
-            <div className='w-full h-full flex flex-col justify-center space-y-3'>
-              <div className='relative w-[75%] h-[75%] mx-auto'>
+            <div className='flex h-full w-full flex-col justify-center space-y-3'>
+              <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
                   src='/assets/images/empty.png'
                   layout='fill'
@@ -119,7 +119,7 @@ const LostBooks = () => {
                   quality={50}
                 />
               </div>
-              <h1 className='text-cGray-300 text-2xl text-center'>
+              <h1 className='text-cGray-300 text-center text-2xl'>
                 {lostBookSearchKey
                   ? 'No results found'
                   : 'There is currently no borrow request.'}
@@ -128,7 +128,7 @@ const LostBooks = () => {
                 <button
                   type='button'
                   onClick={handleUpdate}
-                  className='text-sky-600 text-xl'
+                  className='text-xl text-sky-600'
                 >
                   Refresh
                 </button>
@@ -142,14 +142,14 @@ const LostBooks = () => {
                 {lostBooksTableHeaders.map((header) => (
                   <th
                     key={header}
-                    className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white truncate'
+                    className='bg-primary truncate border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                   >
                     {' '}
                     {header}{' '}
                   </th>
                 ))}
                 <th
-                  className='border-b-2 border-gray-200 bg-primary px-5 py-5 '
+                  className='bg-primary border-b-2 border-gray-200 px-5 py-5 '
                   aria-label='action'
                 />
               </tr>
@@ -161,21 +161,21 @@ const LostBooks = () => {
                     <ReactTooltip id={lostBook.objectID} />
 
                     <tr key={lostBook.id} className='font-medium'>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button type='button'>
-                          <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'>
+                          <p className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'>
                             {lostBook.studentName}
                           </p>
                         </button>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'
                           onClick={() => navigateToBook(lostBook.bookId)}
                         >
                           <p
-                            className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'
+                            className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'
                             data-for={lostBook.objectID}
                             data-tip={lostBook.title}
                           >
@@ -184,24 +184,24 @@ const LostBooks = () => {
                         </button>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {lostBook.isbn}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {lostBook.accessionNumber}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
-                          {lostBook.penalty}
+                      {/* <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
+                          ₱{lostBook.penalty}
                         </p>
-                      </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      </td> */}
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
-                          className={`max-w-[210px] text-left line-clamp-2 overflow-hidden ${
+                          className={`line-clamp-2 max-w-[210px] overflow-hidden text-left ${
                             lostBook.replaceStatus === 'Pending'
                               ? 'text-orange-600'
                               : 'text-green-600'
@@ -212,11 +212,11 @@ const LostBooks = () => {
                       </td>
 
                       {lostBook.replaceStatus === 'Pending' ? (
-                        <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                           <div className='flex space-x-3'>
                             <button
                               type='button'
-                              className='truncate bg-sky-600 text-white px-2 py-1 rounded-md text-xs'
+                              className='truncate rounded-md bg-sky-600 px-2 py-1 text-xs text-white'
                               onClick={() =>
                                 setSelectedLostBook(lostBook.objectID)
                               }
@@ -226,7 +226,7 @@ const LostBooks = () => {
                           </div>
                         </td>
                       ) : (
-                        <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm' />
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm' />
                       )}
                     </tr>
                   </React.Fragment>

@@ -13,6 +13,7 @@ import {
   LoanedBooks,
   LostBooks,
   Users,
+  DamagedBooks,
 } from '@src/components/Content';
 
 const Home: NextPage = () => {
@@ -69,6 +70,7 @@ const Home: NextPage = () => {
         'borrow requests',
         'renewal requests',
         'lost books',
+        'damaged books',
       ].some((el) => el === page)
     ) {
       if (page === 'currently loaned books') {
@@ -95,6 +97,12 @@ const Home: NextPage = () => {
         );
       }
 
+      if (page === 'damaged books') {
+        routerArg.query.damagedBookSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
       router.push(routerArg, undefined, { shallow: true });
     }
   };
@@ -109,8 +117,8 @@ const Home: NextPage = () => {
     } else if (page === 'users') {
       setSearchPlaceholder('Search for users');
     } else if (
-      ['borrow', 'loaned', 'renew', 'lost', 'history'].some((p) =>
-        page.includes(p)
+      ['borrow', 'loaned', 'renew', 'lost', 'history', 'damaged'].some(
+        (p) => page.includes(p)
       )
     ) {
       setSearchPlaceholder('Search for records');
@@ -138,6 +146,7 @@ const Home: NextPage = () => {
         {page === 'currently loaned books' && <LoanedBooks />}
         {page === 'borrow requests' && <BorrowRequest />}
         {page === 'lost books' && <LostBooks />}
+        {page === 'damaged books' && <DamagedBooks />}
       </>
     );
   };
@@ -161,7 +170,7 @@ const Home: NextPage = () => {
             disabled={searchPlaceholder === 'Search disabled'}
             placeholder={searchPlaceholder}
             type='text'
-            className={`w-full outline-none bg-neutral-200 py-3 pl-2 pr-4 rounded-full ${
+            className={`w-full rounded-full bg-neutral-200 py-3 pl-2 pr-4 outline-none ${
               searchPlaceholder === 'Search disabled' &&
               'cursor-not-allowed'
             }`}
@@ -175,18 +184,18 @@ const Home: NextPage = () => {
 
   if (!loading && !user.uid) {
     return (
-      <div className='flex flex-col min-h-screen min-w-screen items-center justify-center'>
+      <div className='min-w-screen flex min-h-screen flex-col items-center justify-center'>
         <form
-          className='space-y-3 bg-primary rounded-lg p-10 max-w-[350px]'
+          className='bg-primary max-w-[350px] space-y-3 rounded-lg p-10'
           onSubmit={handleSubmit}
         >
-          <div className='text-xl font-medium text-white text-center'>
+          <div className='text-center text-xl font-medium text-white'>
             STICA LMS - Admin
           </div>
           <div className='flex flex-col space-y-2'>
             <input
               type='text'
-              className='bg-white w-full outline-none px-3 py-2 rounded-lg'
+              className='w-full rounded-lg bg-white px-3 py-2 outline-none'
               placeholder='Username'
               value={username}
               onChange={(e) => {
@@ -195,7 +204,7 @@ const Home: NextPage = () => {
             />
             <input
               type='password'
-              className='bg-white w-full outline-none px-3 py-2 rounded-lg'
+              className='w-full rounded-lg bg-white px-3 py-2 outline-none'
               placeholder='Password'
               value={password}
               onChange={(e) => {
@@ -204,13 +213,13 @@ const Home: NextPage = () => {
             />
             <button
               type='submit'
-              className='text-primary font-medium w-full px-3 py-2 rounded-lg bg-white'
+              className='text-primary w-full rounded-lg bg-white px-3 py-2 font-medium'
             >
               Login
             </button>
           </div>
           {error && (
-            <div className='text-red-500 text-center'>{error}</div>
+            <div className='text-center text-red-500'>{error}</div>
           )}
         </form>
       </div>

@@ -18,10 +18,11 @@ function addZero(num: number) {
 // .schedule('0 17 * * *') - Every 5:00 PM
 // .schedule('every 1 minutes')
 // .schedule('0 17 * * 1-5') - Every weekday at 5:00 PM
+// .schedule('5 17 * * 1-5') - Every weekday at 5:05 PM
 
 // cancel pending borrows when not picked up before pick up due date (24h, always 5:00 PM)
 export const autoCancelBorrows = regionalFunctions.pubsub
-  .schedule('0 17 * * 1-5')
+  .schedule('5 17 * * 1-5')
   .timeZone('Asia/Manila')
   .onRun(async () => {
     const borrowsRef = db.collection('borrows');
@@ -46,7 +47,7 @@ export const autoCancelBorrows = regionalFunctions.pubsub
 
 // add 5 pesos penalty for every day late (5:00 PM)
 export const addPenaltyForLateReturn = regionalFunctions.pubsub
-  .schedule('0 17 * * 1-5')
+  .schedule('5 17 * * 1-5')
   .timeZone('Asia/Manila')
   .onRun(async () => {
     const DAYS = [
