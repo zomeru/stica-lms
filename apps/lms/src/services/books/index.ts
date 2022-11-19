@@ -59,10 +59,15 @@ export const borrowBook = async (
         const requestDateTimestamp = serverTimestamp();
         const date = new Date(timeData.datetime);
 
-        const dawnAdd =
-          date.getHours() >= 0 && date.getHours() < 8 ? 0 : 1;
-
         const day = DAYS[date.getDay()];
+
+        const dawnAdd =
+          date.getHours() >= 0 && date.getHours() < 8 && day !== 'Sunday'
+            ? 0
+            : 1;
+
+        console.log('day', day);
+
         const dayToAdd =
           day === 'Friday' ? 3 : day === 'Saturday' ? 2 : dawnAdd;
 
