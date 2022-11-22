@@ -6,6 +6,7 @@ import { db } from '..';
 
 const timestamp = admin.firestore.Timestamp;
 const increment = admin.firestore.FieldValue.increment;
+const deleteField = admin.firestore.FieldValue.delete;
 
 const regionalFunctions = functions.region('asia-east2');
 
@@ -108,6 +109,13 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
               penalty: increment(5),
               updatedAt: timestamp.now(),
             });
+
+            if (data.renewRequest || data.renewRequestDate) {
+              await borrow.ref.update({
+                renewRequest: deleteField(),
+                renewRequestDate: deleteField(),
+              });
+            }
           }
         });
       }

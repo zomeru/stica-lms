@@ -26,6 +26,7 @@ export interface IBorrow {
   dueDate?: any;
   replaceStatus?: 'Pending' | 'Replaced';
   renewRequest?: boolean;
+  renewRequestDate?: any;
 }
 
 export interface IBorrowDoc extends IBorrow {

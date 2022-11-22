@@ -57,6 +57,8 @@ const ReturnedModal = ({
   const [newISBN, setNewISBN] = useState('');
 
   const handleConfirmBookReturn = async () => {
+    if (!borrowData) return;
+
     if (hasBeenReplaced) {
       if (!newISBN) {
         toast.error("Please enter the replacement book's ISBN");
@@ -71,12 +73,12 @@ const ReturnedModal = ({
       nProgress.start();
       setIsConfirming(true);
 
-      const borrowRef = doc(db, 'borrows', borrowData?.objectID || '');
+      const borrowRef = doc(db, 'borrows', borrowData.objectID);
 
       const timestamp = serverTimestamp();
 
       const updatedData: any = {
-        penalty: penalty > 0 ? penalty : borrowData?.penalty,
+        penalty: penalty > 0 ? penalty : borrowData.penalty,
         status: withDamage ? 'Damaged' : 'Returned',
         updatedAt: timestamp,
         returnedDate: timestamp,
@@ -90,7 +92,7 @@ const ReturnedModal = ({
 
       await updateDoc(borrowRef, updatedData);
 
-      const bookRef = doc(db, 'books', borrowData?.bookId || '');
+      const bookRef = doc(db, 'books', borrowData.bookId);
       const bookSnap = await getDoc(bookRef);
       const bookData = {
         ...bookSnap.data(),
@@ -102,7 +104,7 @@ const ReturnedModal = ({
       );
 
       const updatedBorrowISBN: ISBNType = {
-        isbn: borrowData?.isbn!,
+        isbn: borrowData.isbn!,
         // isAvailable: true,
         status: withDamage ? 'Damaged' : 'Available',
       };
@@ -123,10 +125,17 @@ const ReturnedModal = ({
         available: increment(withDamage && !hasBeenReplaced ? 0 : 1),
       });
 
+      const userRef = doc(db, 'users', borrowData.userId);
+
       if (!withDamage || hasBeenReplaced) {
-        const userRef = doc(db, 'users', borrowData?.userId || '');
         await updateDoc(userRef, {
           totalReturnedBooks: increment(1),
+        });
+      }
+
+      if (withDamage) {
+        await updateDoc(userRef, {
+          totalDamagedBooks: increment(1),
         });
       }
 

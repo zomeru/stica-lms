@@ -6,6 +6,7 @@ export interface IUser {
   totalBorrowedBooks: number;
   totalRenewedBooks: number;
   totalReturnedBooks: number;
+  totalDamagedBooks: number;
   totalLostBooks: number;
   createdAt: any;
   updatedAt: any;

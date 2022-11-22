@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+  deleteField,
+  doc,
+  getDoc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { BsArrowLeft } from 'react-icons/bs';
 import Modal from 'react-modal';
@@ -8,6 +15,7 @@ import ReactTooltip from 'react-tooltip';
 
 import { AlgoBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
+import { processHoliday } from '@src/utils/processHoliday';
 
 interface RenewalProps {
   isModalOpen: boolean;
@@ -41,26 +49,48 @@ const Renewal = ({
 }: RenewalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
-  console.log(borrows);
-  console.log(setBorrows);
+  const handleConfirmRenewalRequest = async () => {
+    if (!borrowData) return;
 
-  const handleConfirmBookPickup = async () => {
     try {
       nProgress.configure({ showSpinner: true });
       nProgress.start();
       setIsConfirming(true);
 
-      const borrowRef = doc(db, 'borrows', borrowData?.objectID || '');
+      const borrowRef = doc(db, 'borrows', borrowData.objectID);
       const borrowSnap = await getDoc(borrowRef);
 
-      // check if borrow request does not exist or has been cancelled
+      // check if issued book has a penalty
       if (borrowSnap.exists() && borrowSnap.data()?.penalty > 0) {
         toast.error('This issued book already has a penalty.');
+        await updateDoc(borrowRef, {
+          renewRequest: deleteField(),
+        });
         nProgress.done();
         setIsConfirming(false);
         return;
       }
 
+      const finalDueDateTimestamp = await processHoliday(borrowData);
+      const currentTimestamp = serverTimestamp();
+
+      await updateDoc(borrowRef, {
+        dueDate: finalDueDateTimestamp,
+        renewRequest: deleteField(),
+        renewRequestDate: deleteField(),
+        updatedAt: currentTimestamp,
+      });
+
+      const userRef = doc(db, 'users', borrowData.userId);
+      await updateDoc(userRef, {
+        totalRenewedBooks: increment(1),
+      });
+
+      const newRenewalRequest = borrows.filter(
+        (borrow) => borrow.objectID !== borrowData.objectID
+      );
+      setBorrows(newRenewalRequest);
+      toast.success('Renewal request has been approved.');
       setIsConfirming(false);
       setSelectedBorrow('');
       nProgress.done();
@@ -86,7 +116,7 @@ const Renewal = ({
           <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
         <div className='text-primary text-center text-2xl font-semibold'>
-          Approve renewal request of this book?
+          Approve renewal request for this book?
         </div>
         <div className='max-w-[400px] space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>
@@ -129,7 +159,7 @@ const Renewal = ({
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary'
             }`}
-            onClick={handleConfirmBookPickup}
+            onClick={handleConfirmRenewalRequest}
           >
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>

@@ -6,6 +6,7 @@ import {
   doc,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from 'firebase/firestore';
@@ -55,13 +56,13 @@ const CurrentlyIssuedBooks = () => {
         const today = new Date(timeData.datetime);
 
         const diff = dueDate.getTime() - today.getTime();
-        // const diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
         const diffDays = diff / (1000 * 60 * 60 * 24);
 
         if (diffDays < 1) {
           const borrowRef = doc(db, 'borrows', borrowDoc.id);
           await updateDoc(borrowRef, {
             renewRequest: true,
+            renewRequestDate: serverTimestamp(),
           });
           toast.success('Renewal request sent!');
         } else {
@@ -229,33 +230,35 @@ const CurrentlyIssuedBooks = () => {
                         </p>
                       </td>
                       <td className='border-cGray-200 relative space-x-3 border-b bg-white pr-5 text-right text-sm'>
-                        <ReactTooltip id={issue.id} />
-                        <button
-                          data-for={issue.id}
-                          data-tip={
-                            issue.penalty > 0
-                              ? 'You can not renew this book because you have a penalty. Please settle the penalty.'
-                              : ''
-                          }
-                          // disabled={
-                          //   issue.penalty > 0 || issue.renewRequest
-                          // }
-                          className={`rounded-md px-2 py-1 text-xs transition-colors duration-300 ${
-                            issue.penalty > 0
-                              ? 'cursor-not-allowed bg-neutral-500 '
-                              : 'bg-sky-600'
-                          } ${
-                            issue.renewRequest
-                              ? 'bg-transparent text-sky-600'
-                              : 'text-white'
-                          }`}
-                          type='button'
-                          onClick={() => handleRenewRequest(issue)}
-                        >
-                          {issue.renewRequest
-                            ? 'Renew Requested'
-                            : 'Renew'}
-                        </button>
+                        {issue.renewRequest ? (
+                          <p className='text-xs text-sky-600'>
+                            Renewal requested
+                          </p>
+                        ) : (
+                          <>
+                            <ReactTooltip id={issue.id} />
+                            <button
+                              data-for={issue.id}
+                              data-tip={
+                                issue.penalty > 0
+                                  ? 'You can not renew this book because you have a penalty. Please settle the penalty.'
+                                  : ''
+                              }
+                              // disabled={
+                              //   issue.penalty > 0 || issue.renewRequest
+                              // }
+                              className={`rounded-md px-2 py-1 text-xs text-white transition-colors duration-300 ${
+                                issue.penalty > 0
+                                  ? 'cursor-not-allowed bg-neutral-500 '
+                                  : 'bg-sky-600'
+                              }`}
+                              type='button'
+                              onClick={() => handleRenewRequest(issue)}
+                            >
+                              Renew
+                            </button>
+                          </>
+                        )}
 
                         {/* <button
                       className='text-red-600 duration-300 transition-colors'

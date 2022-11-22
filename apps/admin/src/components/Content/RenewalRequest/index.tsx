@@ -6,7 +6,6 @@ import nProgress from 'nprogress';
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import {
   borrowRequestBooksTableHeaders,
-  DEFAULT_SORT_ITEM,
   ITEMS_PER_PAGE,
 } from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
@@ -14,14 +13,14 @@ import { navigateToBook } from '@src/utils';
 import PickedUpModal from './RenewalModal';
 
 const RenewalRequest = () => {
-  const borrowSearchKey = useNextQuery('borrowSearchKey');
+  const renewalSearchKey = useNextQuery('renewalSearchKey');
 
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
-    useAlgoData<AlgoBorrowDoc>('borrows', borrowSearchKey);
+    useAlgoData<AlgoBorrowDoc>('borrows', renewalSearchKey);
 
   const [selectedBorrow, setSelectedBorrow] = useState('');
 
-  const pendingBorrows: AlgoBorrowDoc[] = useMemo(
+  const renewalRequests: AlgoBorrowDoc[] = useMemo(
     () =>
       algoBorrows?.filter(
         (borrow) =>
@@ -32,10 +31,15 @@ const RenewalRequest = () => {
     [algoBorrows]
   );
 
+  console.log('renewalRequests', renewalRequests);
+
   const [currentBorrows, currentPage, next, prev] = useClientPagination(
-    pendingBorrows || [],
+    renewalRequests || [],
     ITEMS_PER_PAGE,
-    DEFAULT_SORT_ITEM
+    {
+      sortBy: 'renewRequestDate',
+      sortOrder: 'desc',
+    }
   );
 
   const handleUpdate = () => {
@@ -50,13 +54,13 @@ const RenewalRequest = () => {
       <PickedUpModal
         isModalOpen={!!selectedBorrow}
         setSelectedBorrow={setSelectedBorrow}
-        borrowData={pendingBorrows.find(
+        borrowData={renewalRequests.find(
           (borrow) => borrow.objectID === selectedBorrow
         )}
         borrows={algoBorrows}
         setBorrows={setBorrows}
       />
-      {pendingBorrows && pendingBorrows.length > 0 && (
+      {renewalRequests && renewalRequests.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
           <button
             type='button'
@@ -65,11 +69,11 @@ const RenewalRequest = () => {
           >
             Refresh records
           </button>
-          {pendingBorrows.length / ITEMS_PER_PAGE > 1 && (
+          {renewalRequests.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
                 {currentPage}/
-                {Math.ceil(pendingBorrows.length / ITEMS_PER_PAGE)}
+                {Math.ceil(renewalRequests.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -86,11 +90,11 @@ const RenewalRequest = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(pendingBorrows.length / ITEMS_PER_PAGE)
+                    Math.ceil(renewalRequests.length / ITEMS_PER_PAGE)
                   }
                   className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
-                      Math.ceil(pendingBorrows.length / ITEMS_PER_PAGE) &&
+                      Math.ceil(renewalRequests.length / ITEMS_PER_PAGE) &&
                     'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
@@ -105,18 +109,18 @@ const RenewalRequest = () => {
       <div
         style={{
           height: `calc(100% - ${
-            pendingBorrows && pendingBorrows.length > 0 ? 30 : 0
+            renewalRequests && renewalRequests.length > 0 ? 30 : 0
           }px)`,
         }}
         className={`custom-scrollbar w-full ${
-          pendingBorrows &&
-          pendingBorrows.length > 0 &&
+          renewalRequests &&
+          renewalRequests.length > 0 &&
           'overflow-y-scroll'
         }`}
       >
         {!borrowLoading &&
-          (!pendingBorrows ||
-            (pendingBorrows && pendingBorrows.length === 0)) && (
+          (!renewalRequests ||
+            (renewalRequests && renewalRequests.length === 0)) && (
             <div className='flex h-full w-full flex-col justify-center space-y-3'>
               <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
@@ -129,11 +133,11 @@ const RenewalRequest = () => {
                 />
               </div>
               <h1 className='text-cGray-300 text-center text-2xl'>
-                {borrowSearchKey
+                {renewalSearchKey
                   ? 'No results found'
                   : 'There is currently no renewal request.'}
               </h1>
-              {!borrowSearchKey && (
+              {!renewalSearchKey && (
                 <button
                   type='button'
                   onClick={handleUpdate}
@@ -144,7 +148,7 @@ const RenewalRequest = () => {
               )}
             </div>
           )}
-        {pendingBorrows && pendingBorrows.length > 0 && (
+        {renewalRequests && renewalRequests.length > 0 && (
           <table className='min-w-full leading-normal'>
             <thead>
               <tr>
