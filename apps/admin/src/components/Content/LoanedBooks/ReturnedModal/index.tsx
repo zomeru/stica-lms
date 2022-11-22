@@ -77,7 +77,7 @@ const ReturnedModal = ({
 
       const updatedData: any = {
         penalty: penalty > 0 ? penalty : borrowData?.penalty,
-        status: withDamage ? 'Returned with damage' : 'Returned',
+        status: withDamage ? 'Damaged' : 'Returned',
         updatedAt: timestamp,
         returnedDate: timestamp,
       };
@@ -154,8 +154,8 @@ const ReturnedModal = ({
     setTimeout(() => {
       setIsEditingPenalty(false);
       setPenalty(borrowData?.penalty || 0);
-      // setWithDamage(false);
-      // setHasBeenReplaced(false);
+      setWithDamage(false);
+      setHasBeenReplaced(false);
     }, 200);
   };
 
@@ -176,8 +176,8 @@ const ReturnedModal = ({
             withDamage && 'text-red-600'
           }`}
         >
-          Are you sure the book has been returned
-          {withDamage && ' with damage'}?
+          Are you sure the book has been
+          {withDamage ? ' damaged' : 'returned'}?
         </div>
         <div className='max-w-[500px] space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>

@@ -66,8 +66,6 @@ export const borrowBook = async (
             ? 0
             : 1;
 
-        console.log('day', day);
-
         const dayToAdd =
           day === 'Friday' ? 3 : day === 'Saturday' ? 2 : dawnAdd;
 

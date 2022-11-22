@@ -133,7 +133,7 @@ const UpdateDamagedModal = ({
       setSelectedDamagedBook('');
       setNewISBN('');
       nProgress.done();
-      toast.success('Book marked as Returned with damage');
+      toast.success('Book marked as "Damaged".');
     } catch (error) {
       console.log(error);
       nProgress.done();

@@ -43,7 +43,7 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
       }
 
       if (searchKeyword) {
-        const result = await searchIndex.search(searchKeyword || '');
+        const result = await searchIndex.search(searchKeyword);
 
         if (result.hits) {
           const hits = [...(result.hits as unknown as T[])];

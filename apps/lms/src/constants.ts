@@ -225,12 +225,7 @@ export const lostBooksTableHeaders = [
 
 export const requestStatus = ['Pending', 'Approved'];
 
-export const historyStatus = [
-  'Cancelled',
-  'Returned',
-  'Returned with damage',
-  'Lost',
-];
+export const historyStatus = ['Cancelled', 'Returned', 'Damaged', 'Lost'];
 
 export const LMS_PREVIOUS_LOGGED_IN_KEY = 'IS_LMS_PREVIOUSLY_LOGGED_IN';
 
