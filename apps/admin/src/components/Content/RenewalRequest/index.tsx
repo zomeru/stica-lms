@@ -5,58 +5,62 @@ import nProgress from 'nprogress';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import {
-  DEFAULT_SORT_ITEM,
+  borrowRequestBooksTableHeaders,
   ITEMS_PER_PAGE,
-  lostBooksTableHeaders,
 } from '@src/constants';
 import { AlgoBorrowDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
-import UpdateDamagedModal from './UpdateDamagedModal';
+import PickedUpModal from './RenewalModal';
 
-const DamagedBooks = () => {
-  const damagedBookSearchKey = useNextQuery('damagedBookSearchKey');
+const RenewalRequest = () => {
+  const renewalSearchKey = useNextQuery('renewalSearchKey');
 
-  const [
-    algoDamagedBooks,
-    setDamagedBooks,
-    refreshDamagedBooks,
-    damagedBooksLoading,
-  ] = useAlgoData<AlgoBorrowDoc>('borrows', damagedBookSearchKey);
+  const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
+    useAlgoData<AlgoBorrowDoc>('borrows', renewalSearchKey);
 
-  const [selectedDamagedBook, setSelectedDamagedBook] = useState('');
+  const [selectedBorrow, setSelectedBorrow] = useState('');
 
-  const damagedBooks: AlgoBorrowDoc[] = useMemo(
+  const renewalRequests: AlgoBorrowDoc[] = useMemo(
     () =>
-      algoDamagedBooks?.filter((borrow) => borrow.status === 'Damaged'),
-    [algoDamagedBooks]
+      algoBorrows?.filter(
+        (borrow) =>
+          borrow.status === 'Issued' &&
+          borrow.renewRequest &&
+          borrow.penalty === 0
+      ),
+    [algoBorrows]
   );
 
-  const [currentDamagedBooks, currentPage, next, prev] =
-    useClientPagination(
-      damagedBooks || [],
-      ITEMS_PER_PAGE,
-      DEFAULT_SORT_ITEM
-    );
+  console.log('renewalRequests', renewalRequests);
+
+  const [currentBorrows, currentPage, next, prev] = useClientPagination(
+    renewalRequests || [],
+    ITEMS_PER_PAGE,
+    {
+      sortBy: 'renewRequestDate',
+      sortOrder: 'desc',
+    }
+  );
 
   const handleUpdate = () => {
     nProgress.configure({ showSpinner: true });
     nProgress.start();
-    refreshDamagedBooks();
+    refreshBorrows();
     nProgress.done();
   };
 
   return (
     <section className='h-full w-full'>
-      <UpdateDamagedModal
-        isModalOpen={!!selectedDamagedBook}
-        setSelectedDamagedBook={setSelectedDamagedBook}
-        damagedBookData={damagedBooks.find(
-          (borrow) => borrow.objectID === selectedDamagedBook
+      <PickedUpModal
+        isModalOpen={!!selectedBorrow}
+        setSelectedBorrow={setSelectedBorrow}
+        borrowData={renewalRequests.find(
+          (borrow) => borrow.objectID === selectedBorrow
         )}
-        damagedBooks={algoDamagedBooks}
-        setDamagedBooks={setDamagedBooks}
+        borrows={algoBorrows}
+        setBorrows={setBorrows}
       />
-      {damagedBooks && damagedBooks.length > 0 && (
+      {renewalRequests && renewalRequests.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
           <button
             type='button'
@@ -65,11 +69,11 @@ const DamagedBooks = () => {
           >
             Refresh records
           </button>
-          {damagedBooks.length / ITEMS_PER_PAGE > 1 && (
+          {renewalRequests.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
                 {currentPage}/
-                {Math.ceil(damagedBooks.length / ITEMS_PER_PAGE)}
+                {Math.ceil(renewalRequests.length / ITEMS_PER_PAGE)}
               </div>
               <div className='space-x-1'>
                 <button
@@ -86,11 +90,11 @@ const DamagedBooks = () => {
                   type='button'
                   disabled={
                     currentPage ===
-                    Math.ceil(damagedBooks.length / ITEMS_PER_PAGE)
+                    Math.ceil(renewalRequests.length / ITEMS_PER_PAGE)
                   }
                   className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
-                      Math.ceil(damagedBooks.length / ITEMS_PER_PAGE) &&
+                      Math.ceil(renewalRequests.length / ITEMS_PER_PAGE) &&
                     'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
@@ -105,16 +109,18 @@ const DamagedBooks = () => {
       <div
         style={{
           height: `calc(100% - ${
-            damagedBooks && damagedBooks.length > 0 ? 30 : 0
+            renewalRequests && renewalRequests.length > 0 ? 30 : 0
           }px)`,
         }}
         className={`custom-scrollbar w-full ${
-          damagedBooks && damagedBooks.length > 0 && 'overflow-y-scroll'
+          renewalRequests &&
+          renewalRequests.length > 0 &&
+          'overflow-y-scroll'
         }`}
       >
-        {!damagedBooksLoading &&
-          (!damagedBooks ||
-            (damagedBooks && damagedBooks.length === 0)) && (
+        {!borrowLoading &&
+          (!renewalRequests ||
+            (renewalRequests && renewalRequests.length === 0)) && (
             <div className='flex h-full w-full flex-col justify-center space-y-3'>
               <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
@@ -127,11 +133,11 @@ const DamagedBooks = () => {
                 />
               </div>
               <h1 className='text-cGray-300 text-center text-2xl'>
-                {damagedBookSearchKey
+                {renewalSearchKey
                   ? 'No results found'
-                  : 'There is currently no borrow request.'}
+                  : 'There is currently no renewal request.'}
               </h1>
-              {!damagedBookSearchKey && (
+              {!renewalSearchKey && (
                 <button
                   type='button'
                   onClick={handleUpdate}
@@ -142,11 +148,11 @@ const DamagedBooks = () => {
               )}
             </div>
           )}
-        {damagedBooks && damagedBooks.length > 0 && (
+        {renewalRequests && renewalRequests.length > 0 && (
           <table className='min-w-full leading-normal'>
             <thead>
               <tr>
-                {lostBooksTableHeaders.map((header) => (
+                {borrowRequestBooksTableHeaders.map((header) => (
                   <th
                     key={header}
                     className='bg-primary truncate border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
@@ -162,16 +168,16 @@ const DamagedBooks = () => {
               </tr>
             </thead>
             <tbody>
-              {currentDamagedBooks.map((lostBook) => {
+              {currentBorrows.map((borrow) => {
                 return (
-                  <React.Fragment key={lostBook.objectID}>
-                    <ReactTooltip id={lostBook.objectID} />
+                  <React.Fragment key={borrow.objectID}>
+                    <ReactTooltip id={borrow.objectID} />
 
-                    <tr key={lostBook.id} className='font-medium'>
+                    <tr key={borrow.id} className='font-medium'>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button type='button'>
                           <p className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'>
-                            {lostBook.studentName}
+                            {borrow.studentName}
                           </p>
                         </button>
                       </td>
@@ -179,62 +185,52 @@ const DamagedBooks = () => {
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'
-                          onClick={() => navigateToBook(lostBook.bookId)}
+                          onClick={() => navigateToBook(borrow.bookId)}
                         >
                           <p
                             className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'
-                            data-for={lostBook.objectID}
-                            data-tip={lostBook.title}
+                            data-for={borrow.objectID}
+                            data-tip={borrow.title}
                           >
-                            {lostBook.title}
+                            {borrow.title}
                           </p>
                         </button>
                       </td>
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {lostBook.isbn}
+                          {borrow.author}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {lostBook.accessionNumber}
+                          {borrow.genre}
                         </p>
                       </td>
-                      {/* <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          ₱{lostBook.penalty}
-                        </p>
-                      </td> */}
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p
-                          className={`line-clamp-2 max-w-[210px] overflow-hidden text-left ${
-                            lostBook.replaceStatus === 'Pending'
-                              ? 'text-orange-600'
-                              : 'text-green-600'
-                          }`}
-                        >
-                          {lostBook.replaceStatus}
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
+                          {borrow.isbn}
+                        </p>
+                      </td>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
+                          {borrow.accessionNumber}
                         </p>
                       </td>
 
-                      {lostBook.replaceStatus === 'Pending' ? (
-                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                          <div className='flex space-x-3'>
-                            <button
-                              type='button'
-                              className='truncate rounded-md bg-sky-600 px-2 py-1 text-xs text-white'
-                              onClick={() =>
-                                setSelectedDamagedBook(lostBook.objectID)
-                              }
-                            >
-                              Update
-                            </button>
-                          </div>
-                        </td>
-                      ) : (
-                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm' />
-                      )}
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <div className='flex space-x-3'>
+                          <button
+                            type='button'
+                            className='truncate rounded-md bg-sky-600 px-2 py-1 text-xs text-white'
+                            onClick={() =>
+                              setSelectedBorrow(borrow.objectID)
+                            }
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   </React.Fragment>
                 );
@@ -247,4 +243,4 @@ const DamagedBooks = () => {
   );
 };
 
-export default DamagedBooks;
+export default RenewalRequest;

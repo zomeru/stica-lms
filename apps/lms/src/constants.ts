@@ -6,7 +6,7 @@ import {
   AiOutlineInfoCircle,
 } from 'react-icons/ai';
 import {
-  MdOutlineContactPage,
+  // MdOutlineContactPage,
   MdPendingActions,
   MdOutlineNotificationsNone,
   MdSearchOff,
@@ -48,10 +48,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     name: 'History',
     Icon: AiOutlineHistory,
   },
-  {
-    name: 'Contact',
-    Icon: MdOutlineContactPage,
-  },
+  // {
+  //   name: 'Contact',
+  //   Icon: MdOutlineContactPage,
+  // },
   {
     name: 'About',
     Icon: AiOutlineInfoCircle,
@@ -67,10 +67,10 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
     name: 'Search',
     Icon: AiOutlineSearch,
   },
-  {
-    name: 'Contact',
-    Icon: MdOutlineContactPage,
-  },
+  // {
+  //   name: 'Contact',
+  //   Icon: MdOutlineContactPage,
+  // },
   {
     name: 'About',
     Icon: AiOutlineInfoCircle,
@@ -225,12 +225,7 @@ export const lostBooksTableHeaders = [
 
 export const requestStatus = ['Pending', 'Approved'];
 
-export const historyStatus = [
-  'Cancelled',
-  'Returned',
-  'Returned with damage',
-  'Lost',
-];
+export const historyStatus = ['Cancelled', 'Returned', 'Damaged', 'Lost'];
 
 export const LMS_PREVIOUS_LOGGED_IN_KEY = 'IS_LMS_PREVIOUSLY_LOGGED_IN';
 

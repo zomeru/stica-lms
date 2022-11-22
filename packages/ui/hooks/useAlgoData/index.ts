@@ -17,6 +17,7 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
 
   const [algoData, setAlgoData] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
+  const [firstFetch, setFirstFetch] = useState(false);
 
   const [value, setValue] = useState(0);
 
@@ -43,7 +44,7 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
       }
 
       if (searchKeyword) {
-        const result = await searchIndex.search(searchKeyword || '');
+        const result = await searchIndex.search(searchKeyword);
 
         if (result.hits) {
           const hits = [...(result.hits as unknown as T[])];
@@ -52,9 +53,22 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
 
         setLoading(false);
       }
+
+      setFirstFetch(true);
     };
 
-    getAlgoData();
+    if (!firstFetch) {
+      getAlgoData();
+    }
+
+    // automatically update data every 1 minute
+    const interval = setInterval(() => {
+      getAlgoData();
+    }, 1000 * 60);
+
+    return () => {
+      clearInterval(interval);
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchKeyword, value]);

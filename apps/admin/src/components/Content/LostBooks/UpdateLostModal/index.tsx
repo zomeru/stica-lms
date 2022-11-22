@@ -124,7 +124,7 @@ const UpdateLostModal = ({
       setSelectedLostBook('');
       setNewISBN('');
       nProgress.done();
-      toast.success('Book marked as lost');
+      toast.success('Book marked as "Lost"');
     } catch (error) {
       console.log(error);
       nProgress.done();

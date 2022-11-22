@@ -2,6 +2,10 @@ import { useMemo, useState } from 'react';
 
 type FunctionType = () => void;
 type PaginationReturnType<S> = [S[], number, FunctionType, FunctionType];
+type Sorter = {
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+};
 
 /**
  *
@@ -14,10 +18,7 @@ type PaginationReturnType<S> = [S[], number, FunctionType, FunctionType];
 export const useClientPagination = <T>(
   data: T[],
   itemsPerPage: number,
-  sorter?: {
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
-  },
+  sorter?: Sorter,
   customCurrentPage?: number
 ): PaginationReturnType<T> => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +35,7 @@ export const useClientPagination = <T>(
   const items = useMemo(
     () =>
       (sorter
-        ? data.sort((a, b) => {
+        ? [...data].sort((a, b) => {
             const sortBy = sorter.sortBy;
             const sortOrder = sorter.sortOrder;
 

@@ -129,7 +129,7 @@ const LostModal = ({
       setSelectedBorrow('');
       nProgress.done();
       setIsModalOpen(false);
-      toast.success('Book marked as lost');
+      toast.success('Book marked as "Lost"');
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -144,6 +144,7 @@ const LostModal = ({
     setTimeout(() => {
       setIsEditingPenalty(false);
       setPenalty(borrowData?.penalty || 0);
+      setHasBeenReplaced(false);
     }, 200);
   };
 

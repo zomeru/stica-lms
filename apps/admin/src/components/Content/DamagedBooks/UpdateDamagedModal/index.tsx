@@ -52,7 +52,7 @@ const UpdateDamagedModal = ({
   const [penalty, setPenalty] = useState(damagedBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
 
-  const handleConfirmBookPickup = async () => {
+  const handleConfirmBookReplaced = async () => {
     if (!newISBN.trim()) {
       toast.error("Please enter the replacement book's ISBN");
       return;
@@ -133,7 +133,7 @@ const UpdateDamagedModal = ({
       setSelectedDamagedBook('');
       setNewISBN('');
       nProgress.done();
-      toast.success('Book marked as Returned with damage');
+      toast.success('Book marked as "Damaged".');
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -267,7 +267,7 @@ const UpdateDamagedModal = ({
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary'
             }`}
-            onClick={handleConfirmBookPickup}
+            onClick={handleConfirmBookReplaced}
           >
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>

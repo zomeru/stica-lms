@@ -2,7 +2,7 @@ export type BorrowStatus =
   | 'Pending'
   | 'Issued'
   | 'Returned'
-  | 'Returned with damage'
+  | 'Damaged'
   | 'Lost'
   | 'Cancelled';
 
@@ -25,6 +25,8 @@ export interface IBorrow {
   returnedDate?: any;
   dueDate?: any;
   replaceStatus?: 'Pending' | 'Replaced';
+  renewRequest?: boolean;
+  renewRequestDate?: any;
 }
 
 export interface IBorrowDoc extends IBorrow {

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import {
+  deleteField,
   doc,
   getDoc,
+  increment,
   serverTimestamp,
   updateDoc,
-  increment,
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { BsArrowLeft } from 'react-icons/bs';
@@ -12,11 +13,11 @@ import Modal from 'react-modal';
 import nProgress from 'nprogress';
 import ReactTooltip from 'react-tooltip';
 
-import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
 
-interface PickedUpModalProps {
+interface RenewalProps {
   isModalOpen: boolean;
   borrows: AlgoBorrowDoc[];
   setBorrows: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
@@ -39,16 +40,16 @@ const modalCustomStyle = {
   },
 };
 
-const PickedUpModal = ({
+const Renewal = ({
   isModalOpen,
   setSelectedBorrow,
   borrowData,
   borrows,
   setBorrows,
-}: PickedUpModalProps) => {
+}: RenewalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
-  const handleConfirmBookPickup = async () => {
+  const handleConfirmRenewalRequest = async () => {
     if (!borrowData) return;
 
     try {
@@ -59,83 +60,43 @@ const PickedUpModal = ({
       const borrowRef = doc(db, 'borrows', borrowData.objectID);
       const borrowSnap = await getDoc(borrowRef);
 
-      // check if borrow request does not exist or has been cancelled
-      if (
-        !borrowSnap.exists() ||
-        borrowSnap.data()?.status !== 'Pending'
-      ) {
-        toast.error('Borrow request no longer exists');
+      // check if issued book has a penalty
+      if (borrowSnap.exists() && borrowSnap.data()?.penalty > 0) {
+        toast.error('This issued book already has a penalty.');
+        await updateDoc(borrowRef, {
+          renewRequest: deleteField(),
+        });
         nProgress.done();
         setIsConfirming(false);
         return;
       }
-
-      // get book data
-      const bookRef = doc(db, 'books', borrowData.bookId);
-      const bookSnap = await getDoc(bookRef);
-
-      const bookData = {
-        ...bookSnap.data(),
-        id: bookSnap.id,
-      } as IBookDoc;
-
-      // check if the book is still available
-      if (bookData.available === 0) {
-        toast.error('There is currently no available copy of this book');
-        nProgress.done();
-        setIsConfirming(false);
-        return;
-      }
-
-      const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== borrowData?.isbn
-      );
-
-      const newIsbn: ISBNType[] = [
-        ...filteredISBNs,
-        {
-          isbn: borrowData.isbn!,
-          // isAvailable: false,
-          status: 'Borrowed',
-          borrowedBy: borrowData?.userId,
-        } as ISBNType,
-      ];
 
       const finalDueDateTimestamp = await processHoliday(borrowData);
+      const currentTimestamp = serverTimestamp();
 
-      // update 1 book isbn
-      await updateDoc(bookRef, {
-        isbns: newIsbn,
-        available: increment(-1),
-        totalBorrowed: increment(1),
-      });
-
-      // update borrow request
-      const timestamp = serverTimestamp();
       await updateDoc(borrowRef, {
-        status: 'Issued',
         dueDate: finalDueDateTimestamp,
-        // dueDate: sampleDueDateTimestamp,
-        issuedDate: timestamp,
-        updatedAt: timestamp,
+        renewRequest: deleteField(),
+        renewRequestDate: deleteField(),
+        updatedAt: currentTimestamp,
       });
 
       const userRef = doc(db, 'users', borrowData.userId);
       await updateDoc(userRef, {
-        totalBorrowedBooks: increment(1),
+        totalRenewedBooks: increment(1),
       });
 
-      const newBorrows = borrows.filter(
+      const newRenewalRequest = borrows.filter(
         (borrow) => borrow.objectID !== borrowData.objectID
       );
-      setBorrows(newBorrows);
-      toast.success('Book picked up successfully');
+      setBorrows(newRenewalRequest);
+      toast.success('Renewal request has been approved.');
       setIsConfirming(false);
       setSelectedBorrow('');
       nProgress.done();
     } catch (error) {
-      console.log('Error picking up book', error);
-      toast.error('Something went wrong! Please try again.');
+      console.log('Error approving renewal request', error);
+      toast.error('Something went wrong! Please try again later.');
       setIsConfirming(false);
       setSelectedBorrow('');
       nProgress.done();
@@ -155,7 +116,7 @@ const PickedUpModal = ({
           <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
         <div className='text-primary text-center text-2xl font-semibold'>
-          Are you sure the book has been picked up?
+          Approve renewal request for this book?
         </div>
         <div className='max-w-[400px] space-y-1 text-lg text-neutral-700'>
           <div className='text-neutral-900'>
@@ -198,7 +159,7 @@ const PickedUpModal = ({
                 ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary'
             }`}
-            onClick={handleConfirmBookPickup}
+            onClick={handleConfirmRenewalRequest}
           >
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>
@@ -208,4 +169,4 @@ const PickedUpModal = ({
   );
 };
 
-export default PickedUpModal;
+export default Renewal;
