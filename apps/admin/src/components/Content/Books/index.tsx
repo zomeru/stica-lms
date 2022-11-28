@@ -10,8 +10,10 @@ import BookList from './BookList';
 
 export type OrderType = 'asc' | 'desc';
 
+const bookSearchQueryName = 'bookSearchKey';
+
 const Books = () => {
-  const bookSearchKey = useNextQuery('bookSearchKey');
+  const bookSearchKey = useNextQuery(bookSearchQueryName);
   const bookId = useNextQuery('bookId');
 
   const [addBook, setAddBook] = useState(false);
@@ -21,7 +23,7 @@ const Books = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoBooks, setAlgoBooks, _, bookLoading] =
-    useAlgoData<AlgoBookDoc>('books', bookSearchKey);
+    useAlgoData<AlgoBookDoc>('books', bookSearchQueryName, bookSearchKey);
 
   useEffect(() => {
     const orderIndex = SORT_ITEMS.findIndex(
@@ -58,7 +60,7 @@ const Books = () => {
   }, [algoBooks, bookId]);
 
   return (
-    <div className='w-full h-full relative overflow-hidden'>
+    <div className='relative h-full w-full overflow-hidden'>
       {/* Book list */}
       <BookList
         onNext={onNext}

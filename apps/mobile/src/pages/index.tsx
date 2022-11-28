@@ -1,34 +1,39 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+// import { useMsal } from '@azure/msal-react';
+// import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
-import { usePhoto } from '@src/hooks';
-import { loginRequest } from '@src/config';
+// import { usePhoto } from '@src/hooks';
+// import { loginRequest } from '@src/config';
 
 const Home: NextPage = () => {
-  const isAuthenticated = useIsAuthenticated();
-  const { accounts, instance } = useMsal();
-  const { photo } = usePhoto();
+  // const isAuthenticated = useIsAuthenticated();
+  // const { instance } = useMsal();
+  // const { accounts, instance } = useMsal();
+  // const { photo } = usePhoto();
 
-  const loggedIn = isAuthenticated && accounts.length > 0;
+  // const loggedIn = isAuthenticated && accounts.length > 0;
 
-  const loginHandler = () => {
-    instance.loginRedirect(loginRequest);
-  };
+  // const loginHandler = () => {
+  //   instance.loginRedirect(loginRequest);
+  // };
 
-  const logoutHandler = () => {
-    instance.logoutRedirect({
-      postLogoutRedirectUri: '/',
-    });
-  };
+  // const logoutHandler = () => {
+  //   instance.logoutRedirect({
+  //     postLogoutRedirectUri: '/',
+  //   });
+  // };
 
   return (
-    <div className='w-screen h-screen flex flex-col items-center justify-center'>
+    <div className='flex h-screen w-screen flex-col items-center justify-center'>
       <h1 className='mb-[20px] text-xl font-bold'>
         STICA LMS - Mobile version
       </h1>
+      <h1 className='mb-[20px] text-xl font-bold'>
+        Maintenance - Currently in development
+      </h1>
 
-      {loggedIn && (
+      {/* {loggedIn && (
         <div className='flex flex-col items-center justify-center'>
           <img
             src={photo || 'https://i.imgur.com/N7EmcCY.jpg'}
@@ -49,7 +54,7 @@ const Home: NextPage = () => {
         onClick={loggedIn ? logoutHandler : loginHandler}
       >
         {loggedIn ? 'Log out' : 'Log in'}
-      </button>
+      </button> */}
     </div>
   );
 };

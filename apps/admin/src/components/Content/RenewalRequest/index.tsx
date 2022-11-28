@@ -12,11 +12,17 @@ import { AlgoBorrowDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import PickedUpModal from './RenewalModal';
 
+const bookSearchQueryName = 'renewalSearchKey';
+
 const RenewalRequest = () => {
-  const renewalSearchKey = useNextQuery('renewalSearchKey');
+  const renewalSearchKey = useNextQuery(bookSearchQueryName);
 
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
-    useAlgoData<AlgoBorrowDoc>('borrows', renewalSearchKey);
+    useAlgoData<AlgoBorrowDoc>(
+      'borrows',
+      bookSearchQueryName,
+      renewalSearchKey
+    );
 
   const [selectedBorrow, setSelectedBorrow] = useState('');
 

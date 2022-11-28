@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import algoliasearch from 'algoliasearch';
+import { useRouter } from 'next/router';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
@@ -12,12 +13,17 @@ const searchClient = algoliasearch(
  * @param searchKeyword the keyword to search
  * @returns [data, setData, refreshData, loading]
  */
-export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
+export const useAlgoData = <T>(
+  index: string,
+  searchQuery: string,
+  searchKeyword?: string
+) => {
   const searchIndex = searchClient.initIndex(index);
+  const router = useRouter();
 
   const [algoData, setAlgoData] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
-  const [firstFetch, setFirstFetch] = useState(false);
+  // const [firstFetch, setFirstFetch] = useState(false);
 
   const [value, setValue] = useState(0);
 
@@ -54,12 +60,14 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
         setLoading(false);
       }
 
-      setFirstFetch(true);
+      // setFirstFetch(true);
     };
 
-    if (!firstFetch) {
-      getAlgoData();
-    }
+    // if (!firstFetch) {
+    //   getAlgoData();
+    // }
+
+    getAlgoData();
 
     // automatically update data every 1 minute
     const interval = setInterval(() => {
@@ -73,7 +81,26 @@ export const useAlgoData = <T>(index: string, searchKeyword?: string) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchKeyword, value]);
 
-  const refreshData = () => setValue((value) => value + 1);
+  const refreshData = () => {
+    setValue((value) => value + 1);
+
+    const allQueries: any = {
+      ...router.query,
+    };
+
+    if (allQueries.hasOwnProperty(searchQuery)) {
+      delete allQueries[searchQuery];
+    }
+
+    router.push(
+      {
+        pathname: '/',
+        query: allQueries,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return [algoData, setAlgoData, refreshData, loading] as const;
 };

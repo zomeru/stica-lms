@@ -172,6 +172,18 @@ export const lostBooksTableHeaders = [
   'Replacement status',
 ];
 
+export const historyTableHeaders = [
+  // 'Book ID',
+  'Title',
+  'ISBN',
+  // 'Requested Date',
+  'Issued Date',
+  'Due Date',
+  'Returned Date',
+  'Penalty',
+  'Status',
+];
+
 export const GENRE_TYPES: GenreType[] = ['Fiction', 'Non-Fiction'];
 
 export const BOOK_GENRES_FICTION: FictionType[] = [

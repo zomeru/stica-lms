@@ -114,6 +114,7 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
               await borrow.ref.update({
                 renewRequest: deleteField(),
                 renewRequestDate: deleteField(),
+                updatedAt: timestamp.now(),
               });
             }
           }

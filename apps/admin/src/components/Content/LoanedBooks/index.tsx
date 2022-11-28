@@ -14,8 +14,10 @@ import { formatDate, navigateToBook } from '@src/utils';
 import ReturnedModal from './ReturnedModal';
 import LostModal from './LostModal';
 
+const bookSearchQueryName = 'loanedSearchKey';
+
 const LoanedBooks = () => {
-  const loanedSearchKey = useNextQuery('loanedSearchKey');
+  const loanedSearchKey = useNextQuery(bookSearchQueryName);
 
   const [selectedReturnBorrow, setSelectedReturnBorrow] = useState('');
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
@@ -23,7 +25,11 @@ const LoanedBooks = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
-    useAlgoData<AlgoBorrowDoc>('borrows', loanedSearchKey);
+    useAlgoData<AlgoBorrowDoc>(
+      'borrows',
+      bookSearchQueryName,
+      loanedSearchKey
+    );
 
   const issuedBorrows: AlgoBorrowDoc[] = useMemo(
     () => algoBorrows?.filter((borrow) => borrow.status === 'Issued'),
@@ -45,7 +51,7 @@ const LoanedBooks = () => {
   };
 
   return (
-    <section className='w-full h-full'>
+    <section className='h-full w-full'>
       <ReturnedModal
         isModalOpen={!!selectedReturnBorrow && isReturnModalOpen}
         setIsModalOpen={setIsReturnModalOpen}
@@ -67,10 +73,10 @@ const LoanedBooks = () => {
         setBorrows={setBorrows}
       />
       {issuedBorrows && issuedBorrows.length > 0 && (
-        <div className='flex justify-between mb-[10px]'>
+        <div className='mb-[10px] flex justify-between'>
           <button
             type='button'
-            className='bg-primary hover:bg-sky-800 duration-200 text-white text-sm px-3 py-1 rounded-md'
+            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
             onClick={handleUpdate}
           >
             Refresh records
@@ -85,8 +91,8 @@ const LoanedBooks = () => {
                 <button
                   type='button'
                   disabled={currentPage === 1}
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                    currentPage === 1 && 'opacity-40 cursor-not-allowed'
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                    currentPage === 1 && 'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => prev()}
                 >
@@ -98,10 +104,10 @@ const LoanedBooks = () => {
                     currentPage ===
                     Math.ceil(issuedBorrows.length / ITEMS_PER_PAGE)
                   }
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
                       Math.ceil(issuedBorrows.length / ITEMS_PER_PAGE) &&
-                    'opacity-40 cursor-not-allowed'
+                    'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
                 >
@@ -118,15 +124,15 @@ const LoanedBooks = () => {
             issuedBorrows && issuedBorrows.length > 0 ? 30 : 0
           }px)`,
         }}
-        className={`w-full custom-scrollbar ${
+        className={`custom-scrollbar w-full ${
           issuedBorrows && issuedBorrows.length > 0 && 'overflow-y-scroll'
         }`}
       >
         {!borrowLoading &&
           (!issuedBorrows ||
             (issuedBorrows && issuedBorrows.length === 0)) && (
-            <div className='w-full h-full flex flex-col justify-center space-y-3'>
-              <div className='relative w-[75%] h-[75%] mx-auto'>
+            <div className='flex h-full w-full flex-col justify-center space-y-3'>
+              <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
                   src='/assets/images/empty.png'
                   layout='fill'
@@ -136,7 +142,7 @@ const LoanedBooks = () => {
                   quality={50}
                 />
               </div>
-              <h1 className='text-cGray-300 text-2xl text-center'>
+              <h1 className='text-cGray-300 text-center text-2xl'>
                 {loanedSearchKey
                   ? 'No results found'
                   : 'There is currently no loaned book.'}
@@ -145,7 +151,7 @@ const LoanedBooks = () => {
                 <button
                   type='button'
                   onClick={handleUpdate}
-                  className='text-sky-600 text-xl'
+                  className='text-xl text-sky-600'
                 >
                   Refresh
                 </button>
@@ -159,14 +165,14 @@ const LoanedBooks = () => {
                 {loanedBooksTableHeaders.map((header) => (
                   <th
                     key={header}
-                    className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white truncate'
+                    className='bg-primary truncate border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                   >
                     {' '}
                     {header}{' '}
                   </th>
                 ))}
                 <th
-                  className='border-b-2 border-gray-200 bg-primary px-5 py-5 '
+                  className='bg-primary border-b-2 border-gray-200 px-5 py-5 '
                   aria-label='action'
                 />
               </tr>
@@ -180,21 +186,21 @@ const LoanedBooks = () => {
                     <ReactTooltip id={borrow.objectID} />
 
                     <tr key={borrow.id} className='font-medium'>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button type='button'>
-                          <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'>
+                          <p className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'>
                             {borrow.studentName}
                           </p>
                         </button>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'
                           onClick={() => navigateToBook(borrow.bookId)}
                         >
                           <p
-                            className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-primary'
+                            className='line-clamp-2 text-primary max-w-[210px] overflow-hidden text-left'
                             data-for={borrow.objectID}
                             data-tip={borrow.title}
                           >
@@ -203,31 +209,31 @@ const LoanedBooks = () => {
                         </button>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left truncate overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='max-w-[210px] overflow-hidden truncate text-left text-neutral-900'>
                           {borrow.genre}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {borrow.isbn}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left line-clamp-2 overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {borrow.accessionNumber}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] text-left overflow-hidden text-neutral-900'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <p className='max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {dueDate}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
                           className={`whitespace-no-wrap ${
                             borrow.penalty > 0
@@ -239,11 +245,11 @@ const LoanedBooks = () => {
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
-                        <div className='flex space-y-2 flex-col'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <div className='flex flex-col space-y-2'>
                           <button
                             type='button'
-                            className='truncate bg-sky-600 text-white px-2 py-1 rounded-md text-xs'
+                            className='truncate rounded-md bg-sky-600 px-2 py-1 text-xs text-white'
                             onClick={() => {
                               setIsReturnModalOpen(true);
                               setSelectedReturnBorrow(borrow.objectID);
@@ -253,7 +259,7 @@ const LoanedBooks = () => {
                           </button>
                           <button
                             type='button'
-                            className='truncate bg-red-600 text-white px-2 py-1 rounded-md text-xs'
+                            className='truncate rounded-md bg-red-600 px-2 py-1 text-xs text-white'
                             onClick={() => {
                               setIsLostModalOpen(true);
                               setSelectedReturnBorrow(borrow.objectID);

@@ -13,15 +13,21 @@ import { AlgoBorrowDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import UpdateDamagedModal from './UpdateDamagedModal';
 
+const bookSearchQueryName = 'damagedBookSearchKey';
+
 const DamagedBooks = () => {
-  const damagedBookSearchKey = useNextQuery('damagedBookSearchKey');
+  const damagedBookSearchKey = useNextQuery(bookSearchQueryName);
 
   const [
     algoDamagedBooks,
     setDamagedBooks,
     refreshDamagedBooks,
     damagedBooksLoading,
-  ] = useAlgoData<AlgoBorrowDoc>('borrows', damagedBookSearchKey);
+  ] = useAlgoData<AlgoBorrowDoc>(
+    'borrows',
+    bookSearchQueryName,
+    damagedBookSearchKey
+  );
 
   const [selectedDamagedBook, setSelectedDamagedBook] = useState('');
 
