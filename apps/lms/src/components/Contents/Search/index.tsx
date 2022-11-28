@@ -15,15 +15,21 @@ import Image from 'next/image';
 
 export type OrderType = 'asc' | 'desc';
 
+const bookSearchQueryName = 'searchKeyword';
+
 const Search = () => {
   const router = useRouter();
   const { sidebarOpen } = useSidebar();
-  const searchKeyword = useNextQuery('searchKeyword');
+  const searchKeyword = useNextQuery(bookSearchQueryName);
   const currentPage = useNextQuery('searchPage');
 
   const { width } = useWindowDimensions();
 
-  const [books] = useAlgoData<AlgoBookDoc>('books', searchKeyword);
+  const [books] = useAlgoData<AlgoBookDoc>(
+    'books',
+    bookSearchQueryName,
+    searchKeyword
+  );
 
   const [sortBy, setSortBy] = useState('views');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');

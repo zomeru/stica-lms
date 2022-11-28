@@ -13,11 +13,17 @@ import { AlgoBorrowDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import UpdateLostModal from './UpdateLostModal';
 
+const bookSearchQueryName = 'lostBookSearchKey';
+
 const LostBooks = () => {
-  const lostBookSearchKey = useNextQuery('lostBookSearchKey');
+  const lostBookSearchKey = useNextQuery(bookSearchQueryName);
 
   const [algoLostBooks, setLostBooks, refreshLostBooks, lostBooksLoading] =
-    useAlgoData<AlgoBorrowDoc>('borrows', lostBookSearchKey);
+    useAlgoData<AlgoBorrowDoc>(
+      'borrows',
+      bookSearchQueryName,
+      lostBookSearchKey
+    );
 
   const [selectedLostBook, setSelectedLostBook] = useState('');
 

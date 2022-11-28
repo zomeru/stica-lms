@@ -15,6 +15,7 @@ import {
   Users,
   DamagedBooks,
   RenewalRequest,
+  History,
 } from '@src/components/Content';
 
 const Home: NextPage = () => {
@@ -104,6 +105,12 @@ const Home: NextPage = () => {
         );
       }
 
+      if (page === 'history') {
+        routerArg.query.historyBookSearchKey = encodeURIComponent(
+          searchInputRef.current.value
+        );
+      }
+
       router.push(routerArg, undefined, { shallow: true });
     }
   };
@@ -149,6 +156,7 @@ const Home: NextPage = () => {
         {page === 'renewal requests' && <RenewalRequest />}
         {page === 'lost books' && <LostBooks />}
         {page === 'damaged books' && <DamagedBooks />}
+        {page === 'history' && <History />}
       </>
     );
   };

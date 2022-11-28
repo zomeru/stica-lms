@@ -59,6 +59,7 @@ const CurrentlyIssuedBooks = () => {
         const diffDays = diff / (1000 * 60 * 60 * 24);
 
         if (diffDays < 1) {
+          // if (!(diffDays < 1)) {
           const borrowRef = doc(db, 'borrows', borrowDoc.id);
           await updateDoc(borrowRef, {
             renewRequest: true,
@@ -230,7 +231,7 @@ const CurrentlyIssuedBooks = () => {
                         </p>
                       </td>
                       <td className='border-cGray-200 relative space-x-3 border-b bg-white pr-5 text-right text-sm'>
-                        {issue.renewRequest ? (
+                        {issue.renewRequest && issue.penalty <= 0 ? (
                           <p className='text-xs text-sky-600'>
                             Renewal requested
                           </p>
@@ -244,9 +245,6 @@ const CurrentlyIssuedBooks = () => {
                                   ? 'You can not renew this book because you have a penalty. Please settle the penalty.'
                                   : ''
                               }
-                              // disabled={
-                              //   issue.penalty > 0 || issue.renewRequest
-                              // }
                               className={`rounded-md px-2 py-1 text-xs text-white transition-colors duration-300 ${
                                 issue.penalty > 0
                                   ? 'cursor-not-allowed bg-neutral-500 '

@@ -10,12 +10,14 @@ import { ITEMS_PER_PAGE, userTableHeaders } from '@src/constants';
 import { copyToClipboard } from '@src/utils';
 import { AlgoUserDoc } from '@lms/types';
 
+const userSearchQueryName = 'userSearchKey';
+
 const Users = () => {
-  const userSearchKey = useNextQuery('userSearchKey');
+  const userSearchKey = useNextQuery(userSearchQueryName);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [users, setUsers, refreshUsers, userLoading] =
-    useAlgoData<AlgoUserDoc>('users', userSearchKey);
+    useAlgoData<AlgoUserDoc>('users', userSearchQueryName, userSearchKey);
 
   const [currentUsers, currentPage, next, prev] =
     useClientPagination<AlgoUserDoc>(users, ITEMS_PER_PAGE);

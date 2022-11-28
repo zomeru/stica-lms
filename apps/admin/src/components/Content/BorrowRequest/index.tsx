@@ -13,11 +13,17 @@ import { AlgoBorrowDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import PickedUpModal from './PickedUpModal';
 
+const bookSearchQueryName = 'borrowSearchKey';
+
 const BorrowRequest = () => {
-  const borrowSearchKey = useNextQuery('borrowSearchKey');
+  const borrowSearchKey = useNextQuery(bookSearchQueryName);
 
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
-    useAlgoData<AlgoBorrowDoc>('borrows', borrowSearchKey);
+    useAlgoData<AlgoBorrowDoc>(
+      'borrows',
+      bookSearchQueryName,
+      borrowSearchKey
+    );
 
   const [selectedBorrow, setSelectedBorrow] = useState('');
 
