@@ -174,6 +174,7 @@ const Home: NextPage = () => {
         searchPlaceholder={searchPlaceholder}
         user='admin'
         userPhoto='/assets/images/STI_LOGO.png'
+        showNotification
         adminInput={
           <input
             ref={searchInputRef}

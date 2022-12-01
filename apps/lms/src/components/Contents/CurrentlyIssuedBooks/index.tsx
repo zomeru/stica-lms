@@ -10,6 +10,8 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
+import nProgress from 'nprogress';
 
 import { formatDate, navigateToBook } from '@src/utils';
 import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
@@ -18,8 +20,6 @@ import { IBorrowDoc } from '@lms/types';
 import { useAuth } from '@src/contexts';
 import { db } from '@lms/db';
 import { useClientPagination } from '@lms/ui';
-import { toast } from 'react-hot-toast';
-import nProgress from 'nprogress';
 
 const CurrentlyIssuedBooks = () => {
   const { user } = useAuth();
