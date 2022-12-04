@@ -88,7 +88,11 @@ export const Layout = ({
         db,
         user === 'user' ? 'notifications' : 'admin-notifications'
       ),
-      where('userId', '==', user === 'user' ? userId : 'admin'),
+      where(
+        'userId',
+        '==',
+        user === 'user' ? userId || 'default' : 'admin'
+      ),
       orderBy('createdAt', 'desc')
     )
   );
