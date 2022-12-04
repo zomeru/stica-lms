@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {
+  addDoc,
+  collection,
   deleteField,
   doc,
   getDoc,
@@ -84,6 +86,16 @@ const Renewal = ({
       const userRef = doc(db, 'users', borrowData.userId);
       await updateDoc(userRef, {
         totalRenewedBooks: increment(1),
+      });
+
+      await addDoc(collection(db, 'notifications'), {
+        createdAt: currentTimestamp,
+        clicked: false,
+        type: 'Renewed',
+        message: `Your renewal request for ${borrowData.title} has been approved.`,
+        userId: borrowData.userId,
+        borrowId: borrowData.objectID,
+        bookTitle: borrowData.title,
       });
 
       const newRenewalRequest = borrows.filter(

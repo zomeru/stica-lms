@@ -18,6 +18,7 @@ import {
   doc,
   updateDoc,
   orderBy,
+  where,
 } from 'firebase/firestore';
 import TimeAgo from 'javascript-time-ago';
 
@@ -54,7 +55,7 @@ interface LayoutProps {
   onAdminSearch?: () => void;
   adminInput?: React.ReactNode;
   showNotification?: boolean;
-  hasNewNotification?: boolean;
+  userId?: string;
 }
 
 export const Layout = ({
@@ -72,7 +73,7 @@ export const Layout = ({
   onAdminSearch,
   adminInput,
   showNotification,
-  hasNewNotification,
+  userId,
 }: LayoutProps) => {
   const router = useRouter();
   const timeAgo = new TimeAgo('en-US');
@@ -87,6 +88,7 @@ export const Layout = ({
         db,
         user === 'user' ? 'notifications' : 'admin-notifications'
       ),
+      where('userId', '==', user === 'user' ? userId : 'admin'),
       orderBy('createdAt', 'desc')
     )
   );
@@ -115,7 +117,6 @@ export const Layout = ({
     );
   };
 
-  // const handleSearch = (e: FormEvent<HTMLFormElement>) => {
   const onSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -165,31 +166,15 @@ export const Layout = ({
     }
 
     setNotifOpen((prev) => !prev);
-
-    // const allQueries = { ...router.query };
-    // delete allQueries.bookId;
-
-    // router.push(
-    //   {
-    //     pathname: '/',
-    //     query: {
-    //       ...allQueries,
-    //       page: 'notifications',
-    //     },
-    //   },
-    //   undefined,
-    //   { shallow: true }
-    // );
   };
 
   const handleEachNotificationClick = async (
-    notifId: string,
-    type: NotificationType
+    notif: INotificationsDoc & IAdminNotificationsDoc
   ) => {
     const notifRef = doc(
       db,
       user === 'user' ? 'notifications' : 'admin-notifications',
-      notifId
+      notif.id
     );
     await updateDoc(notifRef, {
       clicked: true,
@@ -197,8 +182,42 @@ export const Layout = ({
 
     setNotifOpen(false);
 
-    if (type === 'Borrow') {
+    if (notif.type === 'Borrow') {
       handleSidebarItemClick('borrow requests');
+    }
+
+    if (notif.type === 'Renew') {
+      handleSidebarItemClick('renewal requests');
+    }
+
+    if (
+      notif.type === 'PickedUp' ||
+      notif.type === 'Penalty' ||
+      notif.type === 'Renewed'
+    ) {
+      handleSidebarItemClick('currently issued books');
+    }
+
+    if (notif.type === 'Cancelled' || notif.type === 'Return') {
+      handleSidebarItemClick('history');
+    }
+
+    if (notif.type === 'Damaged') {
+      handleSidebarItemClick('damaged books');
+    }
+
+    if (notif.type === 'Lost') {
+      handleSidebarItemClick('lost books');
+    }
+
+    if (notif.type === 'Replace') {
+      if (notif.message.includes('damaged')) {
+        handleSidebarItemClick('damaged books');
+      }
+
+      if (notif.message.includes('lost')) {
+        handleSidebarItemClick('lost books');
+      }
     }
   };
 
@@ -438,9 +457,11 @@ export const Layout = ({
 
               {notifOpen && (
                 <div className='custom-scrollbar absolute top-[80px] right-[0px] z-[9999] max-h-[calc(100vh-100px)] w-[380px] space-y-2 overflow-y-scroll rounded-lg border-t border-neutral-200 bg-white py-2 px-3 shadow-lg shadow-gray-400 drop-shadow-md'>
-                  <h2 className='text-left text-lg'>Notifications</h2>
+                  {notifs && notifs.length > 0 && (
+                    <h2 className='text-left text-lg'>Notifications</h2>
+                  )}
                   {notifs && notifs.length > 0 ? (
-                    <div className='space-y-2'>
+                    <div className='space-y-3'>
                       {notifs.map((notif) => {
                         let message;
                         const createdAt = notif.createdAt
@@ -449,7 +470,21 @@ export const Layout = ({
                         const date = new Date(createdAt);
                         const ago = timeAgo.format(date);
 
-                        if (notif.type === 'Borrow') {
+                        const typeArrAdmin = ['Borrow', 'Renew'];
+                        const typeArrUser = ['PickedUp', 'Cancelled'];
+
+                        const typeArrUser2 = [
+                          'Penalty',
+                          'Renewed',
+                          'Return',
+                          'Damaged',
+                          'Lost',
+                          'Replace',
+                        ];
+
+                        if (
+                          typeArrAdmin.some((type) => type === notif.type)
+                        ) {
                           message = (
                             <p
                               className={`${
@@ -482,20 +517,81 @@ export const Layout = ({
                           );
                         }
 
+                        if (
+                          typeArrUser.some((type) => type === notif.type)
+                        ) {
+                          const newMessage = notif.message.replace(
+                            notif.bookTitle as string,
+                            ''
+                          );
+                          message = (
+                            <p
+                              className={`${
+                                notif.clicked
+                                  ? 'text-neutral-500'
+                                  : 'text-neutral-800'
+                              }`}
+                            >
+                              {newMessage}{' '}
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.bookTitle}
+                              </span>
+                              .
+                            </p>
+                          );
+                        }
+
+                        if (
+                          typeArrUser2.some((type) => type === notif.type)
+                        ) {
+                          const messageSplit = notif.message.split(
+                            notif.bookTitle as string
+                          );
+
+                          message = (
+                            <p
+                              className={`${
+                                notif.clicked
+                                  ? 'text-neutral-500'
+                                  : 'text-neutral-800'
+                              }`}
+                            >
+                              {messageSplit[0] || ''}
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.bookTitle}
+                              </span>
+                              {messageSplit[1] || ''}
+                            </p>
+                          );
+                        }
+
                         return (
                           <button
                             className='flex items-center space-x-[10px]'
                             type='button'
                             onClick={() =>
-                              handleEachNotificationClick(
-                                notif.id,
-                                notif.type
-                              )
+                              handleEachNotificationClick(notif)
                             }
                           >
                             <div className='relative h-[50px] w-[50px] overflow-hidden rounded-full'>
                               <Image
-                                src={notif.studentPhoto!}
+                                src={
+                                  user === 'admin'
+                                    ? notif.studentPhoto!
+                                    : 'https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/stica%2FSTI_LOGO.png?alt=media&token=2a5f406c-9e29-41de-be02-16f830682691'
+                                }
                                 layout='fill'
                                 alt='student'
                               />
@@ -517,7 +613,7 @@ export const Layout = ({
                       })}
                     </div>
                   ) : (
-                    <p>No notifications</p>
+                    <p className='text-center text-xl'>No notifications</p>
                   )}
                 </div>
               )}

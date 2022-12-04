@@ -11,6 +11,8 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
+  addDoc,
+  collection,
 } from 'firebase/firestore';
 
 import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
@@ -113,6 +115,16 @@ const UpdateDamagedModal = ({
       const userRef = doc(db, 'users', damagedBookData?.userId || '');
       await updateDoc(userRef, {
         totalReturnedBooks: increment(1),
+      });
+
+      await addDoc(collection(db, 'notifications'), {
+        createdAt: timestamp,
+        clicked: false,
+        userId: damagedBookData?.userId,
+        borrowId: damagedBookData?.objectID,
+        bookTitle: damagedBookData?.title,
+        message: `You have successfully replaced the book ${damagedBookData?.title} you have damaged with a new one.`,
+        type: 'Replace',
       });
 
       const newDamagedBooks = damagedBooks.filter(

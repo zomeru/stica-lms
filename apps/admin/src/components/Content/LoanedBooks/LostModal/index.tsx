@@ -11,6 +11,8 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
+  collection,
+  addDoc,
 } from 'firebase/firestore';
 
 import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
@@ -119,6 +121,28 @@ const LostModal = ({
       await updateDoc(userRef, {
         totalLostBooks: increment(1),
       });
+
+      const notifCol = collection(db, 'notifications');
+      const notifPayload: any = {
+        createdAt: timestamp,
+        clicked: false,
+        userId: borrowData?.userId,
+        borrowId: borrowData?.objectID,
+        bookTitle: borrowData?.title,
+        type: 'Lost',
+        message: `The ${borrowData?.title} you have borrowed was marked as Lost.`,
+      };
+
+      await addDoc(notifCol, notifPayload);
+
+      if (hasBeenReplaced) {
+        await addDoc(notifCol, {
+          ...notifPayload,
+          type: 'Replace',
+          message: `You have successfully replaced the book ${borrowData?.title} you have lost with a new one.`,
+          createdAt: serverTimestamp(),
+        });
+      }
 
       const newBorrows = borrows.filter(
         (el) => el.objectID !== borrowData?.objectID

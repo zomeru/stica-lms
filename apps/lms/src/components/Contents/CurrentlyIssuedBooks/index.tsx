@@ -2,6 +2,7 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import {
+  addDoc,
   collection,
   doc,
   orderBy,
@@ -58,13 +59,27 @@ const CurrentlyIssuedBooks = () => {
         const diff = dueDate.getTime() - today.getTime();
         const diffDays = diff / (1000 * 60 * 60 * 24);
 
-        if (diffDays < 1) {
-          // if (!(diffDays < 1)) {
+        // if (diffDays < 1) {
+        if (!(diffDays < 1)) {
           const borrowRef = doc(db, 'borrows', borrowDoc.id);
           await updateDoc(borrowRef, {
             renewRequest: true,
             renewRequestDate: serverTimestamp(),
           });
+
+          await addDoc(collection(db, 'admin-notifications'), {
+            createdAt: serverTimestamp(),
+            clicked: false,
+            type: 'Renew',
+            studentName: `${user?.givenName} ${user?.surname}`,
+            studentId: user?.id,
+            borrowId: borrowDoc.id,
+            message: 'has requested to renew.',
+            bookTitle: borrowDoc.title,
+            studentPhoto: user?.photo.url,
+            userId: 'admin',
+          });
+
           toast.success('Renewal request sent!');
         } else {
           toast.error('You can only renew 24 hours before due date');

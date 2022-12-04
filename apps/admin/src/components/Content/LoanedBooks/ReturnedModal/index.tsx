@@ -6,6 +6,8 @@ import Modal from 'react-modal';
 import { AiFillEdit } from 'react-icons/ai';
 import { FaCheck } from 'react-icons/fa';
 import {
+  addDoc,
+  collection,
   doc,
   getDoc,
   increment,
@@ -127,6 +129,23 @@ const ReturnedModal = ({
 
       const userRef = doc(db, 'users', borrowData.userId);
 
+      const notifCol = collection(db, 'notifications');
+
+      const notifPayload: any = {
+        createdAt: timestamp,
+        clicked: false,
+        userId: borrowData.userId,
+        borrowId: borrowData.objectID,
+        bookTitle: borrowData.title,
+      };
+
+      if (!withDamage && !hasBeenReplaced) {
+        notifPayload.message = `You have returned ${borrowData.title} on time.`;
+        notifPayload.type = 'Return';
+
+        await addDoc(notifCol, notifPayload);
+      }
+
       if (!withDamage || hasBeenReplaced) {
         await updateDoc(userRef, {
           totalReturnedBooks: increment(1),
@@ -137,6 +156,19 @@ const ReturnedModal = ({
         await updateDoc(userRef, {
           totalDamagedBooks: increment(1),
         });
+
+        notifPayload.message = `The ${borrowData.title} you have borrowed was marked as Damaged.`;
+        notifPayload.type = 'Damaged';
+        await addDoc(notifCol, notifPayload);
+
+        if (hasBeenReplaced) {
+          await addDoc(notifCol, {
+            ...notifPayload,
+            message: `You have successfully replaced the book ${borrowData.title} you have damaged with a new one.`,
+            type: 'Replace',
+            createdAt: serverTimestamp(),
+          });
+        }
       }
 
       const newBorrows = borrows.filter(

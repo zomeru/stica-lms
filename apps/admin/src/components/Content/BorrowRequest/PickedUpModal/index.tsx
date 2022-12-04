@@ -5,6 +5,8 @@ import {
   serverTimestamp,
   updateDoc,
   increment,
+  addDoc,
+  collection,
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { BsArrowLeft } from 'react-icons/bs';
@@ -123,6 +125,16 @@ const PickedUpModal = ({
       const userRef = doc(db, 'users', borrowData.userId);
       await updateDoc(userRef, {
         totalBorrowedBooks: increment(1),
+      });
+
+      await addDoc(collection(db, 'notifications'), {
+        createdAt: timestamp,
+        clicked: false,
+        type: 'PickedUp',
+        message: `You have picked up ${bookData.title}`,
+        userId: borrowData.userId,
+        borrowId: borrowData.objectID,
+        bookTitle: bookData.title,
       });
 
       const newBorrows = borrows.filter(

@@ -155,8 +155,9 @@ export const borrowBook = async (
           studentId: user.id,
           borrowId: currentBorrow.id,
           studentPhoto: user.photo.url,
-          message: `has requested to borrow the book`,
+          message: `has requested to borrow`,
           bookTitle: book.title,
+          userId: 'admin',
         });
 
         toast.success('Borrow request sent successfully.');

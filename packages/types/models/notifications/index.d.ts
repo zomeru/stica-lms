@@ -2,18 +2,21 @@ type NotificationType =
   | 'Borrow'
   | 'Return'
   | 'Renew'
+  | 'Renewed'
   | 'Replace'
   | 'Penalty'
   | 'Lost'
   | 'Damaged'
-  | 'Cancel';
+  | 'Cancelled'
+  | 'PickedUp';
 
 export interface Notifications {
   createdAt: any;
   clicked: boolean;
   type: NotificationType;
-  message?: string;
+  message: string;
   borrowId?: string;
+  bookTitle?: string;
 }
 
 export interface INotifications extends Notifications {
@@ -24,7 +27,6 @@ export interface IAdminNotifications extends Notifications {
   studentName: string;
   studentId: string;
   studentPhoto?: string;
-  bookTitle?: string;
 }
 
 export interface INotificationsDoc extends INotifications {

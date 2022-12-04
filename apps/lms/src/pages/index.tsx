@@ -115,7 +115,7 @@ const Home: NextPage = () => {
                 duration: 1,
               },
             }}
-            className='w-screen h-screen flex justify-center items-center overflow-hidden'
+            className='flex h-screen w-screen items-center justify-center overflow-hidden'
           >
             <IntroLoader finishLoading={() => setIsLoading(false)} />
           </motion.div>
@@ -134,7 +134,7 @@ const Home: NextPage = () => {
           userPhoto={user?.photo.url}
           showNotification
           // TODO: dynamic notification
-          hasNewNotification={false}
+          userId={user?.id}
         >
           <LoaderModal isLoading={loading} />
           {renderContent()}
