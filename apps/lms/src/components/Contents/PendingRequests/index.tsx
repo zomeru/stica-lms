@@ -8,11 +8,10 @@ import {
   pendingRequestTableHeaders,
   ITEMS_PER_PAGE,
 } from '@src/constants';
-import { cancelBorrowRequest, useCol } from '@src/services';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
-import { useClientPagination } from '@lms/ui';
+import { cancelBorrowRequest, useClientPagination, useCol } from '@lms/ui';
 
 const PendingRequests = () => {
   const { user } = useAuth();
@@ -30,11 +29,11 @@ const PendingRequests = () => {
     useClientPagination(userBorrows || [], ITEMS_PER_PAGE);
 
   return (
-    <section className='w-full h-full'>
+    <section className='h-full w-full'>
       {userBorrows &&
         userBorrows.length > 0 &&
         userBorrows.length / ITEMS_PER_PAGE > 1 && (
-          <div className='flex justify-end mb-[10px]'>
+          <div className='mb-[10px] flex justify-end'>
             <div className='flex items-center space-x-3'>
               <div>
                 {currentPage}/
@@ -44,8 +43,8 @@ const PendingRequests = () => {
                 <button
                   type='button'
                   disabled={currentPage === 1}
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                    currentPage === 1 && 'opacity-40 cursor-not-allowed'
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                    currentPage === 1 && 'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => prev()}
                 >
@@ -57,10 +56,10 @@ const PendingRequests = () => {
                     currentPage ===
                     Math.ceil(userBorrows.length / ITEMS_PER_PAGE)
                   }
-                  className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                     currentPage ===
                       Math.ceil(userBorrows.length / ITEMS_PER_PAGE) &&
-                    'opacity-40 cursor-not-allowed'
+                    'cursor-not-allowed opacity-40'
                   }`}
                   onClick={() => next()}
                 >
@@ -80,14 +79,14 @@ const PendingRequests = () => {
               : 0
           }px)`,
         }}
-        className={`w-full custom-scrollbar ${
+        className={`custom-scrollbar w-full ${
           userBorrows && userBorrows.length > 0 && 'overflow-y-scroll'
         }`}
       >
         {!borrowLoading &&
           (!userBorrows || (userBorrows && userBorrows.length === 0)) && (
-            <div className='w-full h-full flex flex-col justify-center space-y-3'>
-              <div className='relative w-[75%] h-[75%] mx-auto'>
+            <div className='flex h-full w-full flex-col justify-center space-y-3'>
+              <div className='relative mx-auto h-[75%] w-[75%]'>
                 <Image
                   src='/assets/images/empty.png'
                   layout='fill'
@@ -97,7 +96,7 @@ const PendingRequests = () => {
                   quality={50}
                 />
               </div>
-              <h1 className='text-cGray-300 text-2xl text-center'>
+              <h1 className='text-cGray-300 text-center text-2xl'>
                 You currently have no borrow request.
               </h1>
             </div>
@@ -109,14 +108,14 @@ const PendingRequests = () => {
                 {pendingRequestTableHeaders.map((header) => (
                   <th
                     key={header}
-                    className='border-b-2 border-gray-200 bg-primary px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
+                    className='bg-primary border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                   >
                     {' '}
                     {header}{' '}
                   </th>
                 ))}
                 <th
-                  className='border-b-2 border-gray-200 bg-primary px-5 py-5 '
+                  className='bg-primary border-b-2 border-gray-200 px-5 py-5 '
                   aria-label='action'
                 />
               </tr>
@@ -142,13 +141,13 @@ const PendingRequests = () => {
                   {request.id}
                 </p>
               </td> */}
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'
                           onClick={() => navigateToBook(borrow.bookId)}
                         >
                           <p
-                            className='max-w-[200px] overflow-hidden text-primary line-clamp-2 text-left'
+                            className='text-primary line-clamp-2 max-w-[200px] overflow-hidden text-left'
                             data-for={borrow.title}
                             data-tip={borrow.title}
                           >
@@ -156,24 +155,24 @@ const PendingRequests = () => {
                           </p>
                         </button>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
                           {borrow.isbn}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
                           {borrow.accessionNumber}
                         </p>
                       </td>
 
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='whitespace-no-wrap text-gray-900'>
                           {requestDate}
                         </p>
                       </td>
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
                           className={`whitespace-no-wrap ${
                             pickupDueDate !== 'N/A'
@@ -195,7 +194,7 @@ const PendingRequests = () => {
                           {borrow.status}
                         </p>
                       </td> */}
-                      <td className='border-b border-cGray-200 bg-white px-5 py-5 text-right text-sm relative'>
+                      <td className='border-cGray-200 relative border-b bg-white px-5 py-5 text-right text-sm'>
                         <button
                           type='button'
                           className='inline-block text-red-500 hover:text-red-600'

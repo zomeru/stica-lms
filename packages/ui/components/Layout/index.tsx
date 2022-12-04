@@ -1,4 +1,4 @@
-import React, { FormEvent, useRef } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -6,14 +6,36 @@ import {
   AiOutlineLogout,
   AiOutlineLogin,
   AiOutlineSearch,
+  AiOutlineLeft,
 } from 'react-icons/ai';
 import { MdNotificationsNone } from 'react-icons/md';
-import { AiOutlineLeft } from 'react-icons/ai';
 import { IconType } from 'react-icons';
 import { toast } from 'react-hot-toast';
 import { motion, Variants } from 'framer-motion';
+import {
+  collection,
+  query,
+  doc,
+  updateDoc,
+  orderBy,
+  where,
+} from 'firebase/firestore';
+import TimeAgo from 'javascript-time-ago';
+
+import { db } from '@lms/db';
+import {
+  IAdminNotificationsDoc,
+  INotificationsDoc,
+  NotificationType,
+} from '@lms/types';
+
+import en from 'javascript-time-ago/locale/en';
 
 import Menu from '../Menu';
+import { useCol } from '../../services';
+
+// English.
+TimeAgo.addDefaultLocale(en);
 
 interface LayoutProps {
   isAuthenticated: boolean;
@@ -33,7 +55,7 @@ interface LayoutProps {
   onAdminSearch?: () => void;
   adminInput?: React.ReactNode;
   showNotification?: boolean;
-  hasNewNotification?: boolean;
+  userId?: string;
 }
 
 export const Layout = ({
@@ -51,10 +73,27 @@ export const Layout = ({
   onAdminSearch,
   adminInput,
   showNotification,
-  hasNewNotification,
+  userId,
 }: LayoutProps) => {
   const router = useRouter();
+  const timeAgo = new TimeAgo('en-US');
+
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const [notifs] = useCol<INotificationsDoc & IAdminNotificationsDoc>(
+    query(
+      collection(
+        db,
+        user === 'user' ? 'notifications' : 'admin-notifications'
+      ),
+      where('userId', '==', user === 'user' ? userId : 'admin'),
+      orderBy('createdAt', 'desc')
+    )
+  );
+
+  console.log('notifs', notifs);
 
   const handleSearch = (keyword: string) => {
     const allQueries: any = {
@@ -78,7 +117,6 @@ export const Layout = ({
     );
   };
 
-  // const handleSearch = (e: FormEvent<HTMLFormElement>) => {
   const onSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -127,20 +165,60 @@ export const Layout = ({
       return;
     }
 
-    const allQueries = { ...router.query };
-    delete allQueries.bookId;
+    setNotifOpen((prev) => !prev);
+  };
 
-    router.push(
-      {
-        pathname: '/',
-        query: {
-          ...allQueries,
-          page: 'notifications',
-        },
-      },
-      undefined,
-      { shallow: true }
+  const handleEachNotificationClick = async (
+    notif: INotificationsDoc & IAdminNotificationsDoc
+  ) => {
+    const notifRef = doc(
+      db,
+      user === 'user' ? 'notifications' : 'admin-notifications',
+      notif.id
     );
+    await updateDoc(notifRef, {
+      clicked: true,
+    });
+
+    setNotifOpen(false);
+
+    if (notif.type === 'Borrow') {
+      handleSidebarItemClick('borrow requests');
+    }
+
+    if (notif.type === 'Renew') {
+      handleSidebarItemClick('renewal requests');
+    }
+
+    if (
+      notif.type === 'PickedUp' ||
+      notif.type === 'Penalty' ||
+      notif.type === 'Renewed'
+    ) {
+      handleSidebarItemClick('currently issued books');
+    }
+
+    if (notif.type === 'Cancelled' || notif.type === 'Return') {
+      handleSidebarItemClick('history');
+    }
+
+    if (notif.type === 'Damaged') {
+      handleSidebarItemClick('damaged books');
+    }
+
+    if (notif.type === 'Lost') {
+      handleSidebarItemClick('lost books');
+    }
+
+    if (notif.type === 'Replace') {
+      if (notif.message.includes('damaged')) {
+        handleSidebarItemClick('damaged books');
+      }
+
+      if (notif.message.includes('lost')) {
+        handleSidebarItemClick('lost books');
+      }
+    }
   };
 
   //? ANIMATIONS
@@ -361,19 +439,183 @@ export const Layout = ({
               </button> */}
             </form>
 
-            <div className='flex h-full w-[500px] items-center justify-end space-x-4'>
+            <div className='relative flex h-full w-[500px] items-center justify-end space-x-4'>
               {showNotification && (
                 <motion.button
                   variants={menuItemVariants}
                   type='button'
                   className={`${
-                    hasNewNotification &&
+                    notifs &&
+                    notifs.filter((notif) => !notif.clicked).length > 0 &&
                     'relative after:absolute after:top-[3px] after:right-[3px] after:h-[10px] after:w-[10px] after:rounded-full after:bg-red-600 after:content-[""]'
                   }`}
                   onClick={handleNotificationClick}
                 >
                   <MdNotificationsNone className='text-blackText h-[25px] w-[25px]' />
                 </motion.button>
+              )}
+
+              {notifOpen && (
+                <div className='custom-scrollbar absolute top-[80px] right-[0px] z-[9999] max-h-[calc(100vh-100px)] w-[380px] space-y-2 overflow-y-scroll rounded-lg border-t border-neutral-200 bg-white py-2 px-3 shadow-lg shadow-gray-400 drop-shadow-md'>
+                  {notifs && notifs.length > 0 && (
+                    <h2 className='text-left text-lg'>Notifications</h2>
+                  )}
+                  {notifs && notifs.length > 0 ? (
+                    <div className='space-y-3'>
+                      {notifs.map((notif) => {
+                        let message;
+                        const createdAt = notif.createdAt
+                          .toDate()
+                          .toLocaleString();
+                        const date = new Date(createdAt);
+                        const ago = timeAgo.format(date);
+
+                        const typeArrAdmin = ['Borrow', 'Renew'];
+                        const typeArrUser = ['PickedUp', 'Cancelled'];
+
+                        const typeArrUser2 = [
+                          'Penalty',
+                          'Renewed',
+                          'Return',
+                          'Damaged',
+                          'Lost',
+                          'Replace',
+                        ];
+
+                        if (
+                          typeArrAdmin.some((type) => type === notif.type)
+                        ) {
+                          message = (
+                            <p
+                              className={`${
+                                notif.clicked
+                                  ? 'text-neutral-500'
+                                  : 'text-neutral-800'
+                              }`}
+                            >
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.studentName}
+                              </span>{' '}
+                              {notif.message}{' '}
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.bookTitle}
+                              </span>
+                              .
+                            </p>
+                          );
+                        }
+
+                        if (
+                          typeArrUser.some((type) => type === notif.type)
+                        ) {
+                          const newMessage = notif.message.replace(
+                            notif.bookTitle as string,
+                            ''
+                          );
+                          message = (
+                            <p
+                              className={`${
+                                notif.clicked
+                                  ? 'text-neutral-500'
+                                  : 'text-neutral-800'
+                              }`}
+                            >
+                              {newMessage}{' '}
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.bookTitle}
+                              </span>
+                              .
+                            </p>
+                          );
+                        }
+
+                        if (
+                          typeArrUser2.some((type) => type === notif.type)
+                        ) {
+                          const messageSplit = notif.message.split(
+                            notif.bookTitle as string
+                          );
+
+                          message = (
+                            <p
+                              className={`${
+                                notif.clicked
+                                  ? 'text-neutral-500'
+                                  : 'text-neutral-800'
+                              }`}
+                            >
+                              {messageSplit[0] || ''}
+                              <span
+                                className={`${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'text-blackText'
+                                } font-semibold`}
+                              >
+                                {notif.bookTitle}
+                              </span>
+                              {messageSplit[1] || ''}
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <button
+                            className='flex items-center space-x-[10px]'
+                            type='button'
+                            onClick={() =>
+                              handleEachNotificationClick(notif)
+                            }
+                          >
+                            <div className='relative h-[50px] w-[50px] overflow-hidden rounded-full'>
+                              <Image
+                                src={
+                                  user === 'admin'
+                                    ? notif.studentPhoto!
+                                    : 'https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/stica%2FSTI_LOGO.png?alt=media&token=2a5f406c-9e29-41de-be02-16f830682691'
+                                }
+                                layout='fill'
+                                alt='student'
+                              />
+                            </div>
+                            <div className='w-[calc(100%-60px)] text-left text-sm'>
+                              {message}
+                              <div
+                                className={`text-left text-xs ${
+                                  notif.clicked
+                                    ? 'text-neutral-500'
+                                    : 'font-semibold text-sky-600'
+                                }`}
+                              >
+                                {ago}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className='text-center text-xl'>No notifications</p>
+                  )}
+                </div>
               )}
 
               {isAuthenticated ? (

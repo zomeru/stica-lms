@@ -7,13 +7,13 @@ import { collection, query, where } from 'firebase/firestore';
 import { AlgoBookDoc, IBorrowDoc, ILikedBookDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
+import { navigateToBook } from '@src/utils';
 import {
   addToLikedBooks,
   borrowBook,
   removeFromLikedBooks,
   useCol,
-} from '@src/services';
-import { navigateToBook } from '@src/utils';
+} from '@lms/ui';
 
 interface BookCardProps {
   book: AlgoBookDoc;
@@ -47,12 +47,12 @@ const BookCard = ({ book }: BookCardProps) => {
   );
 
   return (
-    <div className='relative w-[300px] h-[180px] flex rounded-2xl overflow-hidden before:content-[""] before:absolute before:border before:border-cGray-200 before:w-full before:h-[calc(100%)] before:rounded-2xl before:z-[-1]'>
+    <div className='before:border-cGray-200 relative flex h-[180px] w-[300px] overflow-hidden rounded-2xl before:absolute before:z-[-1] before:h-[calc(100%)] before:w-full before:rounded-2xl before:border before:content-[""]'>
       <ReactTooltip id={objectID} />
       <div
         data-tip={title}
         data-for={objectID}
-        className='w-[40%] h-full relative overflow-hidden'
+        className='relative h-full w-[40%] overflow-hidden'
       >
         <Image
           src={imageCover.url}
@@ -64,7 +64,7 @@ const BookCard = ({ book }: BookCardProps) => {
           placeholder='blur'
         />
       </div>
-      <div className='w-[60%] h-full px-[5px] py-[8px] flex flex-col justify-between'>
+      <div className='flex h-full w-[60%] flex-col justify-between px-[5px] py-[8px]'>
         <div className='space-y-0'>
           {/* <h1 className='text-ellipsis overflow-hidden text-blackText truncate'>
             {title}
@@ -72,24 +72,24 @@ const BookCard = ({ book }: BookCardProps) => {
           <h1
             data-tip={title}
             data-for={objectID}
-            className='line-clamp-2 overflow-hidden text-blackText'
+            className='line-clamp-2 text-blackText overflow-hidden'
           >
             {title}
           </h1>
-          <h2 className='text-sm mb-[5px] text-cGray-300'>{author}</h2>
-          <p className='text-sm mb-[5px] text-cGray-300'>Genre: {genre}</p>
+          <h2 className='text-cGray-300 mb-[5px] text-sm'>{author}</h2>
+          <p className='text-cGray-300 mb-[5px] text-sm'>Genre: {genre}</p>
         </div>
         <div>
-          <div className='text-xs text-cGray-300'>
+          <div className='text-cGray-300 text-xs'>
             Available: {available}
           </div>
-          <div className='text-xs text-cGray-300'>Views: {views}</div>
+          <div className='text-cGray-300 text-xs'>Views: {views}</div>
         </div>
 
-        <div className='flex justify-evenly items-center'>
+        <div className='flex items-center justify-evenly'>
           <button
             type='button'
-            className='bg-cGray-200 px-2 py-1 rounded-md text-xs text-blackText hover:bg-neutral-400 duration-200 transition-all'
+            className='bg-cGray-200 text-blackText rounded-md px-2 py-1 text-xs transition-all duration-200 hover:bg-neutral-400'
             onClick={() => navigateToBook(objectID)}
           >
             Details
@@ -103,10 +103,10 @@ const BookCard = ({ book }: BookCardProps) => {
               borrowBook(book, user, setIsBorrowing);
             }}
             type='button'
-            className={` px-2 py-1 rounded-md text-white text-xs duration-200 transition-all ${
+            className={` rounded-md px-2 py-1 text-xs text-white transition-all duration-200 ${
               userBorrows?.some((el) => el.bookId === objectID) ||
               isBorrowing
-                ? 'bg-neutral-500 cursor-not-allowed'
+                ? 'cursor-not-allowed bg-neutral-500'
                 : 'bg-primary hover:bg-[#004c95] '
             } `}
           >
@@ -144,9 +144,9 @@ const BookCard = ({ book }: BookCardProps) => {
             }}
           >
             {myLikes && myLikes.some((el) => el.bookId === objectID) ? (
-              <AiFillHeart className='w-[20px] h-[20px] text-primary' />
+              <AiFillHeart className='text-primary h-[20px] w-[20px]' />
             ) : (
-              <AiOutlineHeart className='w-[20px] h-[20px] text-blackText' />
+              <AiOutlineHeart className='text-blackText h-[20px] w-[20px]' />
             )}
           </button>
         </div>

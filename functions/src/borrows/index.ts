@@ -42,6 +42,30 @@ export const autoCancelBorrows = regionalFunctions.pubsub
           status: 'Cancelled',
           updatedAt: timestamp.now(),
         });
+
+        // delete notification for admin
+        const adminNotifRef = db.collection('admin-notifications');
+        const adminNotifQuery = adminNotifRef.where(
+          'borrowId',
+          '==',
+          borrow.id
+        );
+        const adminNotif = await adminNotifQuery.get();
+        const doc = adminNotif.docs[0];
+        await doc.ref.delete();
+
+        // send notification to student that borrow request was automatically cancelled on notifications collection
+
+        const payload = {
+          createdAt: timestamp.now(),
+          clicked: false,
+          type: 'Cancelled',
+          message: `Your borrow request on ${data.title} was automatically cancelled.`,
+          borrowId: borrow.id,
+          userId: data.userId,
+          bookTitle: data.title,
+        };
+        await db.collection('notifications').add(payload);
       }
     });
   });
@@ -117,6 +141,28 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
                 updatedAt: timestamp.now(),
               });
             }
+
+            // send notification to student that penalty was added on notifications collection
+            const studentId = data.userId;
+
+            const payload = {
+              createdAt: timestamp.now(),
+              clicked: false,
+              type: 'Penalty',
+              message: `We have added ${
+                borrow.penalty > 1 ? 'another 5' : '5'
+              } pesos penalty for your issued book on ${
+                data.title
+              } because you have not returned it on time.${
+                borrow.penalty > 1 &&
+                ` Your current penalty is ${data.penalty + 5} pesos.`
+              }`,
+              borrowId: borrow.id,
+              userId: studentId,
+              bookTitle: data.title,
+            };
+
+            await db.collection('notifications').add(payload);
           }
         });
       }
