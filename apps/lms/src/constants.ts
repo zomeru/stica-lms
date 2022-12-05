@@ -4,14 +4,15 @@ import {
   AiOutlineSearch,
   AiOutlineHeart,
   AiOutlineInfoCircle,
+  AiOutlineMessage,
 } from 'react-icons/ai';
 import {
   // MdOutlineContactPage,
   MdPendingActions,
-  MdOutlineNotificationsNone,
   MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
+import { RiFileDamageFill } from 'react-icons/ri';
 
 import { SideBarItemsType } from './types';
 
@@ -25,8 +26,8 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     Icon: AiOutlineSearch,
   },
   {
-    name: 'Notifications',
-    Icon: MdOutlineNotificationsNone,
+    name: 'Message Admin',
+    Icon: AiOutlineMessage,
   },
   {
     name: 'My Likes',
@@ -43,6 +44,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
   {
     name: 'Lost Books',
     Icon: MdSearchOff,
+  },
+  {
+    name: 'Damaged Books',
+    Icon: RiFileDamageFill,
   },
   {
     name: 'History',

@@ -164,7 +164,7 @@ const ReturnedModal = ({
         if (hasBeenReplaced) {
           await addDoc(notifCol, {
             ...notifPayload,
-            message: `You have successfully replaced the book ${borrowData.title} you have damaged with a new one.`,
+            message: `You have successfully replaced ${borrowData.title} that you have damaged with a new one.`,
             type: 'Replace',
             createdAt: serverTimestamp(),
           });

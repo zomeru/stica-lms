@@ -6,3 +6,4 @@ export { default as LostBooks } from './LostBooks';
 export { default as DamagedBooks } from './DamagedBooks';
 export { default as RenewalRequest } from './RenewalRequest';
 export { default as History } from './History';
+export { default as Messages } from './Messages';

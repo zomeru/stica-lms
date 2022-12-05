@@ -114,7 +114,7 @@ const UpdateLostModal = ({
         userId: lostBookData?.userId,
         borrowId: lostBookData?.objectID,
         bookTitle: lostBookData?.title,
-        message: `You have successfully replaced the book ${lostBookData?.title} you have lost with a new one.`,
+        message: `You have successfully replaced ${lostBookData?.title} that you have lost with a new one.`,
         type: 'Replace',
       });
 

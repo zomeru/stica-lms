@@ -139,7 +139,7 @@ const LostModal = ({
         await addDoc(notifCol, {
           ...notifPayload,
           type: 'Replace',
-          message: `You have successfully replaced the book ${borrowData?.title} you have lost with a new one.`,
+          message: `You have successfully replaced ${borrowData?.title} that you have lost with a new one.`,
           createdAt: serverTimestamp(),
         });
       }

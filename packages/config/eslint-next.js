@@ -45,6 +45,8 @@ module.exports = {
     'arrow-body-style': 'off',
     'import/prefer-default-export': 'off',
     'no-nested-ternary': 'off',
+    'no-else-return': 'off',
+    'no-lonely-if': 'off',
     'import/no-cycle': 'off',
     'no-underscore-dangle': 'off',
     '@typescript-eslint/naming-convention': 'off',

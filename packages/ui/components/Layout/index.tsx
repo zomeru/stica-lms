@@ -1,4 +1,4 @@
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -23,11 +23,7 @@ import {
 import TimeAgo from 'javascript-time-ago';
 
 import { db } from '@lms/db';
-import {
-  IAdminNotificationsDoc,
-  INotificationsDoc,
-  NotificationType,
-} from '@lms/types';
+import { IAdminNotificationsDoc, INotificationsDoc } from '@lms/types';
 
 import en from 'javascript-time-ago/locale/en';
 
@@ -79,8 +75,24 @@ export const Layout = ({
   const timeAgo = new TimeAgo('en-US');
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
 
   const [notifOpen, setNotifOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClick = () => {
+      console.log('Button clicked');
+      if (notifOpen) setNotifOpen(false);
+    };
+
+    const element = layoutRef.current;
+
+    element?.addEventListener('click', handleClick);
+
+    return () => {
+      element?.removeEventListener('click', handleClick);
+    };
+  }, [notifOpen]);
 
   const [notifs] = useCol<INotificationsDoc & IAdminNotificationsDoc>(
     query(
@@ -96,8 +108,6 @@ export const Layout = ({
       orderBy('createdAt', 'desc')
     )
   );
-
-  console.log('notifs', notifs);
 
   const handleSearch = (keyword: string) => {
     const allQueries: any = {
@@ -126,10 +136,9 @@ export const Layout = ({
 
     if (user === 'admin') {
       if (onAdminSearch) onAdminSearch();
+
       return;
     }
-
-    // if (router.query.page === 'search') return;
 
     if (!searchInputRef.current) return;
     if (!searchInputRef.current.value) {
@@ -254,7 +263,10 @@ export const Layout = ({
   };
 
   return (
-    <div className='mx-auto h-[calc(100vh)] max-w-[1920px]'>
+    <div
+      ref={layoutRef}
+      className='mx-auto h-[calc(100vh)] max-w-[1920px]'
+    >
       {/* <div className='max-w-[1920px] mx-auto h-[calc(100vh-25px)]'> */}
       <motion.main
         variants={menuVariants}

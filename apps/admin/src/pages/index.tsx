@@ -16,6 +16,7 @@ import {
   DamagedBooks,
   RenewalRequest,
   History,
+  Messages,
 } from '@src/components/Content';
 
 const Home: NextPage = () => {
@@ -151,6 +152,7 @@ const Home: NextPage = () => {
           page === 'books' ||
           !page) && <Books />}
         {page === 'users' && <Users />}
+        {page === 'messages' && <Messages />}
         {page === 'currently loaned books' && <LoanedBooks />}
         {page === 'borrow requests' && <BorrowRequest />}
         {page === 'renewal requests' && <RenewalRequest />}
