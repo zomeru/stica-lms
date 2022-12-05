@@ -127,7 +127,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       <div className='h-[calc(100%-56px)] pl-3'>
         <div
           ref={msgRef}
-          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col justify-end space-y-2 overflow-y-scroll'
+          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col space-y-2 overflow-y-scroll'
           onScroll={handleScroll}
         >
           {conversation && conversation.length > 0 ? (
@@ -160,7 +160,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                     <p
                       data-for={convo.id}
                       data-tip={simpleDate}
-                      className='bg-primary mr-2 w-fit self-end rounded-full px-3 py-2 text-white'
+                      className='bg-primary mr-2 mt-auto w-fit self-end rounded-full px-3 py-2 text-white'
                     >
                       {convo.text}
                     </p>
@@ -174,7 +174,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                 ) {
                   return (
                     <React.Fragment key={convo.id}>
-                      <div className='flex items-center'>
+                      <div className='mt-auto flex  items-center'>
                         <div className='relative h-[30px] w-[30px] overflow-hidden rounded-full'>
                           <Image
                             src={messageData?.userPhoto!}
@@ -199,7 +199,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                       <p
                         data-for={convo.id}
                         data-tip={simpleDate}
-                        className='bg-cGray-200 ml-[35px] w-fit self-start rounded-full px-3 py-2'
+                        className='bg-cGray-200 ml-[35px] mt-auto w-fit self-start rounded-full px-3 py-2'
                       >
                         {convo.text}
                       </p>
