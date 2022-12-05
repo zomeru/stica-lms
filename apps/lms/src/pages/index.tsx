@@ -9,7 +9,6 @@ import {
 } from '@src/constants';
 import {
   Home as HomeComp,
-  Notifications,
   CurrentlyIssuedBooks,
   PendingRequests,
   History,
@@ -18,6 +17,8 @@ import {
   BookDetails,
   LikedBooks,
   About,
+  DamagedBooks,
+  Messages,
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 import { useAuth } from '@src/contexts';
@@ -38,11 +39,13 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const authenticatedPages = [
-      'notifications',
+      'message admin',
       'currently issued books',
       'borrow requests',
       'history',
       'my likes',
+      'lost books',
+      'damaged books',
     ];
 
     function checkPage() {
@@ -89,7 +92,7 @@ const Home: NextPage = () => {
           page === 'home' ||
           !router.query.page) && <HomeComp />}
         {page === 'search' && !router.query.bookId && <Search />}
-        {!!user && page === 'notifications' && <Notifications />}
+        {!!user && page === 'message admin' && <Messages />}
         {!!user && page === 'currently issued books' && (
           <CurrentlyIssuedBooks />
         )}
@@ -97,6 +100,7 @@ const Home: NextPage = () => {
         {!!user && page === 'history' && <History />}
         {!!user && page === 'my likes' && <LikedBooks />}
         {!!user && page === 'lost books' && <LostBooks />}
+        {!!user && page === 'damaged books' && <DamagedBooks />}
         {page === 'contact' && <Contact />}
         {page === 'about' && <About />}
       </>

@@ -123,7 +123,7 @@ const UpdateDamagedModal = ({
         userId: damagedBookData?.userId,
         borrowId: damagedBookData?.objectID,
         bookTitle: damagedBookData?.title,
-        message: `You have successfully replaced the book ${damagedBookData?.title} you have damaged with a new one.`,
+        message: `You have successfully replaced ${damagedBookData?.title} that you have damaged with a new one.`,
         type: 'Replace',
       });
 

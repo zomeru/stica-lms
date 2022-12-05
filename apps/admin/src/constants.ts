@@ -1,4 +1,4 @@
-import { AiOutlineHistory } from 'react-icons/ai';
+import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai';
 import {
   MdLoop,
   MdOutlineLibraryBooks,
@@ -17,6 +17,10 @@ export const adminSidebarItems = [
   {
     name: 'Users',
     Icon: FiUsers,
+  },
+  {
+    name: 'Messages',
+    Icon: AiOutlineMessage,
   },
   {
     name: 'Send Notifications',
