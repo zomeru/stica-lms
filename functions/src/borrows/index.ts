@@ -145,17 +145,20 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
             // send notification to student that penalty was added on notifications collection
             const studentId = data.userId;
 
+            const totalPenalty = Number(data.penalty) + 5;
+
             const payload = {
               createdAt: timestamp.now(),
               clicked: false,
               type: 'Penalty',
               message: `We have added ${
-                borrow.penalty > 1 ? 'another 5' : '5'
+                Number(data.penalty) > 1 ? 'another 5' : '5'
               } pesos penalty for your issued book on ${
                 data.title
               } because you have not returned it on time.${
-                borrow.penalty > 1 &&
-                ` Your current penalty is ${data.penalty + 5} pesos.`
+                Number(data.penalty) > 1
+                  ? ` Total penalty is now ${totalPenalty}`
+                  : ''
               }`,
               borrowId: borrow.id,
               userId: studentId,

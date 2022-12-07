@@ -74,7 +74,7 @@ const Messages = () => {
           className='border-cGray-200 mx-auto h-[40px] w-[90%] rounded-full border px-3 outline-none'
           placeholder='Search user'
         /> */}
-        <div className='custom-scrollbar h-[calc(100%-55px)] w-full overflow-y-scroll'>
+        <div className='custom-scrollbar h-[calc(100%)] w-full overflow-y-scroll'>
           {!messageLoading && messages && messages.length > 0 ? (
             messages.map((message) => {
               const createdAt = message.lastMessageTimestamp

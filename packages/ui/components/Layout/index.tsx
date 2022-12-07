@@ -82,7 +82,9 @@ export const Layout = ({
   useEffect(() => {
     const handleClick = () => {
       console.log('Button clicked');
-      if (notifOpen) setNotifOpen(false);
+      setTimeout(() => {
+        if (notifOpen) setNotifOpen(false);
+      }, 50);
     };
 
     const element = layoutRef.current;
@@ -115,6 +117,7 @@ export const Layout = ({
       searchKeyword: encodeURIComponent(keyword),
     };
     delete allQueries.bookId;
+    delete allQueries.chatId;
 
     if (keyword.length === 0) delete allQueries.searchKeyword;
 
@@ -158,6 +161,7 @@ export const Layout = ({
   const handleSidebarItemClick = (name: string) => {
     const allQueries = { ...router.query };
     delete allQueries.bookId;
+    delete allQueries.chatId;
 
     router.push(
       {
@@ -487,7 +491,7 @@ export const Layout = ({
                         const ago = timeAgo.format(date);
 
                         const typeArrAdmin = ['Borrow', 'Renew'];
-                        const typeArrUser = ['PickedUp', 'Cancelled'];
+                        const typeArrUser = ['PickedUp'];
 
                         const typeArrUser2 = [
                           'Penalty',
@@ -496,6 +500,7 @@ export const Layout = ({
                           'Damaged',
                           'Lost',
                           'Replace',
+                          'Cancelled',
                         ];
 
                         if (

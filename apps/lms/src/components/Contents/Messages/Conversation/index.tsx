@@ -26,11 +26,13 @@ interface ConversationProps {
 }
 
 const Conversation = ({ chatId, messageData }: ConversationProps) => {
-  const [message, setMessage] = useState('');
   const msgRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const router = useRouter();
+
+  const [message, setMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const [conversation, loading] = useCol<ChatMessage>(
     query(
@@ -40,7 +42,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
   );
 
   const seenMessage = async () => {
-    if (!messageData?.adminOpened) {
+    if (!messageData?.userOpened) {
       try {
         const messageRef = doc(db, 'messages', chatId);
         await updateDoc(messageRef, {
@@ -49,6 +51,8 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       } catch (error) {
         console.log(error);
       }
+
+      console.log('seen message');
     }
   };
 
@@ -56,8 +60,6 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
     msgRef.current?.scrollTo({
       top: msgRef.current?.scrollHeight,
     });
-
-    // bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     seenMessage();
   }, [chatId, messageData, conversation, loading]);
@@ -79,7 +81,9 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
   ) => {
     e.preventDefault();
 
-    if (!message) return;
+    if (!message || isSending) return;
+
+    setIsSending(true);
 
     try {
       const timestamp = serverTimestamp();
@@ -118,6 +122,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
         );
 
         setMessage('');
+        setIsSending(false);
         return;
       }
 
@@ -139,9 +144,11 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       });
 
       setMessage('');
+      setIsSending(false);
     } catch (error) {
       console.log('error sending message', error);
       toast.error('Unable to send message! Please try again.');
+      setIsSending(false);
     }
 
     msgRef.current?.scrollTo({
@@ -165,7 +172,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       <div className='h-[calc(100%-56px)] pl-3'>
         <div
           ref={msgRef}
-          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col space-y-2 overflow-y-scroll'
+          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col space-y-2 overflow-y-scroll text-sm'
           onScroll={handleScroll}
         >
           {conversation && conversation.length > 0 ? (
@@ -193,16 +200,19 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
 
               if (convo.senderId !== 'admin') {
                 return (
-                  <React.Fragment key={convo.id}>
+                  <div
+                    className='bg-primary mr-2 mt-auto w-fit max-w-[80%] self-end rounded-xl px-3 py-2 text-white'
+                    key={convo.id}
+                  >
                     <ReactTooltip id={convo.id} />
                     <p
+                      className='whitespace-pre-wrap break-words'
                       data-for={convo.id}
                       data-tip={simpleDate}
-                      className='bg-primary mr-2 mt-auto w-fit self-end rounded-full px-3 py-2 text-white'
                     >
                       {convo.text}
                     </p>
-                  </React.Fragment>
+                  </div>
                 );
               } else {
                 if (
@@ -211,46 +221,59 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                   isLastMessageAdmin
                 ) {
                   return (
-                    <React.Fragment key={convo.id}>
-                      <div className='mt-auto flex items-center'>
-                        <div className='relative h-[30px] w-[30px] overflow-hidden rounded-full'>
-                          <Image
-                            src='https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/stica%2FSTI_LOGO.png?alt=media&token=2a5f406c-9e29-41de-be02-16f830682691'
-                            layout='fill'
-                          />
-                        </div>
-                        <ReactTooltip id={convo.id} />
-                        <p
-                          data-for={convo.id}
-                          data-tip={simpleDate}
-                          className='bg-cGray-200 ml-[5px] w-fit self-start rounded-full px-3 py-2'
-                        >
-                          {convo.text}
-                        </p>
+                    <div
+                      key={convo.id}
+                      className='mt-auto flex max-w-[calc(80%+35px)] items-center'
+                    >
+                      <div className='relative mt-auto h-[30px]  w-[30px] overflow-hidden rounded-full'>
+                        <Image
+                          src='https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/stica%2FSTI_LOGO.png?alt=media&token=2a5f406c-9e29-41de-be02-16f830682691'
+                          layout='fill'
+                        />
                       </div>
-                    </React.Fragment>
-                  );
-                } else {
-                  return (
-                    <React.Fragment key={convo.id}>
                       <ReactTooltip id={convo.id} />
                       <p
                         data-for={convo.id}
                         data-tip={simpleDate}
-                        className='bg-cGray-200 ml-[35px] mt-auto w-fit self-start rounded-full px-3 py-2'
+                        className='bg-cGray-200 ml-[5px] w-fit  self-start whitespace-pre-wrap break-words rounded-xl px-3 py-2'
                       >
                         {convo.text}
                       </p>
-                    </React.Fragment>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div
+                      className='bg-cGray-200 mt-auto ml-[35px] w-fit max-w-[80%] self-start whitespace-pre-wrap break-words rounded-lg px-3 py-2'
+                      key={convo.id}
+                    >
+                      <ReactTooltip id={convo.id} />
+                      <p
+                        className=''
+                        data-for={convo.id}
+                        data-tip={simpleDate}
+                      >
+                        {convo.text}
+                      </p>
+                    </div>
                   );
                 }
               }
             })
           ) : (
-            <div className='flex h-full w-full items-center justify-center'>
+            <div className='flex h-full w-full items-center justify-center text-neutral-600'>
               <p>Send a message to start a conversation</p>
             </div>
           )}
+
+          {/* {isSending && (
+            <div className='bg-primary mr-2 mt-auto w-fit self-end rounded-full px-3 py-2 text-white'>
+              <ReactTooltip id='current-message' />
+              <p data-for='current-message' data-tip='sample'>
+                {message}
+              </p>
+            </div>
+          )} */}
           {messageData?.lastSender !== 'admin' &&
             messageData?.adminOpened && (
               <div className='mr-2 flex items-center space-x-1 self-end text-neutral-600'>
