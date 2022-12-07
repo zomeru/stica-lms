@@ -53,15 +53,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       top: msgRef.current?.scrollHeight,
     });
 
-    // bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-
     seenMessage();
-
-    return () => {
-      seenMessage();
-
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
   }, [chatId, messageData, conversation, loading]);
 
   const handleScroll = async (
@@ -127,7 +119,7 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       <div className='h-[calc(100%-56px)] pl-3'>
         <div
           ref={msgRef}
-          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col space-y-2 overflow-y-scroll'
+          className='custom-scrollbar flex h-[calc(100%-50px)] w-full flex-col space-y-2 overflow-y-scroll text-sm'
           onScroll={handleScroll}
         >
           {conversation && conversation.length > 0 ? (
@@ -155,16 +147,19 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
 
               if (convo.senderId === 'admin') {
                 return (
-                  <React.Fragment key={convo.id}>
+                  <div
+                    className='bg-primary mr-2 mt-auto w-fit max-w-[80%] self-end rounded-lg px-3 py-2 text-white'
+                    key={convo.id}
+                  >
                     <ReactTooltip id={convo.id} />
                     <p
                       data-for={convo.id}
                       data-tip={simpleDate}
-                      className='bg-primary mr-2 mt-auto w-fit self-end rounded-full px-3 py-2 text-white'
+                      className='whitespace-pre-wrap break-words'
                     >
                       {convo.text}
                     </p>
-                  </React.Fragment>
+                  </div>
                 );
               } else {
                 if (
@@ -173,43 +168,43 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                   isLastMessageUser
                 ) {
                   return (
-                    <React.Fragment key={convo.id}>
-                      <div className='mt-auto flex  items-center'>
-                        <div className='relative h-[30px] w-[30px] overflow-hidden rounded-full'>
-                          <Image
-                            src={messageData?.userPhoto!}
-                            layout='fill'
-                          />
-                        </div>
-                        <ReactTooltip id={convo.id} />
-                        <p
-                          data-for={convo.id}
-                          data-tip={simpleDate}
-                          className='bg-cGray-200 ml-[5px] w-fit self-start rounded-full px-3 py-2'
-                        >
-                          {convo.text}
-                        </p>
+                    <div
+                      key={convo.id}
+                      className='mt-auto flex max-w-[calc(80%+35px)] items-center'
+                    >
+                      <div className='relative mt-auto h-[30px] w-[30px] overflow-hidden rounded-full'>
+                        <Image
+                          src={messageData?.userPhoto!}
+                          layout='fill'
+                        />
                       </div>
-                    </React.Fragment>
-                  );
-                } else {
-                  return (
-                    <React.Fragment key={convo.id}>
                       <ReactTooltip id={convo.id} />
                       <p
                         data-for={convo.id}
                         data-tip={simpleDate}
-                        className='bg-cGray-200 ml-[35px] mt-auto w-fit self-start rounded-full px-3 py-2'
+                        className='bg-cGray-200 ml-[5px] w-fit self-start whitespace-pre-wrap break-words rounded-lg px-3 py-2'
                       >
                         {convo.text}
                       </p>
-                    </React.Fragment>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div
+                      key={convo.id}
+                      className='bg-cGray-200 ml-[35px] mt-auto w-fit self-start whitespace-pre-wrap break-words rounded-lg px-3 py-2'
+                    >
+                      <ReactTooltip id={convo.id} />
+                      <p data-for={convo.id} data-tip={simpleDate}>
+                        {convo.text}
+                      </p>
+                    </div>
                   );
                 }
               }
             })
           ) : (
-            <div className='flex h-full w-full items-center justify-center'>
+            <div className='flex h-full w-full items-center justify-center text-neutral-600'>
               <p>Send a message to start a conversation</p>
             </div>
           )}

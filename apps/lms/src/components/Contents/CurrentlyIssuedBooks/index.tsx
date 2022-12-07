@@ -59,8 +59,8 @@ const CurrentlyIssuedBooks = () => {
         const diff = dueDate.getTime() - today.getTime();
         const diffDays = diff / (1000 * 60 * 60 * 24);
 
-        // if (diffDays < 1) {
-        if (!(diffDays < 1)) {
+        if (diffDays < 1) {
+          // if (!(diffDays < 1)) {
           const borrowRef = doc(db, 'borrows', borrowDoc.id);
           await updateDoc(borrowRef, {
             renewRequest: true,
