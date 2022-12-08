@@ -146,9 +146,9 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       setMessage('');
       setIsSending(false);
     } catch (error) {
+      setIsSending(false);
       console.log('error sending message', error);
       toast.error('Unable to send message! Please try again.');
-      setIsSending(false);
     }
 
     msgRef.current?.scrollTo({
@@ -195,7 +195,10 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
                 index === conversation.length - 1;
 
               const simpleDate = convo.createdAt
-                ? formatDate(convo.createdAt.toDate(), true)
+                ? formatDate(
+                    convo.createdAt.toDate().toLocaleString(),
+                    true
+                  )
                 : '';
 
               if (convo.senderId !== 'admin') {

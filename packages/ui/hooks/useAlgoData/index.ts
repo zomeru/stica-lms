@@ -15,7 +15,7 @@ const searchClient = algoliasearch(
  */
 export const useAlgoData = <T>(
   index: string,
-  searchQuery: string,
+  searchQuery?: string,
   searchKeyword?: string
 ) => {
   const searchIndex = searchClient.initIndex(index);
@@ -83,6 +83,8 @@ export const useAlgoData = <T>(
 
   const refreshData = () => {
     setValue((value) => value + 1);
+
+    if (!searchQuery) return;
 
     const allQueries: any = {
       ...router.query,

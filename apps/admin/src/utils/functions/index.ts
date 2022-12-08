@@ -54,9 +54,11 @@ export function formatDate(
   const dateObj = new Date(date);
 
   // show time in 12 hour format
-  const time = `${dateObj.getHours() % 12}:${addZero(
-    dateObj.getMinutes()
-  )} ${dateObj.getHours() >= 12 ? 'PM' : 'AM'}`;
+  const hour =
+    dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12;
+  const time = `${hour}:${addZero(dateObj.getMinutes())} ${
+    dateObj.getHours() >= 12 ? 'PM' : 'AM'
+  }`;
 
   const dateStr = `${
     MONTHS[dateObj.getMonth()]

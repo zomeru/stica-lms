@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import {
   collection,
@@ -10,8 +10,8 @@ import {
 import TimeAgo from 'javascript-time-ago';
 import { useRouter } from 'next/router';
 
-import { ChatMates } from '@lms/types';
-import { useCol, useNextQuery } from '@lms/ui';
+import { AlgoUserDoc, ChatMates } from '@lms/types';
+import { useAlgoData, useCol, useNextQuery } from '@lms/ui';
 import { db } from '@lms/db';
 
 import en from 'javascript-time-ago/locale/en';
@@ -25,6 +25,14 @@ const Messages = () => {
   const router = useRouter();
 
   const chatId = useNextQuery('chatId');
+  const [userSearch, setUserSearch] = useState<string>('');
+  const [newUserData, setNewUserData] = useState<ChatMates | undefined>();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchedUsers, setSearchUsers, _, usersLoading] =
+    useAlgoData<AlgoUserDoc>('users', undefined, userSearch);
+
+  console.log('searchedUsers', searchedUsers);
 
   const [messages, messageLoading] = useCol<ChatMates>(
     query(
@@ -62,6 +70,38 @@ const Messages = () => {
     }
   };
 
+  const searchedUserClick = async (newUser: AlgoUserDoc) => {
+    const hasMessageHistory = messages?.find(
+      (message) => message.userId === newUser.objectID
+    );
+    if (hasMessageHistory) {
+      onChatMateClick(hasMessageHistory.id);
+      setUserSearch('');
+    } else {
+      setNewUserData({
+        userPhoto: newUser.photo.url,
+        userName: `${newUser.givenName} ${newUser.surname}`,
+        userId: newUser.objectID,
+      } as ChatMates);
+
+      const allQueries: any = {
+        ...router.query,
+        chatId: 'new',
+      };
+
+      router.push(
+        {
+          pathname: '/',
+          query: allQueries,
+        },
+        undefined,
+        { shallow: true }
+      );
+
+      setUserSearch('');
+    }
+  };
+
   return (
     <section className='flex h-full w-full'>
       <div className='h-full w-[300px] space-y-[15px] lg:w-[400px]'>
@@ -69,63 +109,103 @@ const Messages = () => {
           type='text'
           className='border-cGray-200 mx-auto h-[40px] w-[90%] rounded-full border px-3 outline-none'
           placeholder='Search user'
+          value={userSearch}
+          onChange={(e) => setUserSearch(e.target.value)}
         />
         <div className='custom-scrollbar h-[calc(100%-55px)] w-full overflow-y-scroll'>
-          {!messageLoading && messages && messages.length > 0 ? (
-            messages.map((message) => {
-              const createdAt = message.lastMessageTimestamp
-                ? message.lastMessageTimestamp.toDate().toLocaleString()
-                : new Date();
-              const date = new Date(createdAt);
-              const ago = timeAgo.format(date);
-              return (
-                <button
-                  key={message.id}
-                  className='flex h-[65px] w-full space-x-2 rounded-md p-1 hover:bg-sky-100'
-                  type='button'
-                  onClick={() => onChatMateClick(message.id)}
-                >
-                  <div className='relative my-auto h-[50px] w-[50px] overflow-hidden rounded-full'>
-                    <Image
-                      src={message.userPhoto}
-                      layout='fill'
-                      objectFit='cover'
-                      objectPosition='center'
-                    />
-                  </div>
-                  <div className='flex h-full w-[calc(100%-50px)] flex-col justify-center text-left text-sm'>
-                    <p
-                      className={
-                        message.adminOpened
-                          ? 'font-medium text-neutral-700'
-                          : 'font-semibold'
-                      }
+          {!userSearch && (
+            <>
+              {!messageLoading && messages && messages.length > 0 ? (
+                messages.map((message) => {
+                  const createdAt = message.lastMessageTimestamp
+                    ? message.lastMessageTimestamp
+                        .toDate()
+                        .toLocaleString()
+                    : new Date();
+                  const date = new Date(createdAt);
+                  const ago = timeAgo.format(date);
+                  return (
+                    <button
+                      key={message.id}
+                      className='flex h-[65px] w-full space-x-2 rounded-md p-1 hover:bg-sky-100'
+                      type='button'
+                      onClick={() => onChatMateClick(message.id)}
                     >
-                      {message.userName}
-                    </p>
-                    <p
-                      className={`line-clamp-1 flex text-xs ${
-                        message.adminOpened
-                          ? 'text-neutral-500'
-                          : 'font-semibold text-sky-700'
-                      }`}
+                      <div className='relative my-auto h-[50px] w-[50px] overflow-hidden rounded-full'>
+                        <Image
+                          src={message.userPhoto}
+                          layout='fill'
+                          objectFit='cover'
+                          objectPosition='center'
+                        />
+                      </div>
+                      <div className='flex h-full w-[calc(100%-50px)] flex-col justify-center text-left text-sm'>
+                        <p
+                          className={
+                            message.adminOpened
+                              ? 'font-medium text-neutral-700'
+                              : 'font-semibold'
+                          }
+                        >
+                          {message.userName}
+                        </p>
+                        <p
+                          className={`line-clamp-1 flex text-xs ${
+                            message.adminOpened
+                              ? 'text-neutral-500'
+                              : 'font-semibold text-sky-700'
+                          }`}
+                        >
+                          {message.lastSender === 'admin' && 'You: '}
+                          {message.lastMessageText}
+                        </p>
+                        <p
+                          className={`line-clamp-1 flex text-xs ${
+                            message.adminOpened && 'text-neutral-500'
+                          }`}
+                        >
+                          {ago === 'in a moment' ? 'just now' : ago}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className='text-neutral-600'>No recent messages</div>
+              )}
+            </>
+          )}
+          {userSearch && (
+            <>
+              {!usersLoading &&
+              searchedUsers &&
+              searchedUsers.length > 0 ? (
+                searchedUsers.map((user) => {
+                  return (
+                    <button
+                      key={user.objectID}
+                      className='flex h-[65px] w-full space-x-2 rounded-md p-1 hover:bg-sky-100'
+                      type='button'
+                      onClick={() => searchedUserClick(user)}
                     >
-                      {message.lastSender === 'admin' && 'You: '}
-                      {message.lastMessageText}
-                    </p>
-                    <p
-                      className={`line-clamp-1 flex text-xs ${
-                        message.adminOpened && 'text-neutral-500'
-                      }`}
-                    >
-                      {ago === 'in a moment' ? 'just now' : ago}
-                    </p>
-                  </div>
-                </button>
-              );
-            })
-          ) : (
-            <div className='text-neutral-600'>No recent messages</div>
+                      <div className='relative my-auto h-[50px] w-[50px] overflow-hidden rounded-full'>
+                        <Image
+                          src={user.photo.url}
+                          layout='fill'
+                          objectFit='cover'
+                          objectPosition='center'
+                        />
+                      </div>
+                      <div className='flex h-full w-[calc(100%-50px)] flex-col justify-center text-left text-sm'>
+                        {`${user.givenName} ${user.surname}`}
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className='text-neutral-600'>No users found</div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -134,7 +214,9 @@ const Messages = () => {
           <Conversation
             chatId={chatId}
             messageData={
-              messages?.filter((message) => message.id === chatId)[0]
+              chatId === 'new'
+                ? newUserData
+                : messages?.filter((message) => message.id === chatId)[0]
             }
           />
         ) : (
