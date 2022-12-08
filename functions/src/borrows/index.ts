@@ -124,6 +124,8 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
         borrows.forEach(async (borrow: any) => {
           const data = borrow.data();
 
+          const totalPenalty = Number(data.penalty) + 5;
+
           const now = new Date();
           const dueDate = data.dueDate.toDate();
           const diff = now.getTime() - dueDate.getTime();
@@ -145,8 +147,6 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
             // send notification to student that penalty was added on notifications collection
             const studentId = data.userId;
 
-            const totalPenalty = Number(data.penalty) + 5;
-
             const payload = {
               createdAt: timestamp.now(),
               clicked: false,
@@ -157,7 +157,7 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
                 data.title
               } because you have not returned it on time.${
                 Number(data.penalty) > 1
-                  ? ` Total penalty is now ${totalPenalty}`
+                  ? ` Total penalty is now ${totalPenalty}.`
                   : ''
               }`,
               borrowId: borrow.id,

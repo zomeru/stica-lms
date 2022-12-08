@@ -11,12 +11,13 @@ import {
 import Image from 'next/image';
 import { AiOutlineSend } from 'react-icons/ai';
 import { BsCheckAll } from 'react-icons/bs';
+import { toast } from 'react-hot-toast';
+import ReactTooltip from 'react-tooltip';
+import { useRouter } from 'next/router';
 
 import { ChatMates, ChatMessage } from '@lms/types';
 import { useCol, formatDate } from '@lms/ui';
 import { db } from '@lms/db';
-import { toast } from 'react-hot-toast';
-import ReactTooltip from 'react-tooltip';
 
 interface ConversationProps {
   chatId: string;
@@ -24,9 +25,13 @@ interface ConversationProps {
 }
 
 const Conversation = ({ chatId, messageData }: ConversationProps) => {
-  const [message, setMessage] = useState('');
+  const router = useRouter();
+
   const msgRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const [message, setMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const [conversation, loading] = useCol<ChatMessage>(
     query(
@@ -73,12 +78,65 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
   ) => {
     e.preventDefault();
 
-    if (!message) return;
+    if (!message || isSending) return;
+
+    setIsSending(true);
 
     try {
-      const convoRef = collection(db, `messages/${chatId}/data`);
-
       const timestamp = serverTimestamp();
+
+      if (chatId === 'new') {
+        const messagePayload = {
+          adminOpened: true,
+          lastMessageText: message.trim(),
+          lastMessageTimestamp: serverTimestamp(),
+          lastSender: 'admin',
+          userId: messageData?.userId,
+          userName: messageData?.userName,
+          userOpened: false,
+          userPhoto: messageData?.userPhoto,
+        };
+        const newMessageRef = collection(db, 'messages');
+
+        const newlyCreatedMessage = await addDoc(
+          newMessageRef,
+          messagePayload
+        );
+
+        const newConvoRef = collection(
+          db,
+          `messages/${newlyCreatedMessage.id}/data`
+        );
+        await addDoc(newConvoRef, {
+          createdAt: timestamp,
+          senderId: 'admin',
+          text: message.trim(),
+        });
+
+        const allQueries: any = {
+          ...router.query,
+          chatId: newlyCreatedMessage.id,
+        };
+
+        router.push(
+          {
+            pathname: '/',
+            query: allQueries,
+          },
+          undefined,
+          { shallow: true }
+        );
+
+        setMessage('');
+        setIsSending(false);
+        msgRef.current?.scrollTo({
+          top: msgRef.current?.scrollHeight,
+        });
+
+        return;
+      }
+
+      const convoRef = collection(db, `messages/${chatId}/data`);
 
       await addDoc(convoRef, {
         createdAt: timestamp,
@@ -96,14 +154,15 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       });
 
       setMessage('');
+      setIsSending(false);
+      msgRef.current?.scrollTo({
+        top: msgRef.current?.scrollHeight,
+      });
     } catch (error) {
+      setIsSending(false);
       console.log('error sending message', error);
       toast.error('Unable to send message! Please try again.');
     }
-
-    msgRef.current?.scrollTo({
-      top: msgRef.current?.scrollHeight,
-    });
 
     // bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
