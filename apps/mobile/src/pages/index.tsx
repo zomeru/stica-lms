@@ -25,13 +25,13 @@ const Home: NextPage = () => {
   // };
 
   return (
-    <div className='flex h-screen w-screen flex-col items-center justify-center'>
-      <h1 className='mb-[20px] text-xl font-bold'>
+    <div className='flex h-screen w-screen flex-col items-center justify-center bg-black'>
+      {/* <h1 className='mb-[20px] text-xl font-bold'>
         STICA LMS - Mobile version
       </h1>
       <h1 className='mb-[20px] text-xl font-bold'>
         Maintenance - Currently in development
-      </h1>
+      </h1> */}
 
       {/* {loggedIn && (
         <div className='flex flex-col items-center justify-center'>
