@@ -74,6 +74,7 @@ const Home: NextPage = () => {
         'renewal requests',
         'lost books',
         'damaged books',
+        'history',
       ].some((el) => el === page)
     ) {
       if (page === 'currently loaned books') {

@@ -178,6 +178,7 @@ export const lostBooksTableHeaders = [
 
 export const historyTableHeaders = [
   // 'Book ID',
+  'Student Name',
   'Title',
   'ISBN',
   // 'Requested Date',

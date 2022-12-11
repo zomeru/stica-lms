@@ -10,22 +10,20 @@ import {
 } from '@src/constants';
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import { formatDate, navigateToBook } from '@src/utils';
+import nProgress from 'nprogress';
 
 const bookSearchQueryName = 'historyBookSearchKey';
 
 const History = () => {
   const historyBookSearchKey = useNextQuery(bookSearchQueryName);
 
-  const [
-    algoHistoryBooks,
-    // setHistoryBooks,
-    // refreshHistoryBooks,
-    historyBooksLoading,
-  ] = useAlgoData<AlgoBorrowDoc>(
-    'borrows',
-    bookSearchQueryName,
-    historyBookSearchKey
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [algoHistoryBooks, _, refreshHistoryBooks, historyBooksLoading] =
+    useAlgoData<AlgoBorrowDoc>(
+      'borrows',
+      bookSearchQueryName,
+      historyBookSearchKey
+    );
 
   // get Issued, Returned, Damaged, and Lost books
   const historyBooks: AlgoBorrowDoc[] = useMemo(
@@ -50,12 +48,25 @@ const History = () => {
       DEFAULT_SORT_ITEM
     );
 
+  const handleUpdate = () => {
+    nProgress.configure({ showSpinner: true });
+    nProgress.start();
+    refreshHistoryBooks();
+    nProgress.done();
+  };
+
   return (
     <section className='h-full w-full'>
-      {historyBooks &&
-        historyBooks.length > 0 &&
-        historyBooks.length / ITEMS_PER_PAGE > 1 && (
-          <div className='mb-[10px] flex justify-end'>
+      {historyBooks && historyBooks.length > 0 && (
+        <div className='mb-[10px] flex justify-between'>
+          <button
+            type='button'
+            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+            onClick={handleUpdate}
+          >
+            Refresh records
+          </button>
+          {historyBooks.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
                 {currentPage}/
@@ -89,16 +100,13 @@ const History = () => {
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
       <div
         style={{
           height: `calc(100% - ${
-            historyBooks &&
-            historyBooks.length > 0 &&
-            historyBooks.length / ITEMS_PER_PAGE > 1
-              ? 28
-              : 0
+            historyBooks && historyBooks.length > 0 ? 30 : 0
           }px)`,
         }}
         className={`custom-scrollbar w-full ${
@@ -120,8 +128,19 @@ const History = () => {
                 />
               </div>
               <h1 className='text-cGray-300 text-center text-2xl'>
-                Your history is currently empty.
+                {historyBookSearchKey
+                  ? 'No results found'
+                  : 'There is currently no borrow request.'}
               </h1>
+              {!historyBookSearchKey && (
+                <button
+                  type='button'
+                  onClick={handleUpdate}
+                  className='text-xl text-sky-600'
+                >
+                  Refresh
+                </button>
+              )}
             </div>
           )}
         {historyBooks && historyBooks.length > 0 && (
@@ -131,12 +150,16 @@ const History = () => {
                 {historyTableHeaders.map((header) => (
                   <th
                     key={header}
-                    className='bg-primary border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
+                    className='bg-primary truncate border-b-2 border-gray-200 px-5 py-5 text-left text-xs font-semibold uppercase tracking-wider text-white'
                   >
                     {' '}
                     {header}{' '}
                   </th>
                 ))}
+                <th
+                  className='bg-primary border-b-2 border-gray-200 px-5 py-5 '
+                  aria-label='action'
+                />
               </tr>
             </thead>
             <tbody>
@@ -156,6 +179,13 @@ const History = () => {
                     <ReactTooltip id={history.title} />
 
                     <tr key={history.id} className='font-medium'>
+                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                        <button type='button'>
+                          <p className='line-clamp-2 text-primary max-w-[200px] overflow-hidden text-left'>
+                            {history.studentName}
+                          </p>
+                        </button>
+                      </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <button
                           type='button'

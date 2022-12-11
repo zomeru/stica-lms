@@ -16,11 +16,7 @@ import { useCol, useNextQuery } from '@lms/ui';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
 
-import en from 'javascript-time-ago/locale/en';
 import Conversation from './Conversation';
-
-// English.
-TimeAgo.addDefaultLocale(en);
 
 const Messages = () => {
   const timeAgo = new TimeAgo('en-US');
