@@ -1,15 +1,15 @@
-import type { AppProps } from 'next/app';
-import { DefaultSeo } from 'next-seo';
-import { Toaster } from 'react-hot-toast';
-import { PublicClientApplication } from '@azure/msal-browser';
+import type { AppProps } from "next/app";
+import { DefaultSeo } from "next-seo";
+import { Toaster } from "react-hot-toast";
+import { PublicClientApplication } from "@azure/msal-browser";
 
-import { msalConfig } from '@src/config';
-import { MSAuthProvider, SidebarProvider } from '@src/contexts';
-import Deface from '@lms/ui/components/Deface';
-import SEO from '../../next-seo.config';
+import { msalConfig } from "@src/config";
+import { MSAuthProvider, SidebarProvider } from "@src/contexts";
+import Deface from "@lms/ui/components/Deface";
+import SEO from "../../next-seo.config";
 
-import 'nprogress/nprogress.css';
-import '../styles/globals.css';
+import "nprogress/nprogress.css";
+import "../styles/globals.css";
 
 export const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   // const navigationClient = new CustomNavigationClient(router);
   // msalInstance.setNavigationClient(navigationClient);
 
-  const isMaintenance = true;
+  const isMaintenance = false;
 
   return (
     <MSAuthProvider>
@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <UserProvider msalInstance={msalInstance}> */}
       {isMaintenance ? (
         <>
-          <DefaultSeo title='Hacked' description='Hacked' />
+          <DefaultSeo title="Hacked" description="Hacked" />
           <Deface />
         </>
       ) : (
@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <DefaultSeo {...SEO} />
           <Component {...pageProps} />
           <Toaster
-            position='top-right'
+            position="top-right"
             toastOptions={{
               duration: 2000,
             }}
