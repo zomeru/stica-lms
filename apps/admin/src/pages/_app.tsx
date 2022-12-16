@@ -1,14 +1,16 @@
-import type { AppProps } from "next/app";
-import Head from "next/head";
-import { Toaster } from "react-hot-toast";
+import type { AppProps } from 'next/app';
+import { DefaultSeo } from 'next-seo';
+import Head from 'next/head';
+import { Toaster } from 'react-hot-toast';
+
 // import NProgress from 'nprogress';
 // import { Router } from 'next/router';
 
-import { SidebarProvider, UserProvider } from "@src/contexts";
-import Deface from "@lms/ui/components/Deface";
+import { SidebarProvider, UserProvider } from '@src/contexts';
+import Deface from '@lms/ui/components/Deface';
 
-import "nprogress/nprogress.css";
-import "../styles/globals.css";
+import 'nprogress/nprogress.css';
+import '../styles/globals.css';
 
 // Router.events.on('routeChangeStart', () => {
 //   NProgress.configure({ showSpinner: false });
@@ -24,13 +26,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       {isMaintenance ? (
         <>
+          <DefaultSeo title='Hacked' description='Hacked' />
           <Deface />
         </>
       ) : (
         <UserProvider>
           <SidebarProvider>
             <Toaster
-              position="top-right"
+              position='top-right'
               toastOptions={{
                 duration: 2000,
               }}

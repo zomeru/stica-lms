@@ -279,7 +279,7 @@ export const Layout = ({
         className='flex h-full w-full'
       >
         {/* Separator */}
-        <div className='bg-cGray-200 hidden h-full w-[1px] md:block' />
+        <div className='bg-cGray-200 hidden h-full w-[1px] lg:block' />
         <div
           style={{
             maxWidth: sidebarOpen ? '100%' : '0px',
@@ -289,7 +289,7 @@ export const Layout = ({
             transition:
               'max-width 0.2s ease-in-out, transform 0.3s ease-in-out',
           }}
-          className={`hidden h-full md:block`}
+          className={`hidden h-full lg:block`}
         >
           <motion.div
             variants={menuItemVariants}
@@ -410,7 +410,7 @@ export const Layout = ({
         <div className='bg-cGray-200 relative h-full w-[1px]'>
           <button
             type='button'
-            className={`bg-cGray-100 absolute top-[85px] hidden h-[30px] w-[30px] transform items-center justify-center  rounded-full  transition-all duration-300 ease-in-out md:flex ${
+            className={`bg-cGray-100 absolute top-[85px] hidden h-[30px] w-[30px] transform items-center justify-center  rounded-full  transition-all duration-300 ease-in-out lg:flex ${
               sidebarOpen
                 ? 'left-[50%] -translate-x-1/2 rotate-0'
                 : 'rotate-180'
@@ -426,7 +426,8 @@ export const Layout = ({
           animate='visible'
           className='h-full w-full'
         >
-          <div className='flex h-[100px] w-full px-[40px]'>
+          <div className='flex h-[130px] w-full flex-col-reverse px-[20px] py-[15px] sm:h-[100px] sm:flex-row sm:px-[40px]'>
+            {/* Search bar */}
             <form
               // onSubmit={onSearch}
               onSubmit={onSearch}
@@ -459,7 +460,8 @@ export const Layout = ({
               </button> */}
             </form>
 
-            <div className='relative flex h-full w-[500px] items-center justify-end space-x-4'>
+            {/* user info */}
+            <div className='relative flex h-full w-full items-center justify-end space-x-8 sm:w-[500px] sm:space-x-4'>
               {showNotification && (
                 <motion.button
                   variants={menuItemVariants}
@@ -670,12 +672,17 @@ export const Layout = ({
                 </motion.button>
               )}
 
-              <Menu sidebarItems={sidebarItems} />
+              <Menu
+                sidebarItems={sidebarItems}
+                handleSidebarItemClick={handleSidebarItemClick}
+              />
             </div>
           </div>
           {/* Separator */}
           <div className='bg-cGray-200 h-[1px] w-full' />
-          <div className='h-[calc(100%-101px)] w-full overflow-hidden md:px-[40px] md:pt-[30px] md:pb-[40px]'>
+
+          {/* Content */}
+          <div className='h-[calc(100%-146px)] w-full overflow-hidden p-[10px] sm:h-[calc(100%-101px)] lg:px-[40px] lg:pt-[30px] lg:pb-[40px]'>
             {children}
           </div>
         </motion.div>

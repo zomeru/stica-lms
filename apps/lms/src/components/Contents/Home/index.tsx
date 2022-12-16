@@ -75,13 +75,13 @@ const Home = () => {
   };
 
   return (
-    <section className='custom-scrollbar h-full w-full overflow-y-scroll'>
+    <section className='custom-scrollbar h-full w-full overflow-y-scroll px-3 md:px-10 lg:px-0'>
       <div className='flex items-center'>
-        <div className='space-y-3 text-center md:text-left'>
-          <div className='text-primary mt-[20px] text-7xl font-semibold md:mt-0'>
+        <div className='space-y-3 text-center lg:text-left'>
+          <div className='text-primary mt-[20px] text-4xl font-semibold sm:text-5xl lg:mt-0 lg:text-7xl'>
             Discover the book treasure
           </div>
-          <p className='w-[90%]'>
+          <p className='mx-auto w-full text-center sm:w-[70%] lg:mx-0 lg:w-[90%] lg:text-left'>
             Pick and borrow books according to your needs. From applied
             literature to education resources, we have a lot of textbooks
             to provide you.
@@ -94,7 +94,7 @@ const Home = () => {
             Search books now
           </button>
         </div>
-        <div className='relative hidden h-[350px] w-[650px] md:block'>
+        <div className='relative hidden h-[350px] w-[650px] lg:block'>
           <Image src='/assets/images/reading_book.jpg' layout='fill' />
         </div>
       </div>
