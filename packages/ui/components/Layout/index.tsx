@@ -426,7 +426,8 @@ export const Layout = ({
           animate='visible'
           className='h-full w-full'
         >
-          <div className='flex h-[100px] w-full px-[40px]'>
+          <div className='flex h-[130px] w-full flex-col-reverse px-[20px] py-[15px] sm:h-[100px] sm:flex-row sm:px-[40px]'>
+            {/* Search bar */}
             <form
               // onSubmit={onSearch}
               onSubmit={onSearch}
@@ -459,7 +460,8 @@ export const Layout = ({
               </button> */}
             </form>
 
-            <div className='relative flex h-full w-[500px] items-center justify-end space-x-4'>
+            {/* user info */}
+            <div className='relative flex h-full w-full items-center justify-end space-x-8 sm:w-[500px] sm:space-x-4'>
               {showNotification && (
                 <motion.button
                   variants={menuItemVariants}
@@ -678,7 +680,7 @@ export const Layout = ({
           </div>
           {/* Separator */}
           <div className='bg-cGray-200 h-[1px] w-full' />
-          <div className='h-[calc(100%-101px)] w-full overflow-hidden lg:px-[40px] lg:pt-[30px] lg:pb-[40px]'>
+          <div className='h-[calc(100%-146px)] w-full overflow-hidden sm:h-[calc(100%-101px)] lg:px-[40px] lg:pt-[30px] lg:pb-[40px]'>
             {children}
           </div>
         </motion.div>
