@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app';
 import { DefaultSeo } from 'next-seo';
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
+
 // import NProgress from 'nprogress';
 // import { Router } from 'next/router';
 
@@ -19,7 +20,7 @@ import '../styles/globals.css';
 // Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const isMaintenance = true;
+  const isMaintenance = false;
 
   return (
     <>

@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   // const navigationClient = new CustomNavigationClient(router);
   // msalInstance.setNavigationClient(navigationClient);
 
-  const isMaintenance = true;
+  const isMaintenance = false;
 
   return (
     <MSAuthProvider>
