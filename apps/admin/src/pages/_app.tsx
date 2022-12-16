@@ -1,4 +1,5 @@
 import type { AppProps } from 'next/app';
+import { DefaultSeo } from 'next-seo';
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 // import NProgress from 'nprogress';
@@ -24,6 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       {isMaintenance ? (
         <>
+          <DefaultSeo title='Hacked' description='Hacked' />
           <Deface />
         </>
       ) : (
