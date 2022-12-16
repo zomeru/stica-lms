@@ -680,7 +680,9 @@ export const Layout = ({
           </div>
           {/* Separator */}
           <div className='bg-cGray-200 h-[1px] w-full' />
-          <div className='h-[calc(100%-146px)] w-full overflow-hidden sm:h-[calc(100%-101px)] lg:px-[40px] lg:pt-[30px] lg:pb-[40px]'>
+
+          {/* Content */}
+          <div className='h-[calc(100%-146px)] w-full overflow-hidden p-[10px] sm:h-[calc(100%-101px)] lg:px-[40px] lg:pt-[30px] lg:pb-[40px]'>
             {children}
           </div>
         </motion.div>

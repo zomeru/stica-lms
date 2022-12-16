@@ -13,6 +13,7 @@ import {
   borrowBook,
   removeFromLikedBooks,
   useCol,
+  useWindowDimensions,
 } from '@lms/ui';
 
 interface BookCardProps {
@@ -32,6 +33,8 @@ const BookCard = ({ book }: BookCardProps) => {
   } = book;
   const { user } = useAuth();
 
+  const { width } = useWindowDimensions();
+
   const [isBorrowing, setIsBorrowing] = React.useState(false);
 
   const [userBorrows] = useCol<IBorrowDoc>(
@@ -46,8 +49,12 @@ const BookCard = ({ book }: BookCardProps) => {
     query(collection(db, `users/${user?.id || 'default'}/my-likes`))
   );
 
+  const divWidth = width < 640 ? 'w-full' : 'w-[300px]';
+
   return (
-    <div className='before:border-cGray-200 relative flex h-[180px] w-[300px] overflow-hidden rounded-2xl before:absolute before:z-[-1] before:h-[calc(100%)] before:w-full before:rounded-2xl before:border before:content-[""]'>
+    <div
+      className={`before:border-cGray-200 relative flex h-[180px] ${divWidth} overflow-hidden rounded-2xl before:absolute before:z-[-1] before:h-[calc(100%)] before:w-full before:rounded-2xl before:border before:content-[""]`}
+    >
       <ReactTooltip id={objectID} />
       <div
         data-tip={title}

@@ -156,7 +156,9 @@ const Search = () => {
   );
 
   const rowSideOpen =
-    width < 1330
+    width < 640
+      ? 'grid-cols-1'
+      : width < 1330
       ? 'grid-cols-2'
       : width < 1665
       ? 'grid-cols-3'
@@ -165,7 +167,9 @@ const Search = () => {
       : 'grid-cols-5';
 
   const rowSideClose =
-    width < 1000
+    width < 640
+      ? 'grid-cols-1'
+      : width < 1000
       ? 'grid-cols-2'
       : width < 1330
       ? 'grid-cols-3'
@@ -196,10 +200,12 @@ const Search = () => {
       )}
       {books && books.length > 0 && (
         <div className='h-full w-[calc(100%)] space-y-3 2xl:w-[calc(100%)]'>
-          <div className='flex justify-between'>
-            <div className='flex items-center space-x-5'>
+          <div className='flex  flex-col justify-between space-y-2 md:flex-row'>
+            <div className='flex flex-col items-start space-y-2 space-x-0 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-5'>
               <div className='flex items-center space-x-3'>
-                <div className='text-cGray-300'>Sort by:</div>
+                <div className='text-cGray-300 text-sm md:text-base'>
+                  Sort by:
+                </div>
                 <div className='flex space-x-2'>
                   {SORT_ITEMS.map(({ sort }) => {
                     const isDefaultSort =
@@ -218,7 +224,7 @@ const Search = () => {
                       <button
                         type='button'
                         key={sort.name}
-                        className={`rounded-lg px-3 py-2 text-sm ${
+                        className={`rounded-lg px-2 py-1 text-xs sm:px-3 sm:py-2 md:text-sm ${
                           isActiveSort
                             ? 'bg-primary text-white'
                             : 'text-cGray-300 bg-neutral-200'
@@ -233,8 +239,10 @@ const Search = () => {
               </div>
 
               <div className='flex items-center space-x-3'>
-                <div className='text-cGray-300'>Order by:</div>
-                <div className='rounded-lg bg-neutral-200 pr-3'>
+                <div className='text-cGray-300 text-sm md:text-base'>
+                  Order by:
+                </div>
+                <div className='rounded-lg bg-neutral-200 pr-3 text-xs md:text-sm'>
                   <select
                     className='text-cGray-300 rounded-lg border-none bg-neutral-200 px-2 py-[3px] outline-none '
                     onChange={(e) =>
@@ -297,10 +305,10 @@ const Search = () => {
             style={{
               height: `calc(100% - ${
                 // books.length / HITS_PER_PAGE > 1 ? 36 : 0
-                36
+                width < 640 ? 86 : 36
               }px)`,
             }}
-            className={`place-items-left grid w-full place-content-start justify-between gap-y-5 pt-1 pb-4  ${
+            className={`place-items-left grid w-full place-content-start place-items-center justify-between gap-y-5 pt-1 pb-4 lg:place-items-start  ${
               sidebarOpen ? rowSideOpen : rowSideClose
             } ${
               currentBooks &&
