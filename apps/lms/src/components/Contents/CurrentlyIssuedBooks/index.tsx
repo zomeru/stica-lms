@@ -219,13 +219,13 @@ const CurrentlyIssuedBooks = () => {
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='whitespace-no-wrap text-gray-900'>
+                        <p className='whitespace-no-wrap min-w-[100px] text-gray-900'>
                           {issuedDate}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p
-                          className={`whitespace-no-wrap ${
+                          className={`whitespace-no-wrap min-w-[100px] ${
                             issue.penalty > 0
                               ? 'text-red-600'
                               : 'text-sky-600'

@@ -9,7 +9,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import Image from 'next/image';
-import { AiOutlineSend } from 'react-icons/ai';
+import { AiOutlineSend, AiOutlineArrowLeft } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
 import ReactTooltip from 'react-tooltip';
 import { useRouter } from 'next/router';
@@ -158,9 +158,32 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
     // bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleBack = () => {
+    const allQueries: any = {
+      ...router.query,
+    };
+    delete allQueries.chatId;
+
+    router.push(
+      {
+        pathname: '/',
+        query: allQueries,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
-    <div className='h-full w-[calc(100%-300px)]'>
+    <div className='h-full w-full'>
       <div className='border-cGray-200 ml-3 flex items-center space-x-3 border-b bg-white pb-[6px]'>
+        <button
+          type='button'
+          className='block sm:hidden'
+          onClick={handleBack}
+        >
+          <AiOutlineArrowLeft className='text-primary text-3xl' />
+        </button>
         <div className='relative h-[50px] w-[50px] overflow-hidden rounded-full'>
           <Image
             src='https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/stica%2FSTI_LOGO.png?alt=media&token=2a5f406c-9e29-41de-be02-16f830682691'

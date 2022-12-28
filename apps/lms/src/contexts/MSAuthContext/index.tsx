@@ -17,7 +17,7 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore';
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 
 import { auth, db } from '@lms/db';
 import { IUserDoc } from '@lms/types';
@@ -175,7 +175,7 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
         console.log('error sign in pop up', err.message);
 
         if (err.message.includes('auth/popup-closed-by-user')) {
-          toast.error('The log in window was closed');
+          // toast.error('The log in window was closed');
         }
 
         setLoading(false);
