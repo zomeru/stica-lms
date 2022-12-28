@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { AiOutlineClose } from 'react-icons/ai';
+import {
+  AiOutlineClose,
+  AiOutlineLogout,
+  AiOutlineLogin,
+} from 'react-icons/ai';
 import { IconType } from 'react-icons';
 
 import { useRouter } from 'next/router';
@@ -28,9 +32,16 @@ interface MenuProps {
     Icon: IconType;
   }[];
   handleSidebarItemClick: (name: string) => void;
+  isAuthenticated: boolean;
+  authAction: () => void;
 }
 
-const Menu = ({ sidebarItems, handleSidebarItemClick }: MenuProps) => {
+const Menu = ({
+  sidebarItems,
+  handleSidebarItemClick,
+  isAuthenticated,
+  authAction,
+}: MenuProps) => {
   const router = useRouter();
 
   const [burgerOpen, setBurgerOpen] = useState(false);
@@ -77,13 +88,10 @@ const Menu = ({ sidebarItems, handleSidebarItemClick }: MenuProps) => {
                 <button
                   type='button'
                   key={name}
-                  className={`hover:bg-primary w-full py-4 px-10 transition-all ease-in-out hover:text-white ${
-                    isActive ? 'bg-primary text-white' : 'text-neutral-600'
-                  }`}
+                  className='hover:bg-primary w-full py-4 px-10 text-neutral-600 transition-all ease-in-out hover:text-white'
                   onClick={() => {
                     if (isActive && !router.query.bookId) return;
                     handleSidebarItemClick(name);
-                    setBurgerOpen(false);
                   }}
                 >
                   <div className='flex items-center space-x-3'>
@@ -93,10 +101,26 @@ const Menu = ({ sidebarItems, handleSidebarItemClick }: MenuProps) => {
                 </button>
               );
             })}
+            <button
+              type='button'
+              className='hover:bg-primary w-full py-4 px-10 text-neutral-600 transition-all ease-in-out hover:text-white'
+              onClick={authAction}
+            >
+              <div className='flex items-center space-x-3'>
+                {isAuthenticated ? (
+                  <AiOutlineLogout className='text-lg' />
+                ) : (
+                  <AiOutlineLogin className='text-lg' />
+                )}
+                <p className='font-medium'>
+                  {isAuthenticated ? 'Log out' : 'Log in'}
+                </p>
+              </div>
+            </button>
           </div>
           <button
             type='button'
-            className='flex w-full items-center justify-center py-4 text-center text-neutral-800 transition-all hover:bg-red-600 hover:text-white'
+            className='flex w-full items-center justify-center py-4 text-center text-neutral-800 hover:bg-red-600 hover:text-white'
             onClick={() => setBurgerOpen(false)}
           >
             <AiOutlineClose className='h-[30px] w-[30px]' />

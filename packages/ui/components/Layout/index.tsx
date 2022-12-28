@@ -675,6 +675,8 @@ export const Layout = ({
               <Menu
                 sidebarItems={sidebarItems}
                 handleSidebarItemClick={handleSidebarItemClick}
+                authAction={authAction}
+                isAuthenticated={isAuthenticated}
               />
             </div>
           </div>

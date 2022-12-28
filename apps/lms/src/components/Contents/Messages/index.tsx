@@ -12,7 +12,7 @@ import TimeAgo from 'javascript-time-ago';
 import { useRouter } from 'next/router';
 
 import { ChatMates } from '@lms/types';
-import { useCol, useNextQuery } from '@lms/ui';
+import { useCol, useNextQuery, useWindowDimensions } from '@lms/ui';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
 
@@ -22,6 +22,7 @@ const Messages = () => {
   const timeAgo = new TimeAgo('en-US');
   const router = useRouter();
   const { user } = useAuth();
+  const { width } = useWindowDimensions();
 
   const chatId = useNextQuery('chatId');
 
@@ -63,8 +64,12 @@ const Messages = () => {
   };
 
   return (
-    <section className='flex h-full w-full'>
-      <div className='h-full w-[300px] space-y-[15px] lg:w-[400px]'>
+    <section className='relative flex h-full w-full'>
+      <div
+        className={`h-full w-full space-y-[15px] transition-all duration-200 ease-in-out sm:w-[300px] lg:w-[400px] ${
+          chatId && width < 640 ? '-translate-x-[105%]' : '-translate-x-0'
+        }`}
+      >
         {/* <input
           type='text'
           className='border-cGray-200 mx-auto h-[40px] w-[90%] rounded-full border px-3 outline-none'
@@ -168,7 +173,11 @@ const Messages = () => {
           )}
         </div>
       </div>
-      <>
+      <div
+        className={`absolute top-[0px] right-0  h-full w-full transition-all duration-200 ease-in-out sm:static sm:w-[calc(100%-300px)] lg:w-[calc(100%-400px)] ${
+          !chatId && width < 640 ? 'translate-x-[100%]' : 'translate-x-0'
+        }`}
+      >
         {chatId ? (
           <Conversation
             chatId={chatId}
@@ -177,11 +186,11 @@ const Messages = () => {
             }
           />
         ) : (
-          <div className='flex h-full w-[calc(100%-300px)] items-center justify-center text-xl text-neutral-600 lg:w-[calc(100%-400px)]'>
-            Select a char or start a new conversation
+          <div className='flex h-full w-full items-center justify-center text-center text-xl text-neutral-600'>
+            Select a chat or start a new conversation
           </div>
         )}
-      </>
+      </div>
     </section>
   );
 };

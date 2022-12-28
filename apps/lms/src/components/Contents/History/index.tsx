@@ -2,7 +2,6 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import { collection, query, orderBy, where } from 'firebase/firestore';
-
 import { formatDate, navigateToBook } from '@src/utils';
 import { historyTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
 import { useCol } from '@src/services';
