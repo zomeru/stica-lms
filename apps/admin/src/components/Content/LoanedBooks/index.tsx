@@ -210,13 +210,13 @@ const LoanedBooks = () => {
                       </td>
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='max-w-[210px] overflow-hidden truncate text-left text-neutral-900'>
+                        <p className='max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {borrow.genre}
                         </p>
                       </td>
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
+                        <p className='max-w-[210px] overflow-hidden text-left text-neutral-900'>
                           {borrow.isbn}
                         </p>
                       </td>

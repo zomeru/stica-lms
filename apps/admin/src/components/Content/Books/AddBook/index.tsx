@@ -26,9 +26,9 @@ import {
   CategoryDoc,
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
-import Loader from '@src/components/Loader';
-import { useCol } from '@src/services';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
+import { useCol } from '@lms/ui';
+import Loader from '@src/components/Loader';
 
 Modal.setAppElement('#__next');
 
