@@ -2,7 +2,7 @@ import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai';
 import {
   MdLoop,
   MdOutlineLibraryBooks,
-  MdOutlineNotificationsNone,
+  /* MdOutlineNotificationsNone, */
   MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
@@ -22,10 +22,10 @@ export const adminSidebarItems = [
     name: 'Messages',
     Icon: AiOutlineMessage,
   },
-  {
+  /* {
     name: 'Send Notifications',
     Icon: MdOutlineNotificationsNone,
-  },
+  }, */
   {
     name: 'Currently Loaned Books',
     Icon: FiBookOpen,
