@@ -5,7 +5,6 @@ import { PublicClientApplication } from '@azure/msal-browser';
 
 import { msalConfig } from '@src/config';
 import { MSAuthProvider, SidebarProvider } from '@src/contexts';
-import Deface from '@lms/ui/components/Deface';
 import SEO from '../../next-seo.config';
 
 import 'nprogress/nprogress.css';
@@ -31,32 +30,18 @@ function MyApp({ Component, pageProps }: AppProps) {
   // const navigationClient = new CustomNavigationClient(router);
   // msalInstance.setNavigationClient(navigationClient);
 
-  const isMaintenance = false;
-
   return (
     <MSAuthProvider>
-      {/* <MsalProvider instance={msalInstance}>
-        <UserProvider msalInstance={msalInstance}> */}
-      {isMaintenance ? (
-        <>
-          <DefaultSeo title='Hacked' description='Hacked' />
-          <Deface />
-        </>
-      ) : (
-        <SidebarProvider>
-          <DefaultSeo {...SEO} />
-          <Component {...pageProps} />
-          <Toaster
-            position='top-right'
-            toastOptions={{
-              duration: 2000,
-            }}
-          />
-        </SidebarProvider>
-      )}
-
-      {/* </UserProvider>
-      </MsalProvider> */}
+      <SidebarProvider>
+        <DefaultSeo {...SEO} />
+        <Component {...pageProps} />
+        <Toaster
+          position='top-right'
+          toastOptions={{
+            duration: 2000,
+          }}
+        />
+      </SidebarProvider>
     </MSAuthProvider>
   );
 }

@@ -1,4 +1,4 @@
-const TITLE = 'STICA LMS';
+const TITLE = 'STICA Library Management System';
 const DESCRIPTION =
   'Stica LMS is an online library management system that helps students from STI College Alabang and the librarian to manage books easily.';
 const URL = 'https://sticalms.com';
