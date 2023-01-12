@@ -1,11 +1,30 @@
 export type GenreType = 'Fiction' | 'Non-Fiction';
 
+export type IdentifierStatus =
+  | 'Lost'
+  | 'Damaged'
+  | 'Available'
+  | 'Borrowed';
+
+export type Identifier = {
+  isbn: string;
+  accessionNumber: string;
+  status: IdentifierStatus;
+  borrowedBy?: string;
+};
+
+export type Category = {
+  category: string;
+  canBeBorrowed: boolean;
+};
+
 export interface IBooks {
   title: string;
   author: string;
   publisher: string;
-  accessionNumber: string;
-  genreType: string;
+  /* accessionNumber: string; */
+  category: Category;
+  copyright: string;
   genre: string;
   quantity: number;
   available: number;
@@ -14,10 +33,11 @@ export interface IBooks {
     ref: string;
   };
   views: number;
-  totalBorrowed: number;
+  totalBorrow: number;
   createdAt: any;
   updatedAt: any;
-  isbns: ISBNType[];
+  /* isbns: ISBNType[]; */
+  identifiers: Identifier[];
 }
 
 export interface IBookDoc extends IBooks {
