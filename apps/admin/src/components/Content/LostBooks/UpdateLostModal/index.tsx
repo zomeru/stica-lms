@@ -93,30 +93,30 @@ const UpdateLostModal = ({
         id: bookSnap.id,
       } as IBookDoc;
 
-      const filteredIdentifiers = [...bookData.identifiers].filter(
-        (el) => {
-          const notSameIsbn = el.isbn !== lostBookData?.identifiers.isbn;
-          const notSameAccession =
-            el.accessionNumber !==
-            lostBookData?.identifiers.accessionNumber;
+      // const filteredIdentifiers = [...bookData.identifiers].filter(
+      //   (el) => {
+      //     const notSameIsbn = el.isbn !== lostBookData?.identifiers.isbn;
+      //     const notSameAccession =
+      //       el.accessionNumber !==
+      //       lostBookData?.identifiers.accessionNumber;
 
-          return notSameIsbn && notSameAccession;
-        }
-      );
+      //     return notSameIsbn && notSameAccession;
+      //   }
+      // );
 
-      const updatedBorrowIdentifiers: Identifier = {
-        accessionNumber: lostBookData?.identifiers.accessionNumber!,
-        status: 'Lost',
-        isbn: lostBookData?.identifiers.isbn!,
+      const newBookIdentifiers: Identifier = {
+        accessionNumber: newAccessionNo,
+        status: 'Available',
+        isbn: newISBN,
       };
 
-      const updatedIdentifiers = [
-        ...filteredIdentifiers,
-        updatedBorrowIdentifiers,
-      ];
+      // const updatedIdentifiers = [
+      //   ...filteredIdentifiers,
+      //   updatedBorrowIdentifiers,
+      // ];
 
       await updateDoc(bookRef, {
-        identifiers: updatedIdentifiers,
+        identifiers: [...bookData.identifiers, newBookIdentifiers],
         available: increment(1),
       });
 
@@ -280,7 +280,7 @@ const UpdateLostModal = ({
               Accession No.:
             </p>
             <input
-              placeholder='Enter the ISBN of the book'
+              placeholder='Enter the accession number of the new book'
               className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
               value={newAccessionNo}
               onChange={(e) => setNewAccessionNo(e.target.value)}
