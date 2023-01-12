@@ -27,7 +27,10 @@ export interface ILikedBooks {
   title: string;
   author: string;
   genre: string;
-  accessionNumber: string;
+  identifiers: {
+    isbn: string;
+    accessionNumber: string;
+  };
   imageCover: {
     url: string;
     ref: string;

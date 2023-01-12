@@ -21,7 +21,7 @@ import {
   removeFromLikedBooks,
   useCol,
   useDoc,
-} from '@src/services';
+ useNextQuery } from '@lms/ui';
 import {
   AlgoBookDoc,
   IBookDoc,
@@ -31,7 +31,6 @@ import {
 import { useAuth } from '@src/contexts';
 
 import { formatDate } from '@src/utils';
-import { useNextQuery } from '@lms/ui';
 
 const BookDetails = () => {
   const { user } = useAuth();

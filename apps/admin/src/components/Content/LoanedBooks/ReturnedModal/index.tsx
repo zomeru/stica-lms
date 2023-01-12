@@ -15,7 +15,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 
-import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
 
@@ -57,6 +57,8 @@ const ReturnedModal = ({
   const [withDamage, setWithDamage] = useState(false);
   const [hasBeenReplaced, setHasBeenReplaced] = useState(false);
   const [newISBN, setNewISBN] = useState('');
+  const [newAccessionNo, setNewAccessionNo] = useState('');
+  // const
 
   const handleConfirmBookReturn = async () => {
     if (!borrowData) return;
@@ -101,29 +103,39 @@ const ReturnedModal = ({
         id: bookSnap.id,
       } as IBookDoc;
 
-      const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== borrowData?.isbn
+      const filteredIdentifiers = [...bookData.identifiers].filter(
+        (el) => {
+          const notSameIsbn = el.isbn !== borrowData?.identifiers.isbn;
+          const notSameAccession =
+            el.accessionNumber !== borrowData?.identifiers.accessionNumber;
+
+          return notSameIsbn && notSameAccession;
+        }
       );
 
-      const updatedBorrowISBN: ISBNType = {
-        isbn: borrowData.isbn!,
-        // isAvailable: true,
+      const updatedBorrowIdentifiers: Identifier = {
+        accessionNumber: borrowData.identifiers.accessionNumber,
         status: withDamage ? 'Damaged' : 'Available',
+        isbn: borrowData.identifiers.isbn,
       };
 
-      const updatedISBNs = [...filteredISBNs, updatedBorrowISBN];
+      const updatedIdentifiers = [
+        ...filteredIdentifiers,
+        updatedBorrowIdentifiers,
+      ];
 
       if (hasBeenReplaced) {
-        const newISBNType: ISBNType = {
+        const newIdentifiers: Identifier = {
           isbn: newISBN,
+          accessionNumber: newAccessionNo,
           status: 'Available',
         };
 
-        updatedISBNs.push(newISBNType);
+        updatedIdentifiers.push(newIdentifiers);
       }
 
       await updateDoc(bookRef, {
-        isbns: updatedISBNs,
+        identifiers: updatedIdentifiers,
         available: increment(withDamage && !hasBeenReplaced ? 0 : 1),
       });
 
@@ -180,7 +192,18 @@ const ReturnedModal = ({
       setSelectedBorrow('');
       nProgress.done();
       setIsModalOpen(false);
-      toast.success('Book returned successfully');
+
+      if (hasBeenReplaced) {
+        toast.success('Book has been replaced');
+      }
+
+      if (withDamage && !hasBeenReplaced) {
+        toast.success('Book marked as "Damaged"');
+      }
+
+      if (!withDamage) {
+        toast.success('Book returned successfully');
+      }
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -243,12 +266,15 @@ const ReturnedModal = ({
             <span className='text-sky-600'>{borrowData?.genre}</span>
           </div>
           <div>
-            ISBN: <span className='text-sky-600'>{borrowData?.isbn}</span>
+            ISBN:{' '}
+            <span className='text-sky-600'>
+              {borrowData?.identifiers.isbn}
+            </span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {borrowData?.accessionNumber}
+              {borrowData?.identifiers.accessionNumber}
             </span>
           </div>
           <div className='flex items-center'>
@@ -382,15 +408,28 @@ const ReturnedModal = ({
             </p>
           </div>
           {hasBeenReplaced && (
-            <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
-              <p className='mb-2 flex-none font-normal lg:mb-0'>ISBN:</p>
-              <input
-                placeholder='Enter the ISBN of the book'
-                className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
-                value={newISBN}
-                onChange={(e) => setNewISBN(e.target.value)}
-              />
-            </div>
+            <>
+              <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+                <p className='mb-2 flex-none font-normal lg:mb-0'>ISBN:</p>
+                <input
+                  placeholder='Enter the ISBN of the new book'
+                  className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
+                  value={newISBN}
+                  onChange={(e) => setNewISBN(e.target.value)}
+                />
+              </div>
+              <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+                <p className='mb-2 flex-none font-normal lg:mb-0'>
+                  Accession no.:
+                </p>
+                <input
+                  placeholder='Enter the accession number of the new book'
+                  className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
+                  value={newAccessionNo}
+                  onChange={(e) => setNewAccessionNo(e.target.value)}
+                />
+              </div>
+            </>
           )}
         </div>
         <div className='flex justify-end'>

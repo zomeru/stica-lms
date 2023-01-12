@@ -192,12 +192,12 @@ const LostBooks = () => {
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {lostBook.isbn}
+                          {lostBook.identifiers.isbn}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {lostBook.accessionNumber}
+                          {lostBook.identifiers.accessionNumber}
                         </p>
                       </td>
                       {/* <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>

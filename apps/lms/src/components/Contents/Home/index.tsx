@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { BiBook } from 'react-icons/bi';
 import { collection, query } from 'firebase/firestore';
 
-import { useCol } from '@src/services';
+import { useCol } from '@lms/ui';
 import { db } from '@lms/db';
 
 type Category = {

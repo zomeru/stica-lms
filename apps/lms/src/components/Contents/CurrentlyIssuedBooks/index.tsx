@@ -16,11 +16,10 @@ import nProgress from 'nprogress';
 
 import { formatDate, navigateToBook } from '@src/utils';
 import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
-import { useCol } from '@src/services';
+import { useCol , useClientPagination } from '@lms/ui';
 import { IBorrowDoc } from '@lms/types';
 import { useAuth } from '@src/contexts';
 import { db } from '@lms/db';
-import { useClientPagination } from '@lms/ui';
 
 const CurrentlyIssuedBooks = () => {
   const { user } = useAuth();
@@ -211,11 +210,13 @@ const CurrentlyIssuedBooks = () => {
                         </button>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='w-max text-gray-900'>{issue.isbn}</p>
+                        <p className='w-max text-gray-900'>
+                          {issue.identifiers.isbn}
+                        </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
-                          {issue.accessionNumber}
+                          {issue.identifiers.accessionNumber}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>

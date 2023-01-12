@@ -30,9 +30,8 @@ import {
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import Loader from '@src/components/Loader';
-import { useNextQuery } from '@lms/ui';
+import { useNextQuery , useCol } from '@lms/ui';
 import { useRouter } from 'next/router';
-import { useCol } from '@src/services';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 
 Modal.setAppElement('#__next');
@@ -104,7 +103,7 @@ const ISBNModal = ({
               <div className='flex flex-col space-y-1' key={input}>
                 <div className='text-lg font-semibold'>Book {i + 1}: </div>
                 <TextInput
-                  title="ISBN"
+                  title='ISBN'
                   inputProps={{
                     value: identifiers[i]?.isbn ? identifiers[i].isbn : '',
                     onChange: (e) => {
@@ -121,7 +120,7 @@ const ISBNModal = ({
                   }}
                 />
                 <TextInput
-                  title="Accession no."
+                  title='Accession no.'
                   inputProps={{
                     value: identifiers[i]?.accessionNumber
                       ? identifiers[i].accessionNumber

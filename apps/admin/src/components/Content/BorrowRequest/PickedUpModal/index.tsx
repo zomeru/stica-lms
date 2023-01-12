@@ -14,7 +14,7 @@ import Modal from 'react-modal';
 import nProgress from 'nprogress';
 import ReactTooltip from 'react-tooltip';
 
-import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
 
@@ -89,27 +89,33 @@ const PickedUpModal = ({
         return;
       }
 
-      const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== borrowData?.isbn
+      const filteredIdentifiers = [...bookData.identifiers].filter(
+        (el) => {
+          const notSameIsbn = el.isbn !== borrowData?.identifiers.isbn;
+          const notSameAccession =
+            el.accessionNumber !== borrowData?.identifiers.accessionNumber;
+
+          return notSameIsbn && notSameAccession;
+        }
       );
 
-      const newIsbn: ISBNType[] = [
-        ...filteredISBNs,
+      const newIdentifiers: Identifier[] = [
+        ...filteredIdentifiers,
         {
-          isbn: borrowData.isbn!,
-          // isAvailable: false,
+          isbn: borrowData.identifiers.isbn!,
+          accessionNumber: borrowData.identifiers.accessionNumber!,
           status: 'Borrowed',
           borrowedBy: borrowData?.userId,
-        } as ISBNType,
+        },
       ];
 
       const finalDueDateTimestamp = await processHoliday(borrowData);
 
       // update 1 book isbn
       await updateDoc(bookRef, {
-        isbns: newIsbn,
+        identifiers: newIdentifiers,
         available: increment(-1),
-        totalBorrowed: increment(1),
+        totalBorrow: increment(1),
       });
 
       // update borrow request
@@ -192,12 +198,15 @@ const PickedUpModal = ({
             <span className='text-sky-600'>{borrowData?.genre}</span>
           </div>
           <div>
-            ISBN: <span className='text-sky-600'>{borrowData?.isbn}</span>
+            ISBN:{' '}
+            <span className='text-sky-600'>
+              {borrowData?.identifiers.isbn}
+            </span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {borrowData?.accessionNumber}
+              {borrowData?.identifiers.accessionNumber}
             </span>
           </div>
         </div>

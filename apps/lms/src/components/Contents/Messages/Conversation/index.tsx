@@ -51,8 +51,6 @@ const Conversation = ({ chatId, messageData }: ConversationProps) => {
       } catch (error) {
         console.log(error);
       }
-
-      console.log('seen message');
     }
   };
 

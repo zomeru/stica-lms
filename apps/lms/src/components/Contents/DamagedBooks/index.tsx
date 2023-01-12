@@ -5,11 +5,10 @@ import Image from 'next/image';
 
 import { navigateToBook } from '@src/utils';
 import { ITEMS_PER_PAGE, lostBooksTableHeaders } from '@src/constants';
-import { useCol } from '@src/services';
+import { useCol , useClientPagination } from '@lms/ui';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
-import { useClientPagination } from '@lms/ui';
 
 const DamagedBooks = () => {
   const { user } = useAuth();
@@ -145,13 +144,13 @@ const DamagedBooks = () => {
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
-                          {borrow.isbn}
+                          {borrow.identifiers.isbn}
                         </p>
                       </td>
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='whitespace-no-wrap text-gray-900'>
-                          {borrow.accessionNumber}
+                          {borrow.identifiers.accessionNumber}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>

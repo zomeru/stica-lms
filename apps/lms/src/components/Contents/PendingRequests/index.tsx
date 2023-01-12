@@ -157,13 +157,13 @@ const PendingRequests = () => {
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
-                          {borrow.isbn}
+                          {borrow.identifiers.isbn}
                         </p>
                       </td>
 
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
-                          {borrow.accessionNumber}
+                          {borrow.identifiers.accessionNumber}
                         </p>
                       </td>
 

@@ -27,11 +27,11 @@ export const borrowBook = async (
     return;
   }
 
-  const availableIsbn = book.isbns.find(
+  const availableBook = book.identifiers.find(
     (el) => el.status === 'Available'
-  )?.isbn;
+  );
 
-  if (book.available === 0 || !availableIsbn) {
+  if (book.available === 0 || !availableBook) {
     toast.error('No available books, please try again later.');
     return;
   }
@@ -132,9 +132,15 @@ export const borrowBook = async (
           title: book.title,
           author: book.author,
           genre: book.genre,
-          category: book.genreType,
-          isbn: availableIsbn,
-          accessionNumber: book.accessionNumber,
+          copyright: book.copyright,
+          publisher: book.publisher,
+          category: book.category.category,
+          // isbn: availableIsbn,
+          // accessionNumber: book.accessionNumber,
+          identifiers: {
+            isbn: availableBook.isbn,
+            accessionNumber: availableBook.accessionNumber,
+          },
           requestDate: requestDateTimestamp,
           status: 'Pending',
           updatedAt: requestDateTimestamp,
@@ -223,7 +229,10 @@ export const addToLikedBooks = async (
       title: book.title,
       author: book.author,
       genre: book.genre,
-      accessionNumber: book.accessionNumber,
+      identifiers: {
+        isbn: book.identifiers[0].isbn,
+        accessionNumber: book.identifiers[0].accessionNumber,
+      },
       imageCover: book.imageCover,
       createdAt: serverTimestamp(),
     };

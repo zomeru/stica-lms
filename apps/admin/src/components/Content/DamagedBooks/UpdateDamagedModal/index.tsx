@@ -15,7 +15,7 @@ import {
   collection,
 } from 'firebase/firestore';
 
-import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
 
@@ -53,19 +53,22 @@ const UpdateDamagedModal = ({
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
   const [penalty, setPenalty] = useState(damagedBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
+  const [newAccessionNo, setNewAccessionNo] = useState('');
 
   const handleConfirmBookReplaced = async () => {
-    if (!newISBN.trim()) {
-      toast.error("Please enter the replacement book's ISBN");
-      return;
-    }
-
-    if (newISBN.trim() === damagedBookData?.isbn) {
+    if (!newISBN.trim() || !newAccessionNo.trim()) {
       toast.error(
-        "The replacement book's ISBN cannot be the same as the lost book's ISBN"
+        "Please enter the replacement book's ISBN and Accession number."
       );
       return;
     }
+
+    // if (newISBN.trim() === damagedBookData?.isbn) {
+    //   toast.error(
+    //     "The replacement book's ISBN cannot be the same as the lost book's ISBN and Accession number."
+    //   );
+    //   return;
+    // }
 
     setIsEditingPenalty(false);
 
@@ -96,19 +99,31 @@ const UpdateDamagedModal = ({
         id: bookSnap.id,
       } as IBookDoc;
 
-      const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== damagedBookData?.isbn
+      const filteredIdentifiers = [...bookData.identifiers].filter(
+        (el) => {
+          const notSameIsbn =
+            el.isbn !== damagedBookData?.identifiers.isbn;
+          const notSameAccession =
+            el.accessionNumber !==
+            damagedBookData?.identifiers.accessionNumber;
+
+          return notSameIsbn && notSameAccession;
+        }
       );
 
-      const newISBNType: ISBNType = {
-        isbn: newISBN,
-        status: 'Available',
+      const updatedBorrowIdentifiers: Identifier = {
+        accessionNumber: damagedBookData?.identifiers.accessionNumber!,
+        status: 'Lost',
+        isbn: damagedBookData?.identifiers.isbn!,
       };
 
-      const updatedISBNs = [...filteredISBNs, newISBNType];
+      const updatedIdentifiers = [
+        ...filteredIdentifiers,
+        updatedBorrowIdentifiers,
+      ];
 
       await updateDoc(bookRef, {
-        isbns: updatedISBNs,
+        identifiers: updatedIdentifiers,
         available: increment(1),
       });
 
@@ -144,8 +159,9 @@ const UpdateDamagedModal = ({
       setIsConfirming(false);
       setSelectedDamagedBook('');
       setNewISBN('');
+      setNewAccessionNo('');
       nProgress.done();
-      toast.success('Book marked as "Damaged".');
+      toast.success('Book has been replaced.');
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -203,12 +219,14 @@ const UpdateDamagedModal = ({
           </div>
           <div>
             Damaged book&apos;s ISBN:{' '}
-            <span className='text-sky-600'>{damagedBookData?.isbn}</span>
+            <span className='text-sky-600'>
+              {damagedBookData?.identifiers.isbn}
+            </span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {damagedBookData?.accessionNumber}
+              {damagedBookData?.identifiers.accessionNumber}
             </span>
           </div>
           <div className='flex items-center'>
@@ -267,6 +285,17 @@ const UpdateDamagedModal = ({
               className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
               value={newISBN}
               onChange={(e) => setNewISBN(e.target.value)}
+            />
+          </div>
+          <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+            <p className='mb-2 flex-none font-normal lg:mb-0'>
+              Accession No.:
+            </p>
+            <input
+              placeholder='Enter the ISBN of the book'
+              className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
+              value={newAccessionNo}
+              onChange={(e) => setNewAccessionNo(e.target.value)}
             />
           </div>
         </div>

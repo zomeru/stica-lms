@@ -14,8 +14,14 @@ export interface IBorrow {
   author: string;
   genre: string;
   category: string;
-  isbn: string;
-  accessionNumber: string;
+  copyright: string;
+  // isbn: string;
+  publisher: string;
+  identifiers: {
+    isbn: string;
+    accessionNumber: string;
+  };
+  // accessionNumber: string;
   requestDate: any;
   status: BorrowStatus;
   penalty: number;
