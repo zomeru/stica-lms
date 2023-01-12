@@ -21,12 +21,17 @@ import { db, storage } from '@lms/db';
 import { useFileHandler, useUploadImage } from '@src/hooks';
 import { Select, TextInput } from '@src/components/Inputs';
 import { ADD_BOOK_TEXT_INPUTS } from '@src/constants';
-import { AlgoBookDoc, CategoryDoc, GenreDoc, ISBNType } from '@lms/types';
+import {
+  AlgoBookDoc,
+  CategoryDoc,
+  GenreDoc,
+  Identifier,
+  ISBNType,
+} from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import Loader from '@src/components/Loader';
-import { useNextQuery } from '@lms/ui';
+import { useNextQuery , useCol } from '@lms/ui';
 import { useRouter } from 'next/router';
-import { useCol } from '@src/services';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 
 Modal.setAppElement('#__next');
@@ -48,22 +53,30 @@ const ISBNModal = ({
   isModalOpen,
   setIsModalOpen,
   quantity,
-  ISBNs,
-  setISBNs,
-}: {
+  identifiers,
+  setIdentifiers,
+}: // ISBNs,
+// setISBNs,
+{
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   quantity: number;
-  ISBNs: string[];
-  setISBNs: React.Dispatch<React.SetStateAction<string[]>>;
+  identifiers: Identifier[];
+  setIdentifiers: React.Dispatch<React.SetStateAction<Identifier[]>>;
 }) => {
   const inputs = useMemo(() => {
     return new Array(quantity).fill(0).map((_, i) => `isbn-${i + 1}`);
   }, [quantity]);
 
   const handleClose = () => {
-    if (hasDuplicateString(ISBNs)) {
-      toast.error('ISBNs must be unique');
+    const accessionNumbers: string[] = [];
+
+    identifiers.forEach((item) => {
+      accessionNumbers.push(item.accessionNumber);
+    });
+
+    if (hasDuplicateString(accessionNumbers)) {
+      toast.error('Accession number must be unique');
     } else {
       setIsModalOpen(false);
     }
@@ -87,20 +100,44 @@ const ISBNModal = ({
         <div className='space-y-3'>
           {inputs.map((input, i) => {
             return (
-              <TextInput
-                key={input}
-                title={`ISBN ${i + 1}`}
-                inputProps={{
-                  value: ISBNs[i],
-                  onChange: (e) => {
-                    setISBNs((prev) => {
-                      const newISBNs = [...prev];
-                      newISBNs[i] = e.target.value;
-                      return newISBNs;
-                    });
-                  },
-                }}
-              />
+              <div className='flex flex-col space-y-1' key={input}>
+                <div className='text-lg font-semibold'>Book {i + 1}: </div>
+                <TextInput
+                  title='ISBN'
+                  inputProps={{
+                    value: identifiers[i]?.isbn ? identifiers[i].isbn : '',
+                    onChange: (e) => {
+                      setIdentifiers((prev) => {
+                        const newIdentifiers = [...prev];
+                        newIdentifiers[i] = {
+                          ...newIdentifiers[i],
+                          isbn: e.target.value,
+                        };
+                        return newIdentifiers;
+                      });
+                    },
+                    className: 'space-x-0',
+                  }}
+                />
+                <TextInput
+                  title='Accession no.'
+                  inputProps={{
+                    value: identifiers[i]?.accessionNumber
+                      ? identifiers[i].accessionNumber
+                      : '',
+                    onChange: (e) => {
+                      setIdentifiers((prev) => {
+                        const newIdentifiers = [...prev];
+                        newIdentifiers[i] = {
+                          ...newIdentifiers[i],
+                          accessionNumber: e.target.value,
+                        };
+                        return newIdentifiers;
+                      });
+                    },
+                  }}
+                />
+              </div>
             );
           })}
         </div>
@@ -139,14 +176,19 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publisher, setPublisher] = useState('');
-  const [accessionNumber, setAccessionNumber] = useState('');
-  const [genreType, setGenreType] = useState('');
+  // const [accessionNumber, setAccessionNumber] = useState('');
+  // const [genreType, setGenreType] = useState('');
+  // const [category, setCategory] = useState<Category>({} as Category);
+  const [category, setCategory] = useState('');
   const [genre, setGenre] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [ISBNs, setISBNs] = useState<string[]>([]);
+  // const [ISBNs, setISBNs] = useState<string[]>([]);
+  const [identifiers, setIdentifiers] = useState<Identifier[]>([]);
   const [image, setImage] = useState('');
+  const [copyright, setCopyright] = useState('');
 
   const [isCustomGenre, setIsCustomGenre] = useState(false);
+  const [canBeBorrowed, setCanBeBorrowed] = useState(false);
 
   const [allGenres] = useCol<GenreDoc>(
     query(collection(db, 'genres'), orderBy('genre', 'asc'))
@@ -161,18 +203,13 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       setTitle(bookDetails.title);
       setAuthor(bookDetails.author);
       setPublisher(bookDetails.publisher);
-      setAccessionNumber(bookDetails.accessionNumber);
-      setGenreType(bookDetails.genreType);
+      setCategory(bookDetails.category.category);
       setGenre(bookDetails.genre);
       setQuantity(bookDetails.quantity);
       setImage(bookDetails.imageCover.url);
-
-      const newISBNs: string[] = [];
-      bookDetails.isbns.forEach(({ isbn }) => {
-        newISBNs.push(isbn);
-      });
-
-      setISBNs(newISBNs);
+      setIdentifiers(bookDetails.identifiers);
+      setCopyright(bookDetails.copyright);
+      setCanBeBorrowed(bookDetails.category.canBeBorrowed);
     };
 
     if (bookDetails) setDetails();
@@ -192,8 +229,8 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       setValue: setPublisher,
     },
     {
-      value: accessionNumber,
-      setValue: setAccessionNumber,
+      value: copyright,
+      setValue: setCopyright,
     },
   ];
 
@@ -202,17 +239,28 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       return title === bookDetails.title &&
         author === bookDetails.author &&
         publisher === bookDetails.publisher &&
-        accessionNumber === bookDetails.accessionNumber &&
-        genreType === bookDetails.genreType &&
+        copyright === bookDetails.copyright &&
+        category === bookDetails.category.category &&
+        canBeBorrowed === bookDetails.category.canBeBorrowed &&
         genre === bookDetails.genre &&
         quantity === bookDetails.quantity &&
         image === bookDetails.imageCover.url &&
-        bookDetails.isbns
-        ? ISBNs.every(
-            (isbn, i) => isbn === bookDetails.isbns[i]?.isbn || ''
-          )
+        bookDetails.identifiers
+        ? identifiers.every((identifier, i) => {
+            const sameIsbn =
+              identifier.isbn === bookDetails.identifiers[i]?.isbn || '';
+            const sameAccession =
+              identifier.accessionNumber ===
+                bookDetails.identifiers[i]?.accessionNumber || '';
+
+            return sameIsbn && sameAccession;
+          })
         : false;
     }
+
+    // ISBNs.every(
+    //   (isbn, i) => isbn === bookDetails.isbns[i]?.isbn || ''
+    // )
 
     return false;
   };
@@ -225,13 +273,24 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       return;
     }
 
-    if (quantity > ISBNs.length || ISBNs.some((isbn) => isbn === '')) {
-      toast.error('Please fill in all ISBNs');
+    const hasEmptyIdentifier = identifiers.some(
+      (identifier) =>
+        identifier.isbn === '' || identifier.accessionNumber === ''
+    );
+
+    if (quantity > identifiers.length || hasEmptyIdentifier) {
+      toast.error('Please fill in all identifiers');
       return;
     }
 
-    if (hasDuplicateString(ISBNs)) {
-      toast.error('ISBNs must be unique');
+    const accessionNumbers: string[] = [];
+
+    identifiers.forEach((item) => {
+      accessionNumbers.push(item.accessionNumber);
+    });
+
+    if (hasDuplicateString(accessionNumbers)) {
+      toast.error('Accession number must be unique');
       return;
     }
 
@@ -250,7 +309,11 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       if (isCustomGenre) {
         const newCategory = {
           active: true,
-          category: genreType,
+          category,
+          canBeBorrowed:
+            category === 'Fiction' || category === 'Non-Fiction'
+              ? true
+              : canBeBorrowed,
         };
 
         const categ = await addDoc(
@@ -271,30 +334,31 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
         title,
         author,
         publisher,
-        accessionNumber,
-        genreType,
+        // accessionNumber,
+        copyright,
+        category,
         genre,
         quantity: increment(quantity - bookDetails.quantity),
         available: increment(quantity - bookDetails.quantity),
         updatedAt: timestamp,
       };
 
-      const newISBNsToAdd: ISBNType[] = [];
+      const newIdentifiersToAdd: ISBNType[] = [];
 
       if (quantity > bookDetails.quantity) {
-        const addedISBNs = ISBNs.slice(bookDetails.quantity);
+        const addedIdentifiers = identifiers.slice(bookDetails.quantity);
 
-        addedISBNs.forEach((isbn) => {
-          const newISBN = {
-            isbn,
+        addedIdentifiers.forEach((identifier) => {
+          const newIdentifier = {
+            ...identifier,
             // isAvailable: true,
             status: 'Available',
           } as ISBNType;
 
-          newISBNsToAdd.push(newISBN);
+          newIdentifiersToAdd.push(newIdentifier);
         });
 
-        payload.isbns = arrayUnion(...newISBNsToAdd);
+        payload.identifiers = arrayUnion(...newIdentifiersToAdd);
       }
 
       if (bookFile) {
@@ -308,7 +372,6 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       }
 
       const bookRef = doc(db, 'books', bookId || '');
-      // const updatedBook = await updateDoc(bookRef, {...payload});
       await updateDoc(bookRef, { ...payload });
 
       const filteredBooks = books.filter(
@@ -320,14 +383,17 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
           title,
           author,
           publisher,
-          accessionNumber,
-          genreType,
+          copyright,
+          category,
           genre,
           quantity,
           available:
             bookDetails.available + (quantity - bookDetails.quantity),
           imageCover: payload.imageCover || bookDetails.imageCover,
-          isbns: [...bookDetails.isbns, ...newISBNsToAdd],
+          identifiers: [
+            ...bookDetails.identifiers,
+            ...newIdentifiersToAdd,
+          ],
         },
         ...filteredBooks,
       ] as AlgoBookDoc[];
@@ -347,15 +413,30 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   };
 
   const renderISBNerror = () => {
-    if (quantity > ISBNs.length || ISBNs.some((isbn) => isbn === '')) {
+    const hasEmptyIdentifier = identifiers.some(
+      (identifier) =>
+        identifier.isbn === '' || identifier.accessionNumber === ''
+    );
+
+    if (quantity > identifiers.length || hasEmptyIdentifier) {
       return (
-        <div className='text-sm text-red-500'>Please enter all ISBN</div>
+        <div className='text-sm text-red-500'>
+          Please enter all identifiers
+        </div>
       );
     }
 
-    if (hasDuplicateString(ISBNs)) {
+    const accessionNumbers: string[] = [];
+
+    identifiers.forEach((item) => {
+      accessionNumbers.push(item.accessionNumber);
+    });
+
+    if (hasDuplicateString(accessionNumbers)) {
       return (
-        <div className='text-sm text-red-500'>ISBNs must be unique</div>
+        <div className='text-sm text-red-500'>
+          Accession number must be unique
+        </div>
       );
     }
 
@@ -395,20 +476,18 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
             <div className='flex space-x-2'>
               <Select
                 title='Category'
-                options={
-                  categories?.map((category) => category.category) || []
-                }
-                setValue={setGenreType}
+                options={categories?.map((categ) => categ.category) || []}
+                setValue={setCategory}
                 inputProps={{
                   required: true,
                 }}
-                value={genreType}
+                value={category}
               />
               <button
                 type='button'
                 onClick={() => {
                   setIsCustomGenre(true);
-                  setGenreType('');
+                  setCategory('');
                 }}
               >
                 <AiFillEdit className='h-[25px] w-[25px]' />
@@ -421,10 +500,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                 inputProps={{
                   type: 'text',
                   required: true,
-                  value: genreType,
+                  value: category,
                   placeholder: 'Enter category',
                   onChange(e) {
-                    setGenreType(e.target.value);
+                    setCategory(e.target.value);
                   },
                 }}
               />
@@ -432,7 +511,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                 type='button'
                 onClick={() => {
                   setIsCustomGenre(false);
-                  setGenreType('');
+                  setCategory('');
                 }}
               >
                 <AiOutlineClose className='h-[25px] w-[25px] text-red-600' />
@@ -462,7 +541,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                     (gnr) =>
                       gnr.categoryId ===
                       categories?.find(
-                        (cate) => cate.category === genreType
+                        (cate) => cate.category === category
                       )?.id
                   )
                   .map((gnre) => gnre.genre) || []
@@ -470,10 +549,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               setValue={setGenre}
               value={genre}
               inputProps={{
-                disabled: !genreType,
+                disabled: !category,
                 required: true,
               }}
-              dep={genreType}
+              dep={category}
             />
           ) : (
             <TextInput
@@ -514,9 +593,13 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               value: quantity,
               onChange(e) {
                 if (Number(e.target.value) < quantity) {
-                  setISBNs((prev) =>
+                  setIdentifiers((prev) =>
                     prev.slice(0, Number(e.target.value))
                   );
+
+                  // setISBNs((prev) =>
+                  //   prev.slice(0, Number(e.target.value))
+                  // );
                 }
 
                 setQuantity(Number(e.target.value));
@@ -539,8 +622,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               isModalOpen={isISBNModalOpen}
               setIsModalOpen={setIsISBNModalOpen}
               quantity={quantity}
-              ISBNs={ISBNs}
-              setISBNs={setISBNs}
+              // ISBNs={ISBNs}
+              // setISBNs={setISBNs}
+              identifiers={identifiers}
+              setIdentifiers={setIdentifiers}
             />
           </div>
           <button

@@ -21,7 +21,7 @@ import {
   removeFromLikedBooks,
   useCol,
   useDoc,
-} from '@src/services';
+ useNextQuery } from '@lms/ui';
 import {
   AlgoBookDoc,
   IBookDoc,
@@ -31,7 +31,6 @@ import {
 import { useAuth } from '@src/contexts';
 
 import { formatDate } from '@src/utils';
-import { useNextQuery } from '@lms/ui';
 
 const BookDetails = () => {
   const { user } = useAuth();
@@ -91,12 +90,12 @@ const BookDetails = () => {
   );
 
   return (
-    <section className='w-full h-full flex-col justify-center items-center space-y-[20px]'>
-      <div className='flex space-x-3 items-center' ref={headerRef}>
+    <section className='h-full w-full flex-col items-center justify-center space-y-[20px]'>
+      <div className='flex items-center space-x-3' ref={headerRef}>
         <button type='button' onClick={() => router.back()}>
-          <BsArrowLeft className='h-8 w-8 text-primary' />
+          <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
-        <div className='text-3xl font-semibold text-primary'>
+        <div className='text-primary text-3xl font-semibold'>
           Book details
         </div>
       </div>
@@ -106,7 +105,7 @@ const BookDetails = () => {
         }}
         className='flex'
       >
-        <div className='relative h-full w-[260px] 2xl:w-[450px] rounded-2xl overflow-hidden mr-[40px]'>
+        <div className='relative mr-[40px] h-full w-[260px] overflow-hidden rounded-2xl 2xl:w-[450px]'>
           <Image
             src={bookData?.imageCover.url!}
             layout='fill'
@@ -117,53 +116,79 @@ const BookDetails = () => {
             objectPosition='center'
           />
         </div>
-        <div className='w-[calc(100%-300px)] 2xl:w-[calc(100%-450px)] flex flex-col justify-between'>
+        <div className='flex w-[calc(100%-300px)] flex-col justify-between 2xl:w-[calc(100%-450px)]'>
           <div>
             <h1 className='text-primary text-2xl font-medium'>
               {bookData?.title}
             </h1>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Author:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.author}
               </span>
             </p>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Publisher:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.publisher}
               </span>
             </p>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Genre:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.genre}
               </span>
             </p>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Accession number:{' '}
               <span className='ml-2 text-neutral-900'>
-                {bookData?.accessionNumber}
+                {
+                  bookData?.identifiers.find(
+                    (identifier) => identifier.status === 'Available'
+                  )?.accessionNumber
+                }
+              </span>
+            </p>
+            <p className='text-lg text-neutral-600'>
+              ISBN:{' '}
+              <span className='ml-2 text-neutral-900'>
+                {
+                  bookData?.identifiers.find(
+                    (identifier) => identifier.status === 'Available'
+                  )?.isbn
+                }
+              </span>
+            </p>
+            <p className='text-lg text-neutral-600'>
+              Copyright:{' '}
+              <span className='ml-2 text-neutral-900'>
+                {bookData?.copyright}
               </span>
             </p>
           </div>
           <div>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Quantity:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.quantity}
               </span>
             </p>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Available:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.available}
               </span>
             </p>
-            <p className='text-neutral-600 text-lg'>
+            <p className='text-lg text-neutral-600'>
               Views:{' '}
               <span className='ml-2 text-neutral-900'>
                 {bookData?.views}
+              </span>
+            </p>
+            <p className='text-lg text-neutral-600'>
+              Borrowed:{' '}
+              <span className='ml-2 text-neutral-900'>
+                {bookData?.totalBorrow}
               </span>
             </p>
           </div>
@@ -175,7 +200,7 @@ const BookDetails = () => {
                     userBorrow?.some((el) => el.bookId === bookId)) ||
                   isBorrowing
                 }
-                className={`text-white px-[20px] py-[8px] rounded-md ${
+                className={`rounded-md px-[20px] py-[8px] text-white ${
                   (userBorrow &&
                     userBorrow?.some((el) => el.bookId === bookId)) ||
                   isBorrowing
@@ -205,7 +230,7 @@ const BookDetails = () => {
                 ) && (
                   <button
                     type='button'
-                    className='px-[18px] py-[6px] rounded-md border-2 text-orange-700 border-orange-700'
+                    className='rounded-md border-2 border-orange-700 px-[18px] py-[6px] text-orange-700'
                     onClick={() => cancelBorrowRequest(userBorrow[0]?.id)}
                   >
                     Cancel
@@ -234,9 +259,9 @@ const BookDetails = () => {
                 }}
               >
                 {myLikes && myLikes.some((el) => el.bookId === bookId) ? (
-                  <AiFillHeart className='w-[40px] h-[40px] text-primary' />
+                  <AiFillHeart className='text-primary h-[40px] w-[40px]' />
                 ) : (
-                  <AiOutlineHeart className='w-[40px] h-[40px] text-blackText' />
+                  <AiOutlineHeart className='text-blackText h-[40px] w-[40px]' />
                 )}
               </button>
             </div>
@@ -248,7 +273,7 @@ const BookDetails = () => {
                 <p
                   data-for={bookId}
                   data-tip='Library is open from Monday to Friday, 9:00 AM to 5:00 PM. Holidays are excluded.'
-                  className='text-orange-600 flex mt-2 text-sm'
+                  className='mt-2 flex text-sm text-orange-600'
                 >
                   Please pick up the book from the library before{' '}
                   {formatDate(userBorrow[0].pickUpDueDate.toDate(), true)}{' '}

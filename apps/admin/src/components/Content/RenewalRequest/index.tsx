@@ -37,8 +37,6 @@ const RenewalRequest = () => {
     [algoBorrows]
   );
 
-  console.log('renewalRequests', renewalRequests);
-
   const [currentBorrows, currentPage, next, prev] = useClientPagination(
     renewalRequests || [],
     ITEMS_PER_PAGE,
@@ -215,12 +213,12 @@ const RenewalRequest = () => {
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {borrow.isbn}
+                          {borrow.identifiers.isbn}
                         </p>
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='line-clamp-2 max-w-[210px] overflow-hidden text-left text-neutral-900'>
-                          {borrow.accessionNumber}
+                          {borrow.identifiers.accessionNumber}
                         </p>
                       </td>
 

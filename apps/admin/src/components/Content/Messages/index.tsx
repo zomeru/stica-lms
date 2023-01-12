@@ -28,16 +28,12 @@ const Messages = () => {
   const [searchedUsers, setSearchUsers, _, usersLoading] =
     useAlgoData<AlgoUserDoc>('users', undefined, userSearch);
 
-  console.log('searchedUsers', searchedUsers);
-
   const [messages, messageLoading] = useCol<ChatMates>(
     query(
       collection(db, 'messages'),
       orderBy('lastMessageTimestamp', 'desc')
     )
   );
-
-  console.log('messages', messages);
 
   const onChatMateClick = async (chatMateId: string) => {
     const allQueries: any = {

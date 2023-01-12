@@ -10,6 +10,7 @@ import {
   where,
   query,
   getDocs,
+  getDoc,
 } from 'firebase/firestore';
 import nProgress from 'nprogress';
 
@@ -27,16 +28,41 @@ export const borrowBook = async (
     return;
   }
 
-  const availableIsbn = book.isbns.find(
-    (el) => el.status === 'Available'
-  )?.isbn;
+  // const availableBook = book.identifiers.find(
+  //   (el) => el.status === 'Available'
+  // );
 
-  if (book.available === 0 || !availableIsbn) {
-    toast.error('No available books, please try again later.');
-    return;
-  }
+  // if (book.available === 0 || !availableBook) {
+  //   toast.error('No available books, please try again later.');
+  //   return;
+  // }
   try {
     setLoading(true);
+    nProgress.configure({
+      showSpinner: true,
+    });
+    nProgress.start();
+
+    // Delete notification for admin
+    const bookRef = doc(db, 'books', book.id || book.objectID);
+    const bookSnap = await getDoc(bookRef);
+
+    if (bookSnap.exists()) {
+      const bookData: AlgoBookDoc = bookSnap.data() as AlgoBookDoc;
+
+      if (bookData.available === 0) {
+        toast.error('No available books, please try again later.');
+        setLoading(false);
+        nProgress.done();
+        return;
+      }
+    } else {
+      toast.error('No available books, please try again later.');
+      setLoading(false);
+      nProgress.done();
+
+      return;
+    }
 
     const calRes = await fetch(
       `https://www.googleapis.com/calendar/v3/calendars/en.philippines%23holiday%40group.v.calendar.google.com/events?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
@@ -52,10 +78,6 @@ export const borrowBook = async (
       process.env.NEXT_PUBLIC_TIMEZONE_API_KEY as string
     }&location=Manila, Philippines`;
 
-    nProgress.configure({
-      showSpinner: true,
-    });
-    nProgress.start();
     fetch(timeApiUrl)
       .then((res) => res.json())
       .then(async (timeData) => {
@@ -125,6 +147,11 @@ export const borrowBook = async (
         const pickUpDueDate = addDays(date, dayToAdd + holidayDaysToAdd);
         const pickupDueTimestamp = Timestamp.fromDate(pickUpDueDate);
 
+        const newBookData: AlgoBookDoc = bookSnap.data() as AlgoBookDoc;
+        const availableBook = newBookData.identifiers.find(
+          (iden) => iden.status === 'Available'
+        );
+
         const payload: IBorrow = {
           bookId: book.objectID,
           userId: user.id,
@@ -132,9 +159,15 @@ export const borrowBook = async (
           title: book.title,
           author: book.author,
           genre: book.genre,
-          category: book.genreType,
-          isbn: availableIsbn,
-          accessionNumber: book.accessionNumber,
+          copyright: book.copyright,
+          publisher: book.publisher,
+          category: book.category.category,
+          identifiers: {
+            // isbn: availableBook.isbn,
+            isbn: availableBook?.isbn!,
+            accessionNumber: availableBook?.accessionNumber!,
+            // accessionNumber: availableBook.accessionNumber,
+          },
           requestDate: requestDateTimestamp,
           status: 'Pending',
           updatedAt: requestDateTimestamp,
@@ -223,7 +256,10 @@ export const addToLikedBooks = async (
       title: book.title,
       author: book.author,
       genre: book.genre,
-      accessionNumber: book.accessionNumber,
+      identifiers: {
+        isbn: book.identifiers[0].isbn,
+        accessionNumber: book.identifiers[0].accessionNumber,
+      },
       imageCover: book.imageCover,
       createdAt: serverTimestamp(),
     };

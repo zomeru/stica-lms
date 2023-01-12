@@ -30,6 +30,7 @@ const BookCard = ({ book }: BookCardProps) => {
     available,
     views,
     imageCover,
+    totalBorrow,
   } = book;
   const { user } = useAuth();
 
@@ -91,6 +92,9 @@ const BookCard = ({ book }: BookCardProps) => {
             Available: {available}
           </div>
           <div className='text-cGray-300 text-xs'>Views: {views}</div>
+          <div className='text-cGray-300 text-xs'>
+            Borrowed: {totalBorrow}
+          </div>
         </div>
 
         <div className='flex items-center justify-evenly'>

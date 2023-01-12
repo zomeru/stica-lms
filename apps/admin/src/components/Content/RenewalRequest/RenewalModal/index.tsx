@@ -153,12 +153,15 @@ const Renewal = ({
             <span className='text-sky-600'>{borrowData?.genre}</span>
           </div>
           <div>
-            ISBN: <span className='text-sky-600'>{borrowData?.isbn}</span>
+            ISBN:{' '}
+            <span className='text-sky-600'>
+              {borrowData?.identifiers.isbn}
+            </span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {borrowData?.accessionNumber}
+              {borrowData?.identifiers.accessionNumber}
             </span>
           </div>
         </div>

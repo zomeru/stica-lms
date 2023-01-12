@@ -128,7 +128,8 @@ export const ADD_BOOK_TEXT_INPUTS = [
   'Title',
   'Author',
   'Publisher',
-  'Accession No.',
+  'Copyright',
+  // 'Accession No.',
 ];
 
 export const ITEMS_PER_PAGE = 10;

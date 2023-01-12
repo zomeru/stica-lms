@@ -15,7 +15,7 @@ import {
   collection,
 } from 'firebase/firestore';
 
-import { AlgoBorrowDoc, IBookDoc, ISBNType } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
 
@@ -53,6 +53,7 @@ const UpdateLostModal = ({
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
   const [penalty, setPenalty] = useState(lostBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
+  const [newAccessionNo, setNewAccessionNo] = useState('');
 
   const handleConfirmBookPickup = async () => {
     if (!newISBN.trim()) {
@@ -60,12 +61,12 @@ const UpdateLostModal = ({
       return;
     }
 
-    if (newISBN.trim() === lostBookData?.isbn) {
-      toast.error(
-        "The replacement book's ISBN cannot be the same as the lost book's ISBN"
-      );
-      return;
-    }
+    // if (newISBN.trim() === lostBookData?.isbn) {
+    //   toast.error(
+    //     "The replacement book's ISBN cannot be the same as the lost book's ISBN"
+    //   );
+    //   return;
+    // }
 
     setIsEditingPenalty(false);
 
@@ -92,19 +93,30 @@ const UpdateLostModal = ({
         id: bookSnap.id,
       } as IBookDoc;
 
-      const filteredISBNs = [...bookData.isbns].filter(
-        (el) => el.isbn !== lostBookData?.isbn
-      );
+      // const filteredIdentifiers = [...bookData.identifiers].filter(
+      //   (el) => {
+      //     const notSameIsbn = el.isbn !== lostBookData?.identifiers.isbn;
+      //     const notSameAccession =
+      //       el.accessionNumber !==
+      //       lostBookData?.identifiers.accessionNumber;
 
-      const newISBNType: ISBNType = {
-        isbn: newISBN,
+      //     return notSameIsbn && notSameAccession;
+      //   }
+      // );
+
+      const newBookIdentifiers: Identifier = {
+        accessionNumber: newAccessionNo,
         status: 'Available',
+        isbn: newISBN,
       };
 
-      const updatedISBNs = [...filteredISBNs, newISBNType];
+      // const updatedIdentifiers = [
+      //   ...filteredIdentifiers,
+      //   updatedBorrowIdentifiers,
+      // ];
 
       await updateDoc(bookRef, {
-        isbns: updatedISBNs,
+        identifiers: [...bookData.identifiers, newBookIdentifiers],
         available: increment(1),
       });
 
@@ -135,8 +147,9 @@ const UpdateLostModal = ({
       setIsConfirming(false);
       setSelectedLostBook('');
       setNewISBN('');
+      setNewAccessionNo('');
       nProgress.done();
-      toast.success('Book marked as "Lost"');
+      toast.success('Book has been replaced!');
     } catch (error) {
       console.log(error);
       nProgress.done();
@@ -194,12 +207,14 @@ const UpdateLostModal = ({
           </div>
           <div>
             Lost ISBN:{' '}
-            <span className='text-sky-600'>{lostBookData?.isbn}</span>
+            <span className='text-sky-600'>
+              {lostBookData?.identifiers.isbn}
+            </span>
           </div>
           <div>
             Accession No.:{' '}
             <span className='text-sky-600'>
-              {lostBookData?.accessionNumber}
+              {lostBookData?.identifiers.accessionNumber}
             </span>
           </div>
           <div className='flex items-center'>
@@ -258,6 +273,17 @@ const UpdateLostModal = ({
               className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
               value={newISBN}
               onChange={(e) => setNewISBN(e.target.value)}
+            />
+          </div>
+          <div className='flex w-full flex-col space-x-2 text-sm lg:flex-row lg:items-center lg:text-base'>
+            <p className='mb-2 flex-none font-normal lg:mb-0'>
+              Accession No.:
+            </p>
+            <input
+              placeholder='Enter the accession number of the new book'
+              className='focus:border-primary h-[40px] w-full max-w-[400px] rounded border border-neutral-300 px-[10px] outline-none'
+              value={newAccessionNo}
+              onChange={(e) => setNewAccessionNo(e.target.value)}
             />
           </div>
         </div>

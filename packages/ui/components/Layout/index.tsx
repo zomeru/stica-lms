@@ -308,9 +308,14 @@ export const Layout = ({
                     objectPosition='center'
                   />
                 </div> */}
-                <h1 className='text-primary w-[185px] px-[10px] text-3xl font-black'>
-                  STICA LMS
-                </h1>
+                <div className='flex flex-col items-center justify-center'>
+                  <h1 className='text-primary px-[10px] text-xl font-black'>
+                    STICA
+                  </h1>
+                  <h2 className='text-primary font-semibold '>
+                    Library Management System
+                  </h2>
+                </div>
               </div>
             </Link>
           </motion.div>

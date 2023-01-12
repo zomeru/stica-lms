@@ -4,11 +4,10 @@ import Image from 'next/image';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { formatDate, navigateToBook } from '@src/utils';
 import { historyTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
-import { useCol } from '@src/services';
+import { useCol , useClientPagination } from '@lms/ui';
 import { IBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { useAuth } from '@src/contexts';
-import { useClientPagination } from '@lms/ui';
 
 const History = () => {
   const { user } = useAuth();
@@ -151,7 +150,7 @@ const History = () => {
                       </td>
                       <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
                         <p className='w-max text-gray-900'>
-                          {history.isbn}
+                          {history.identifiers.isbn}
                         </p>
                       </td>
 

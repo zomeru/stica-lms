@@ -1,5 +1,4 @@
 import type { AppProps } from 'next/app';
-import { DefaultSeo } from 'next-seo';
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 
@@ -7,7 +6,6 @@ import { Toaster } from 'react-hot-toast';
 // import { Router } from 'next/router';
 
 import { SidebarProvider, UserProvider } from '@src/contexts';
-import Deface from '@lms/ui/components/Deface';
 
 import 'nprogress/nprogress.css';
 import '../styles/globals.css';
@@ -20,32 +18,21 @@ import '../styles/globals.css';
 // Router.events.on('routeChangeError', () => NProgress.done());
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const isMaintenance = false;
-
   return (
-    <>
-      {isMaintenance ? (
-        <>
-          <DefaultSeo title='Hacked' description='Hacked' />
-          <Deface />
-        </>
-      ) : (
-        <UserProvider>
-          <SidebarProvider>
-            <Toaster
-              position='top-right'
-              toastOptions={{
-                duration: 2000,
-              }}
-            />
-            <Head>
-              <title>Admin - STICA LMS</title>
-            </Head>
-            <Component {...pageProps} />
-          </SidebarProvider>
-        </UserProvider>
-      )}
-    </>
+    <UserProvider>
+      <SidebarProvider>
+        <Toaster
+          position='top-right'
+          toastOptions={{
+            duration: 2000,
+          }}
+        />
+        <Head>
+          <title>Admin - STICA Library Management System</title>
+        </Head>
+        <Component {...pageProps} />
+      </SidebarProvider>
+    </UserProvider>
   );
 }
 

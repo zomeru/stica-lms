@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState, useRef, Fragment } from 'react';
+import { FormEvent, useEffect, useState, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';

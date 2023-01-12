@@ -20,7 +20,7 @@ const BookListCard = ({ book }: BookListCardProps) => {
     // views,
     quantity,
     imageCover,
-    accessionNumber,
+    identifiers,
   } = book;
 
   const router = useRouter();
@@ -41,8 +41,8 @@ const BookListCard = ({ book }: BookListCardProps) => {
 
   return (
     <tr>
-      <td className='border-b border-gray-200 w-[70px] bg-white px-5 py-5 text-sm'>
-        <div className='relative w-[60px] h-[70px] rounded-md overflow-hidden'>
+      <td className='w-[70px] border-b border-gray-200 bg-white px-5 py-5 text-sm'>
+        <div className='relative h-[70px] w-[60px] overflow-hidden rounded-md'>
           <Image layout='fill' src={imageCover.url} quality={5} priority />
         </div>
       </td>
@@ -64,7 +64,11 @@ const BookListCard = ({ book }: BookListCardProps) => {
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>
-          {accessionNumber}
+          {
+            identifiers.find(
+              (identifier) => identifier.status === 'Available'
+            )?.accessionNumber
+          }
         </p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
@@ -78,11 +82,11 @@ const BookListCard = ({ book }: BookListCardProps) => {
           <button
             onClick={handleEdit}
             type='button'
-            className='text-blue-600 font-medium'
+            className='font-medium text-blue-600'
           >
             Edit
           </button>
-          <button type='button' className='text-red-600 font-medium'>
+          <button type='button' className='font-medium text-red-600'>
             Delete
           </button>
         </div>
