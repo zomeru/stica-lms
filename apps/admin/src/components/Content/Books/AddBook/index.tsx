@@ -78,10 +78,6 @@ const ISBNModal = ({
     }
   };
 
-  console.log({
-    identifiers,
-  });
-
   return (
     <Modal
       isOpen={isModalOpen}
@@ -95,7 +91,9 @@ const ISBNModal = ({
           <button type='button' onClick={handleClose}>
             <BsArrowLeft className='text-primary h-8 w-8' />
           </button>
-          <div className='text-primary text-3xl font-semibold'>ISBNs</div>
+          <div className='text-primary text-3xl font-semibold'>
+            Identifiers
+          </div>
         </div>
         <div className='space-y-3'>
           {inputs.map((input, i) => {
@@ -103,7 +101,7 @@ const ISBNModal = ({
               <div className='flex flex-col space-y-1' key={input}>
                 <div className='text-lg font-semibold'>Book {i + 1}: </div>
                 <TextInput
-                  title="ISBN"
+                  title='ISBN'
                   inputProps={{
                     value: identifiers[i]?.isbn ? identifiers[i].isbn : '',
                     onChange: (e) => {
@@ -120,7 +118,7 @@ const ISBNModal = ({
                   }}
                 />
                 <TextInput
-                  title="Accession no."
+                  title='Accession no.'
                   inputProps={{
                     value: identifiers[i]?.accessionNumber
                       ? identifiers[i].accessionNumber
@@ -189,6 +187,7 @@ const AddBook = ({
   const [identifiers, setIdentifiers] = useState<Identifier[]>([]);
   const [canBeBorrowed, setCanBeBorrowed] = useState(false);
 
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [isCustomGenre, setIsCustomGenre] = useState(false);
 
   const [allGenres] = useCol<GenreDoc>(
@@ -265,7 +264,21 @@ const AddBook = ({
       });
 
       if (imageCover) {
-        if (isCustomGenre) {
+        if (!isCustomCategory && isCustomGenre) {
+          if (categories) {
+            const selectedCateg = categories.find(
+              (categ) => categ.category === category
+            );
+            const newGenre = {
+              categoryId: selectedCateg?.id,
+              genre,
+            };
+
+            await addDoc(collection(db, 'genres'), newGenre);
+          }
+        }
+
+        if (isCustomCategory) {
           const newCategory = {
             active: true,
             category,
@@ -297,7 +310,7 @@ const AddBook = ({
           category: {
             category,
             canBeBorrowed:
-              category === 'Fiction' || category === 'Non-Fiction'
+              category === 'Fiction' || category === 'Non-fiction'
                 ? true
                 : canBeBorrowed,
           },
@@ -339,6 +352,7 @@ const AddBook = ({
 
       nProgress.done();
       setIsUploading(false);
+      setIsCustomCategory(false);
       setIsCustomGenre(false);
     } catch (error) {
       toast.error('Something went wrong! Please try again later.');
@@ -349,8 +363,11 @@ const AddBook = ({
 
   const renderISBNerror = () => {
     const hasEmptyIdentifier = identifiers.some(
-      (identifier) =>
-        identifier.isbn === '' || identifier.accessionNumber === ''
+      ({ isbn, accessionNumber }) =>
+        !isbn ||
+        !accessionNumber ||
+        isbn.trim() === '' ||
+        accessionNumber.trim() === ''
     );
 
     if (quantity > identifiers.length || hasEmptyIdentifier) {
@@ -401,11 +418,13 @@ const AddBook = ({
                 placeholder: text,
                 required: true,
                 value: textInputs[i].value,
-                onChange: (e) => textInputs[i].setValue(e.target.value),
+                onChange(e) {
+                  textInputs[i].setValue(e.target.value);
+                },
               }}
             />
           ))}
-          {!isCustomGenre ? (
+          {!isCustomCategory ? (
             <div className='flex space-x-2'>
               <Select
                 title='Category'
@@ -419,7 +438,7 @@ const AddBook = ({
               <button
                 type='button'
                 onClick={() => {
-                  setIsCustomGenre(true);
+                  setIsCustomCategory(true);
                   setCategory('');
                 }}
               >
@@ -444,7 +463,7 @@ const AddBook = ({
                 <button
                   type='button'
                   onClick={() => {
-                    setIsCustomGenre(false);
+                    setIsCustomCategory(false);
                     setCategory('');
                     setCanBeBorrowed(false);
                   }}
@@ -490,32 +509,71 @@ const AddBook = ({
             </>
           )}
 
-          {!isCustomGenre ? (
-            <Select
-              title='Genre'
-              options={
-                // genreType === 'Fiction'
-                //   ? BOOK_GENRES_FICTION
-                //   : BOOK_GENRES_NONFICTION
+          {!isCustomCategory ? (
+            <>
+              {!isCustomGenre ? (
+                <div className='flex space-x-2'>
+                  <Select
+                    title='Genre'
+                    options={
+                      // genreType === 'Fiction'
+                      //   ? BOOK_GENRES_FICTION
+                      //   : BOOK_GENRES_NONFICTION
 
-                allGenres
-                  ?.filter(
-                    (gnr) =>
-                      gnr.categoryId ===
-                      categories?.find(
-                        (cate) => cate.category === category
-                      )?.id
-                  )
-                  .map((gnre) => gnre.genre) || []
-              }
-              setValue={setGenre}
-              value={genre}
-              inputProps={{
-                disabled: !category,
-                required: true,
-              }}
-              dep={category}
-            />
+                      allGenres
+                        ?.filter(
+                          (gnr) =>
+                            gnr.categoryId ===
+                            categories?.find(
+                              (cate) => cate.category === category
+                            )?.id
+                        )
+                        .map((gnre) => gnre.genre) || []
+                    }
+                    setValue={setGenre}
+                    value={genre}
+                    inputProps={{
+                      disabled: !category,
+                      required: true,
+                    }}
+                    dep={category}
+                  />
+
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setIsCustomGenre(true);
+                      setGenre('');
+                    }}
+                  >
+                    <AiFillEdit className='h-[25px] w-[25px]' />
+                  </button>
+                </div>
+              ) : (
+                <div className='flex space-x-2'>
+                  <TextInput
+                    title='Genre'
+                    inputProps={{
+                      type: 'text',
+                      required: true,
+                      value: genre,
+                      placeholder: 'Enter genre',
+                      onChange(e) {
+                        setGenre(e.target.value);
+                      },
+                    }}
+                  />
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setIsCustomGenre(false);
+                    }}
+                  >
+                    <AiOutlineClose className='h-[25px] w-[25px] text-red-600' />
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <TextInput
               title='Genre'
