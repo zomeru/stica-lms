@@ -28,6 +28,11 @@ export const borrowBook = async (
     return;
   }
 
+  if (!book.category.canBeBorrowed) {
+    toast.error('This book cannot be borrowed.');
+    return;
+  }
+
   // const availableBook = book.identifiers.find(
   //   (el) => el.status === 'Available'
   // );
