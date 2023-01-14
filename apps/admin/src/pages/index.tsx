@@ -75,7 +75,7 @@ const Home: NextPage = () => {
         'renewal requests',
         'lost books',
         'damaged books',
-        'history',
+        'reports',
       ].some((el) => el === page)
     ) {
       if (page === 'currently loaned books') {
@@ -108,7 +108,7 @@ const Home: NextPage = () => {
         );
       }
 
-      if (page === 'history') {
+      if (page === 'reports') {
         routerArg.query.historyBookSearchKey = encodeURIComponent(
           searchInputRef.current.value
         );
@@ -128,7 +128,7 @@ const Home: NextPage = () => {
     } else if (page === 'users') {
       setSearchPlaceholder('Search for users');
     } else if (
-      ['borrow', 'loaned', 'renew', 'lost', 'history', 'damaged'].some(
+      ['borrow', 'loaned', 'renew', 'lost', 'reports', 'damaged'].some(
         (p) => page.includes(p)
       )
     ) {
@@ -161,7 +161,7 @@ const Home: NextPage = () => {
         {page === 'renewal requests' && <RenewalRequest />}
         {page === 'lost books' && <LostBooks />}
         {page === 'damaged books' && <DamagedBooks />}
-        {page === 'history' && <History />}
+        {page === 'reports' && <History />}
       </>
     );
   };

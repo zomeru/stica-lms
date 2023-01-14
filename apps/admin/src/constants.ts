@@ -1,4 +1,5 @@
-import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai';
+/* import { AiOutlineHistory, AiOutlineMessage } from 'react-icons/ai'; */
+import { AiOutlineMessage } from 'react-icons/ai';
 import {
   MdLoop,
   MdOutlineLibraryBooks,
@@ -7,6 +8,7 @@ import {
 } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
 import { RiFileDamageFill } from 'react-icons/ri';
+import { TbReport } from 'react-icons/tb';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
 
 export const adminSidebarItems = [
@@ -47,8 +49,8 @@ export const adminSidebarItems = [
     Icon: RiFileDamageFill,
   },
   {
-    name: 'History',
-    Icon: AiOutlineHistory,
+    name: 'Reports',
+    Icon: TbReport,
   },
 ];
 
