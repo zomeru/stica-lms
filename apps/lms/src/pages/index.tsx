@@ -19,6 +19,7 @@ import {
   About,
   DamagedBooks,
   Messages,
+  FAQ,
 } from '@src/components/Contents';
 import { useSidebar } from '@src/contexts/SidebarContext';
 import { useAuth } from '@src/contexts';
@@ -102,6 +103,7 @@ const Home: NextPage = () => {
         {!!user && page === 'lost books' && <LostBooks />}
         {!!user && page === 'damaged books' && <DamagedBooks />}
         {page === 'contact' && <Contact />}
+        {page === 'faq' && <FAQ />}
         {page === 'about' && <About />}
       </>
     );

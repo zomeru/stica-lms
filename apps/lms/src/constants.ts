@@ -13,6 +13,7 @@ import {
 } from 'react-icons/md';
 import { FiBookOpen } from 'react-icons/fi';
 import { RiFileDamageFill } from 'react-icons/ri';
+import { TbMessages } from 'react-icons/tb';
 
 import { SideBarItemsType } from './types';
 
@@ -53,6 +54,10 @@ export const loggedInSidebarItems: SideBarItemsType[] = [
     name: 'History',
     Icon: AiOutlineHistory,
   },
+  {
+    name: 'FAQ',
+    Icon: TbMessages,
+  },
   // {
   //   name: 'Contact',
   //   Icon: MdOutlineContactPage,
@@ -77,8 +82,91 @@ export const loggedOutSidebarItems: SideBarItemsType[] = [
   //   Icon: MdOutlineContactPage,
   // },
   {
+    name: 'FAQ',
+    Icon: TbMessages,
+  },
+  {
     name: 'About',
     Icon: AiOutlineInfoCircle,
+  },
+];
+
+interface IFAQs {
+  id: string;
+  question: string;
+  answer: Array<{
+    text: string;
+    coloredText?: string;
+    link?: string;
+  }>;
+}
+
+export const FAQS: IFAQs[] = [
+  {
+    id: 'faq1',
+    question: 'How do I borrow a book?',
+    answer: [
+      {
+        text: 'You can borrow a book by clicking on the "Borrow" button on the book card or book details page.',
+      },
+      {
+        text: 'You can also borrow a book by directly going to the school library and borrowing it from there.',
+      },
+      {
+        text: 'Note: Some books may not be available for borrowing.',
+      },
+    ],
+  },
+  {
+    id: 'faq2',
+    question: 'How do I renew a book?',
+    answer: [
+      {
+        text: 'You can renew a book by clicking on the "Renew" button inside the "Currently Issued Books" module.',
+      },
+      {
+        text: 'Note: You can only renew the book 24 hours before the due date and if it is not overdue.',
+      },
+    ],
+  },
+  {
+    id: 'faq3',
+    question: 'What is the penalty for overdue books?',
+    answer: [
+      {
+        text: 'The penalty for overdue books is 5 pesos per day (weekends and holidays are not included).',
+      },
+    ],
+  },
+  {
+    id: 'faq4',
+    question: 'What happens if I lose a book?',
+    answer: [
+      {
+        text: 'If you lose a book, go to the school library and report it to the librarian to avoid more penalty.',
+      },
+      {
+        text: 'You will also need to replace the book with the same title and author.',
+      },
+    ],
+  },
+  {
+    id: 'faq5',
+    question: 'What happens if I break the book?',
+    answer: [
+      {
+        text: 'Same as losing a book, you will need to report it to the librarian and replace the book with the same title and author.',
+      },
+    ],
+  },
+  {
+    id: 'faq6',
+    question: 'How many books can I borrow at a time?',
+    answer: [
+      {
+        text: 'TBD',
+      },
+    ],
   },
 ];
 

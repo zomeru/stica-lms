@@ -30,7 +30,7 @@ import {
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import Loader from '@src/components/Loader';
-import { useNextQuery , useCol } from '@lms/ui';
+import { useNextQuery, useCol } from '@lms/ui';
 import { useRouter } from 'next/router';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 
@@ -95,7 +95,9 @@ const ISBNModal = ({
           <button type='button' onClick={handleClose}>
             <BsArrowLeft className='text-primary h-8 w-8' />
           </button>
-          <div className='text-primary text-3xl font-semibold'>ISBNs</div>
+          <div className='text-primary text-3xl font-semibold'>
+            Identifiers
+          </div>
         </div>
         <div className='space-y-3'>
           {inputs.map((input, i) => {
@@ -583,6 +585,41 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
             value={genre}
             // dep={genreType}
           /> */}
+          <div className='flex space-x-2'>
+            <div className='mb-2 w-[120px] flex-none font-normal text-gray-500 lg:mb-0'>
+              Can be borrowed
+            </div>
+            <div className='flex items-center space-x-5'>
+              <button
+                type='button'
+                className='flex items-center space-x-1'
+                onClick={() => setCanBeBorrowed(true)}
+              >
+                <div className='flex h-[25px] w-[25px] items-center justify-center rounded-full border border-neutral-400 bg-neutral-300'>
+                  <div
+                    className={`h-[17px] w-[17px] rounded-full ${
+                      canBeBorrowed ? 'bg-primary' : 'bg-neutral-300'
+                    }`}
+                  />
+                </div>
+                <div>Yes</div>
+              </button>
+              <button
+                type='button'
+                className='flex items-center space-x-1'
+                onClick={() => setCanBeBorrowed(false)}
+              >
+                <div className='flex h-[25px] w-[25px] items-center justify-center rounded-full border border-neutral-400 bg-neutral-300'>
+                  <div
+                    className={`h-[17px] w-[17px] rounded-full ${
+                      !canBeBorrowed ? 'bg-primary' : 'bg-neutral-300'
+                    }`}
+                  />
+                </div>
+                <div>No</div>
+              </button>
+            </div>
+          </div>
           <TextInput
             title='Quantity'
             inputProps={{
@@ -615,7 +652,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               className='bg-primary rounded-lg px-3 py-1 text-white'
               onClick={() => setIsISBNModalOpen(true)}
             >
-              Enter ISBNs
+              Enter identifiers
             </button>
             {renderISBNerror()}
             <ISBNModal
