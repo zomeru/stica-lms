@@ -107,7 +107,7 @@ const ISBNModal = ({
                 <TextInput
                   title='ISBN'
                   inputProps={{
-                    value: identifiers[i]?.isbn ? identifiers[i].isbn : '',
+                    value: identifiers[i]?.isbn,
                     onChange: (e) => {
                       setIdentifiers((prev) => {
                         const newIdentifiers = [...prev];
@@ -124,9 +124,7 @@ const ISBNModal = ({
                 <TextInput
                   title='Accession no.'
                   inputProps={{
-                    value: identifiers[i]?.accessionNumber
-                      ? identifiers[i].accessionNumber
-                      : '',
+                    value: identifiers[i]?.accessionNumber,
                     onChange: (e) => {
                       setIdentifiers((prev) => {
                         const newIdentifiers = [...prev];
@@ -189,16 +187,19 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [image, setImage] = useState('');
   const [copyright, setCopyright] = useState('');
 
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [isCustomGenre, setIsCustomGenre] = useState(false);
   const [canBeBorrowed, setCanBeBorrowed] = useState(false);
 
-  const [allGenres] = useCol<GenreDoc>(
+  const [allGenres, genreLoading] = useCol<GenreDoc>(
     query(collection(db, 'genres'), orderBy('genre', 'asc'))
   );
 
   const [categories] = useCol<CategoryDoc>(
     query(collection(db, 'categories'), orderBy('category', 'asc'))
   );
+
+  console.log(bookDetails);
 
   useEffect(() => {
     const setDetails = () => {
@@ -215,7 +216,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
     };
 
     if (bookDetails) setDetails();
-  }, [bookDetails]);
+  }, [bookDetails, genreLoading]);
 
   const textInputs = [
     {
@@ -452,7 +453,16 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       }`}
     >
       <div className='flex items-center space-x-3'>
-        <button type='button' onClick={() => router.back()}>
+        <button
+          type='button'
+          onClick={() => {
+            setIsCustomGenre(false);
+            setIsCustomCategory(false);
+            setGenre(bookDetails.genre);
+            setCategory(bookDetails.category.category);
+            router.back();
+          }}
+        >
           <BsArrowLeft className='text-primary h-8 w-8' />
         </button>
         <div className='text-primary text-3xl font-semibold'>
@@ -474,7 +484,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               }}
             />
           ))}
-          {!isCustomGenre ? (
+          {!isCustomCategory ? (
             <div className='flex space-x-2'>
               <Select
                 title='Category'
@@ -488,8 +498,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               <button
                 type='button'
                 onClick={() => {
+                  setIsCustomCategory(true);
                   setIsCustomGenre(true);
                   setCategory('');
+                  setGenre('');
                 }}
               >
                 <AiFillEdit className='h-[25px] w-[25px]' />
@@ -513,7 +525,9 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
                 type='button'
                 onClick={() => {
                   setIsCustomGenre(false);
-                  setCategory('');
+                  setIsCustomCategory(false);
+                  setCategory(bookDetails.category.category);
+                  setGenre(bookDetails.genre);
                 }}
               >
                 <AiOutlineClose className='h-[25px] w-[25px] text-red-600' />
@@ -529,33 +543,72 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
             }}
             value={genreType}
           /> */}
+          {!isCustomCategory ? (
+            <>
+              {!isCustomGenre ? (
+                <div className='flex space-x-2'>
+                  <Select
+                    title='Genre'
+                    options={
+                      // genreType === 'Fiction'
+                      //   ? BOOK_GENRES_FICTION
+                      //   : BOOK_GENRES_NONFICTION
 
-          {!isCustomGenre ? (
-            <Select
-              title='Genre'
-              options={
-                // genreType === 'Fiction'
-                //   ? BOOK_GENRES_FICTION
-                //   : BOOK_GENRES_NONFICTION
+                      allGenres
+                        ?.filter(
+                          (gnr) =>
+                            gnr.categoryId ===
+                            categories?.find(
+                              (cate) => cate.category === category
+                            )?.id
+                        )
+                        .map((gnre) => gnre.genre) || []
+                    }
+                    setValue={setGenre}
+                    value={genre}
+                    inputProps={{
+                      disabled: !category,
+                      required: true,
+                    }}
+                    dep={category}
+                  />
 
-                allGenres
-                  ?.filter(
-                    (gnr) =>
-                      gnr.categoryId ===
-                      categories?.find(
-                        (cate) => cate.category === category
-                      )?.id
-                  )
-                  .map((gnre) => gnre.genre) || []
-              }
-              setValue={setGenre}
-              value={genre}
-              inputProps={{
-                disabled: !category,
-                required: true,
-              }}
-              dep={category}
-            />
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setIsCustomGenre(true);
+                      setGenre('');
+                    }}
+                  >
+                    <AiFillEdit className='h-[25px] w-[25px]' />
+                  </button>
+                </div>
+              ) : (
+                <div className='flex space-x-2'>
+                  <TextInput
+                    title='Genre'
+                    inputProps={{
+                      type: 'text',
+                      required: true,
+                      value: genre,
+                      placeholder: 'Enter genre',
+                      onChange(e) {
+                        setGenre(e.target.value);
+                      },
+                    }}
+                  />
+                  <button
+                    type='button'
+                    onClick={() => {
+                      setIsCustomGenre(false);
+                      setGenre(bookDetails.genre);
+                    }}
+                  >
+                    <AiOutlineClose className='h-[25px] w-[25px] text-red-600' />
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <TextInput
               title='Genre'
@@ -570,6 +623,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
               }}
             />
           )}
+
           {/* <Select
             title='Genre'
             options={
