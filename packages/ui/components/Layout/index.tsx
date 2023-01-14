@@ -312,7 +312,7 @@ export const Layout = ({
                   <h1 className='text-primary px-[10px] text-xl font-black'>
                     STICA
                   </h1>
-                  <h2 className='text-primary font-semibold '>
+                  <h2 className='text-primary whitespace-nowrap px-[10px] font-semibold'>
                     Library Management System
                   </h2>
                 </div>
@@ -321,15 +321,15 @@ export const Layout = ({
           </motion.div>
           <div
             className={`flex h-[calc(100%-100px)] w-full flex-col ${
-              isAuthenticated && 'justify-between pb-[30px]'
+              isAuthenticated && ''
             }`}
           >
-            <div className='flex flex-col'>
+            <div className='custom-scrollbar flex flex-col items-start overflow-y-auto'>
               {sidebarItems &&
                 sidebarItems.map(({ name, Icon }) => {
                   const isHome =
                     router.pathname === '/' &&
-                    (router.asPath.includes('/?page=home') ||
+                    (router.asPath.includes('page=home') ||
                       router.query.page === 'home' ||
                       !router.query.page ||
                       router.query.page === 'books' ||

@@ -10,3 +10,4 @@ export { default as LikedBooks } from './LikedBooks';
 export { default as About } from './About';
 export { default as DamagedBooks } from './DamagedBooks';
 export { default as Messages } from './Messages';
+export { default as FAQ } from './FAQ';
