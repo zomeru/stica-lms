@@ -24,6 +24,7 @@ import {
   GenreDoc,
   CategoryDoc,
   Identifier,
+  IBookDoc,
 } from '@lms/types';
 import { hasDuplicateString } from '@src/utils';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
@@ -47,18 +48,38 @@ const modalCustomStyle = {
   },
 };
 
+export const uniqueAcnCheck = (books: IBookDoc[], acn: string) => {
+  let found = 0;
+
+  books.forEach((book) => {
+    book.identifiers.forEach((identifier) => {
+      if (
+        identifier.accessionNumber === acn &&
+        identifier.status !== 'Lost' &&
+        identifier.status !== 'Damaged'
+      ) {
+        found += 1;
+      }
+    });
+  });
+
+  return found === 0;
+};
+
 const ISBNModal = ({
   isModalOpen,
   setIsModalOpen,
   quantity,
   identifiers,
   setIdentifiers,
+  allBooks,
 }: {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   quantity: number;
   identifiers: Identifier[];
   setIdentifiers: React.Dispatch<React.SetStateAction<Identifier[]>>;
+  allBooks?: IBookDoc[];
 }) => {
   const inputs = useMemo(() => {
     return new Array(quantity).fill(0).map((_, i) => `isbn-${i + 1}`);
@@ -66,12 +87,17 @@ const ISBNModal = ({
 
   const handleClose = () => {
     const accessionNumbers: string[] = [];
+    let sameAcnFound = 0;
 
     identifiers.forEach((item) => {
       accessionNumbers.push(item.accessionNumber);
+
+      if (!uniqueAcnCheck(allBooks || [], item.accessionNumber)) {
+        sameAcnFound += 1;
+      }
     });
 
-    if (hasDuplicateString(accessionNumbers)) {
+    if (hasDuplicateString(accessionNumbers) || sameAcnFound > 0) {
       toast.error('Accession number must be unique');
     } else {
       setIsModalOpen(false);
@@ -119,6 +145,14 @@ const ISBNModal = ({
                 />
                 <TextInput
                   title='Accession no.'
+                  inputStyle={`${
+                    !uniqueAcnCheck(
+                      allBooks || [],
+                      identifiers[i]?.accessionNumber
+                        ? identifiers[i].accessionNumber
+                        : ''
+                    ) && 'border-red-600 text-red-600'
+                  }`}
                   inputProps={{
                     value: identifiers[i]?.accessionNumber
                       ? identifiers[i].accessionNumber
@@ -135,6 +169,16 @@ const ISBNModal = ({
                     },
                   }}
                 />
+                {!uniqueAcnCheck(
+                  allBooks || [],
+                  identifiers[i]?.accessionNumber
+                    ? identifiers[i].accessionNumber
+                    : ''
+                ) && (
+                  <div className='text-xs text-red-600'>
+                    Accession number already taken.
+                  </div>
+                )}
               </div>
             );
           })}
@@ -198,6 +242,10 @@ const AddBook = ({
     query(collection(db, 'categories'), orderBy('category', 'asc'))
   );
 
+  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
+
+  console.log('allBooks', allBooks);
+
   const textInputs = [
     {
       value: title,
@@ -241,16 +289,21 @@ const AddBook = ({
       return;
     }
 
-    if (!bookFile || !bookImage) {
-      toast.error('Please upload a book cover');
-      return;
-    }
+    /* if (!bookFile || !bookImage) { */
+    /*   toast.error('Please upload a book cover'); */
+    /*   return; */
+    /* } */
 
     try {
       setIsUploading(true);
       nProgress.configure({ showSpinner: true });
       nProgress.start();
-      const imageCover = await uploadImage('books', bookFile);
+
+      let imageCover;
+
+      if (bookFile || bookImage) {
+        imageCover = await uploadImage('books', bookFile);
+      }
 
       const newIdentifiers: Identifier[] = [];
 
@@ -263,92 +316,95 @@ const AddBook = ({
         newIdentifiers.push(newIdentifier);
       });
 
-      if (imageCover) {
-        if (!isCustomCategory && isCustomGenre) {
-          if (categories) {
-            const selectedCateg = categories.find(
-              (categ) => categ.category === category
-            );
-            const newGenre = {
-              categoryId: selectedCateg?.id,
-              genre,
-            };
+      const defaultImageCover = {
+        ref: 'books/default_book_cover.jpg',
+        url: 'https://firebasestorage.googleapis.com/v0/b/stica-lms.appspot.com/o/books%2Fdefault_book_cover.jpg?alt=media&token=97f72be3-2a47-45ba-a455-b7b50fe79150',
+      };
 
-            await addDoc(collection(db, 'genres'), newGenre);
-          }
-        }
-
-        if (isCustomCategory) {
-          const newCategory = {
-            active: true,
-            category,
-            canBeBorrowed:
-              category === 'Fiction' || category === 'Non-Fiction'
-                ? true
-                : canBeBorrowed,
-          };
-
-          const categ = await addDoc(
-            collection(db, 'categories'),
-            newCategory
+      if (!isCustomCategory && isCustomGenre) {
+        if (categories) {
+          const selectedCateg = categories.find(
+            (categ) => categ.category === category
           );
-
           const newGenre = {
-            categoryId: categ.id,
+            categoryId: selectedCateg?.id,
             genre,
           };
 
           await addDoc(collection(db, 'genres'), newGenre);
         }
+      }
 
-        const timestamp = serverTimestamp();
-
-        const payload: IBooks = {
-          title,
-          author,
-          publisher,
-          category: {
-            category,
-            canBeBorrowed:
-              category === 'Fiction' || category === 'Non-fiction'
-                ? true
-                : canBeBorrowed,
-          },
-          copyright,
-          genre,
-          quantity,
-          totalBorrow: 0,
-          views: 0,
-          available: quantity,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          imageCover,
-          identifiers: newIdentifiers,
+      if (isCustomCategory) {
+        const newCategory = {
+          active: true,
+          category,
+          canBeBorrowed:
+            category === 'Fiction' || category === 'Non-Fiction'
+              ? true
+              : canBeBorrowed,
         };
 
-        const bookAdded = await addDoc(collection(db, 'books'), payload);
+        const categ = await addDoc(
+          collection(db, 'categories'),
+          newCategory
+        );
 
-        setTitle('');
-        setAuthor('');
-        setPublisher('');
-        setCopyright('');
-        setCategory('' as GenreType);
-        setGenre('' as GenreTypes);
-        setQuantity(1);
-        setIdentifiers([]);
-        clearImage();
+        const newGenre = {
+          categoryId: categ.id,
+          genre,
+        };
 
-        const newBooks = [
-          {
-            id: bookAdded.id,
-            ...payload,
-          } as AlgoBookDoc,
-          ...books,
-        ];
-        setBooks(newBooks);
-
-        toast.success('Book added successfully');
+        await addDoc(collection(db, 'genres'), newGenre);
       }
+
+      const timestamp = serverTimestamp();
+
+      const payload: IBooks = {
+        title,
+        author,
+        publisher,
+        category: {
+          category,
+          canBeBorrowed:
+            category === 'Fiction' || category === 'Non-fiction'
+              ? true
+              : canBeBorrowed,
+        },
+        copyright,
+        genre,
+        quantity,
+        totalBorrow: 0,
+        views: 0,
+        available: quantity,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        imageCover: imageCover || defaultImageCover,
+        identifiers: newIdentifiers,
+      };
+
+      const bookAdded = await addDoc(collection(db, 'books'), payload);
+
+      setTitle('');
+      setAuthor('');
+      setPublisher('');
+      setCopyright('');
+      setCategory('' as GenreType);
+      setGenre('' as GenreTypes);
+      setQuantity(1);
+      setIdentifiers([]);
+      clearImage();
+
+      const newBooks = [
+        {
+          id: bookAdded.id,
+          ...payload,
+        } as AlgoBookDoc,
+        ...books,
+      ];
+      setBooks(newBooks);
+
+      toast.success('Book added successfully');
 
       nProgress.done();
       setIsUploading(false);
@@ -621,6 +677,7 @@ const AddBook = ({
             </button>
             {renderISBNerror()}
             <ISBNModal
+              allBooks={allBooks}
               identifiers={identifiers}
               setIdentifiers={setIdentifiers}
               isModalOpen={isISBNModalOpen}
@@ -685,7 +742,7 @@ const AddBook = ({
                 accept='image/jpeg, image/png, image/jpg, image/webp, image/svg'
                 type='file'
                 onChange={handleBookImage}
-                required
+                /* required */
               />
             </>
           )}

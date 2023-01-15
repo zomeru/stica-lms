@@ -67,6 +67,7 @@ const Books = () => {
         onPrev={onPrev}
         currentPage={currentPage}
         books={algoBooks}
+        setAlgoBooks={setAlgoBooks}
         currentBooks={currentBooks}
         bookLoading={bookLoading}
         addBook={addBook}

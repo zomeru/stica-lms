@@ -12,6 +12,7 @@ import { OrderType } from '..';
 
 interface BookListProps {
   books: AlgoBookDoc[];
+  setAlgoBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
   currentBooks: AlgoBookDoc[];
   bookLoading: boolean;
   addBook: boolean;
@@ -27,6 +28,7 @@ interface BookListProps {
 
 const BookList = ({
   books,
+  setAlgoBooks,
   bookLoading,
   addBook,
   setAddBook,
@@ -58,21 +60,21 @@ const BookList = ({
 
   return (
     <div
-      className={`w-full h-full duration-300 transition-all space-y-2 ${
+      className={`h-full w-full space-y-2 transition-all duration-300 ${
         bookId ? '-translate-x-[100%]' : 'translate-x-0'
       } ${addBook ? 'translate-y-[100%]' : 'translate-y-0'}`}
     >
       <div className='flex justify-between' ref={headerRef}>
-        <div className='text-3xl font-semibold text-primary'>Books</div>
+        <div className='text-primary text-3xl font-semibold'>Books</div>
 
         <div className='flex items-center space-x-3'>
           {books && books.length > 0 && books.length / 10 > 1 && (
-            <div className='space-x-3 flex items-center'>
+            <div className='flex items-center space-x-3'>
               <button
                 type='button'
                 disabled={currentPage === 1}
-                className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
-                  currentPage === 1 && 'opacity-40 cursor-not-allowed'
+                className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                  currentPage === 1 && 'cursor-not-allowed opacity-40'
                 }`}
                 onClick={onPrev}
               >
@@ -84,9 +86,9 @@ const BookList = ({
               <button
                 type='button'
                 disabled={currentPage === Math.ceil(books.length / 10)}
-                className={`px-[15px] text-xl rounded-md bg-neutral-200 text-textBlack ${
+                className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
                   currentPage === Math.ceil(books.length / 10) &&
-                  'opacity-40 cursor-not-allowed'
+                  'cursor-not-allowed opacity-40'
                 }`}
                 onClick={onNext}
               >
@@ -97,7 +99,7 @@ const BookList = ({
         </div>
         <button
           type='button'
-          className='px-3 text-sm font-medium text-white bg-primary rounded-md'
+          className='bg-primary rounded-md px-3 text-sm font-medium text-white'
           onClick={() => setAddBook(true)}
         >
           + Add Book
@@ -115,7 +117,7 @@ const BookList = ({
       {!bookLoading && books && books.length === 0 && (
         <div
           style={{ height: `calc(100% - ${headerHeight}px)` }}
-          className='flex items-center justify-center flex-col space-y-3'
+          className='flex flex-col items-center justify-center space-y-3'
         >
           <div className='relative h-[70%] w-full'>
             <Image
@@ -137,14 +139,14 @@ const BookList = ({
           style={{
             height: `calc(100% - ${headerHeight}px)`,
           }}
-          className='overflow-y-scroll w-full custom-scrollbar space-y-2'
+          className='custom-scrollbar w-full space-y-2 overflow-y-scroll'
         >
-          <div className='flex justify-between items-center'>
-            <div className='flex space-x-5 items-center'>
-              <div className='flex space-x-3 items-center'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-5'>
+              <div className='flex items-center space-x-3'>
                 <div className='text-cGray-300'>Sort by:</div>
                 <select
-                  className='outline-none border border-cGray-200 px-2 py-[3px] rounded'
+                  className='border-cGray-200 rounded border px-2 py-[3px] outline-none'
                   onChange={(e) => setSortBy(e.target.value)}
                   value={sortBy}
                 >
@@ -155,10 +157,10 @@ const BookList = ({
                   ))}
                 </select>
               </div>
-              <div className='flex space-x-3 items-center'>
+              <div className='flex items-center space-x-3'>
                 <div className='text-cGray-300'>Order:</div>
                 <select
-                  className='outline-none border border-cGray-200 px-2 py-[3px] rounded'
+                  className='border-cGray-200 rounded border px-2 py-[3px] outline-none'
                   onChange={(e) =>
                     setSortOrder(e.target.value as OrderType)
                   }
@@ -178,32 +180,32 @@ const BookList = ({
           <table className='min-w-full leading-normal'>
             <thead>
               <tr>
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Image
                 </th>
 
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Title
                 </th>
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Author
                 </th>
 
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Genre
                 </th>
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white truncate'>
+                <th className='bg-primary truncate border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Accession No
                 </th>
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Quantity
                 </th>
-                <th className='border-b-2 border-gray-200 bg-primary px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
+                <th className='bg-primary border-b-2 border-gray-200 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-white'>
                   Available
                 </th>
                 {
                   // eslint-disable-next-line jsx-a11y/control-has-associated-label
-                  <th className='border-b-2 border-gray-200 bg-primary px-5 py-3' />
+                  <th className='bg-primary border-b-2 border-gray-200 px-5 py-3' />
                 }
               </tr>
             </thead>
@@ -213,7 +215,11 @@ const BookList = ({
                 return (
                   <React.Fragment key={book.objectID}>
                     <ReactTooltip id={book.objectID} />
-                    <BookListCard book={book} />
+                    <BookListCard
+                      books={books}
+                      setAlgoBooks={setAlgoBooks}
+                      book={book}
+                    />
                   </React.Fragment>
                 );
               })}

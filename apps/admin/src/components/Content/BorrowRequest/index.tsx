@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
+import { useRouter } from 'next/router';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import {
@@ -17,6 +18,7 @@ const bookSearchQueryName = 'borrowSearchKey';
 
 const BorrowRequest = () => {
   const borrowSearchKey = useNextQuery(bookSearchQueryName);
+  const router = useRouter();
 
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
     useAlgoData<AlgoBorrowDoc>(
@@ -45,6 +47,19 @@ const BorrowRequest = () => {
     nProgress.done();
   };
 
+  const handleRefresh = () => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          page: router.query.page,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
     <section className='h-full w-full'>
       <PickedUpModal
@@ -58,13 +73,16 @@ const BorrowRequest = () => {
       />
       {pendingBorrows && pendingBorrows.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
-          <button
-            type='button'
-            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
-            onClick={handleUpdate}
-          >
-            Refresh records
-          </button>
+          <div className='flex items-center space-x-2'>
+            <button
+              type='button'
+              className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+              onClick={handleUpdate}
+            >
+              Refresh records
+            </button>
+            <div className='text-sm'>Results: {pendingBorrows.length}</div>
+          </div>
           {pendingBorrows.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
@@ -133,15 +151,13 @@ const BorrowRequest = () => {
                   ? 'No results found'
                   : 'There is currently no borrow request.'}
               </h1>
-              {!borrowSearchKey && (
-                <button
-                  type='button'
-                  onClick={handleUpdate}
-                  className='text-xl text-sky-600'
-                >
-                  Refresh
-                </button>
-              )}
+              <button
+                type='button'
+                onClick={handleRefresh}
+                className='text-xl text-sky-600'
+              >
+                Refresh
+              </button>
             </div>
           )}
         {pendingBorrows && pendingBorrows.length > 0 && (

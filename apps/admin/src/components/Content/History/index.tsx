@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import { AlgoBorrowDoc } from '@lms/types';
 import {
@@ -16,6 +17,7 @@ const bookSearchQueryName = 'historyBookSearchKey';
 
 const History = () => {
   const historyBookSearchKey = useNextQuery(bookSearchQueryName);
+  const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoHistoryBooks, _, refreshHistoryBooks, historyBooksLoading] =
@@ -53,17 +55,33 @@ const History = () => {
     nProgress.done();
   };
 
+  const handleRefresh = () => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          page: router.query.page,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
     <section className='h-full w-full'>
       {historyBooks && historyBooks.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
-          <button
-            type='button'
-            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
-            onClick={handleUpdate}
-          >
-            Refresh records
-          </button>
+          <div className='flex items-center space-x-2'>
+            <button
+              type='button'
+              className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+              onClick={handleUpdate}
+            >
+              Refresh records
+            </button>
+            <div className='text-sm'>Results: {historyBooks.length}</div>
+          </div>
           {historyBooks.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
@@ -130,15 +148,13 @@ const History = () => {
                   ? 'No results found'
                   : 'There is currently no borrow request.'}
               </h1>
-              {!historyBookSearchKey && (
-                <button
-                  type='button'
-                  onClick={handleUpdate}
-                  className='text-xl text-sky-600'
-                >
-                  Refresh
-                </button>
-              )}
+              <button
+                type='button'
+                onClick={handleRefresh}
+                className='text-xl text-sky-600'
+              >
+                Refresh
+              </button>
             </div>
           )}
         {historyBooks && historyBooks.length > 0 && (

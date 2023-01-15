@@ -191,7 +191,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [isCustomGenre, setIsCustomGenre] = useState(false);
   const [canBeBorrowed, setCanBeBorrowed] = useState(false);
 
-  const [allGenres, genreLoading] = useCol<GenreDoc>(
+  const [allGenres] = useCol<GenreDoc>(
     query(collection(db, 'genres'), orderBy('genre', 'asc'))
   );
 
@@ -216,7 +216,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
     };
 
     if (bookDetails) setDetails();
-  }, [bookDetails, genreLoading]);
+  }, [bookDetails, bookId]);
 
   const textInputs = [
     {
@@ -338,6 +338,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
         author,
         publisher,
         // accessionNumber,
+        identifiers,
         copyright,
         category,
         genre,
@@ -393,10 +394,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
           available:
             bookDetails.available + (quantity - bookDetails.quantity),
           imageCover: payload.imageCover || bookDetails.imageCover,
-          identifiers: [
-            ...bookDetails.identifiers,
-            ...newIdentifiersToAdd,
-          ],
+          identifiers: [...identifiers, ...newIdentifiersToAdd],
         },
         ...filteredBooks,
       ] as AlgoBookDoc[];

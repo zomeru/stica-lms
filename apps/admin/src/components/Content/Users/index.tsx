@@ -4,6 +4,7 @@ import nProgress from 'nprogress';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import { AiOutlineCopy } from 'react-icons/ai';
+import { useRouter } from 'next/router';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import { ITEMS_PER_PAGE, userTableHeaders } from '@src/constants';
@@ -14,6 +15,7 @@ const userSearchQueryName = 'userSearchKey';
 
 const Users = () => {
   const userSearchKey = useNextQuery(userSearchQueryName);
+  const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [users, setUsers, refreshUsers, userLoading] =
@@ -29,19 +31,33 @@ const Users = () => {
     nProgress.done();
   };
 
-  console.log('users', users);
+  const handleRefresh = () => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          page: router.query.page,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <section className='h-full w-full'>
       {users && users.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
-          <button
-            type='button'
-            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
-            onClick={handleUpdate}
-          >
-            Refresh users
-          </button>
+          <div className='flex items-center space-x-2'>
+            <button
+              type='button'
+              className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+              onClick={handleUpdate}
+            >
+              Refresh records
+            </button>
+            <div className='text-sm'>Results: {users.length}</div>
+          </div>
           {users.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
@@ -103,15 +119,13 @@ const Users = () => {
                 ? 'No users found'
                 : 'There is currently no registered users.'}
             </h1>
-            {!userSearchKey && (
-              <button
-                type='button'
-                onClick={handleUpdate}
-                className='text-xl text-sky-600'
-              >
-                Refresh
-              </button>
-            )}
+            <button
+              type='button'
+              onClick={handleRefresh}
+              className='text-xl text-sky-600'
+            >
+              Refresh
+            </button>
           </div>
         )}
         {users && users.length > 0 && (
