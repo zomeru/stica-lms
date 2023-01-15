@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
+import { useRouter } from 'next/router';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import {
@@ -16,6 +17,7 @@ const bookSearchQueryName = 'renewalSearchKey';
 
 const RenewalRequest = () => {
   const renewalSearchKey = useNextQuery(bookSearchQueryName);
+  const router = useRouter();
 
   const [algoBorrows, setBorrows, refreshBorrows, borrowLoading] =
     useAlgoData<AlgoBorrowDoc>(
@@ -53,6 +55,19 @@ const RenewalRequest = () => {
     nProgress.done();
   };
 
+  const handleRefresh = () => {
+    router.push(
+      {
+        pathname: '/',
+        query: {
+          page: router.query.page,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   return (
     <section className='h-full w-full'>
       <PickedUpModal
@@ -66,13 +81,18 @@ const RenewalRequest = () => {
       />
       {renewalRequests && renewalRequests.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
-          <button
-            type='button'
-            className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
-            onClick={handleUpdate}
-          >
-            Refresh records
-          </button>
+          <div className='flex items-center space-x-2'>
+            <button
+              type='button'
+              className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+              onClick={handleUpdate}
+            >
+              Refresh records
+            </button>
+            <div className='text-sm'>
+              Results: {renewalRequests.length}
+            </div>
+          </div>
           {renewalRequests.length / ITEMS_PER_PAGE > 1 && (
             <div className='flex items-center space-x-3'>
               <div>
@@ -141,15 +161,13 @@ const RenewalRequest = () => {
                   ? 'No results found'
                   : 'There is currently no renewal request.'}
               </h1>
-              {!renewalSearchKey && (
-                <button
-                  type='button'
-                  onClick={handleUpdate}
-                  className='text-xl text-sky-600'
-                >
-                  Refresh
-                </button>
-              )}
+              <button
+                type='button'
+                onClick={handleRefresh}
+                className='text-xl text-sky-600'
+              >
+                Refresh
+              </button>
             </div>
           )}
         {renewalRequests && renewalRequests.length > 0 && (
