@@ -64,11 +64,9 @@ const BookListCard = ({ book }: BookListCardProps) => {
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
         <p className='whitespace-no-wrap text-gray-900'>
-          {
-            identifiers.find(
-              (identifier) => identifier.status === 'Available'
-            )?.accessionNumber
-          }
+          {identifiers.find(
+            (identifier) => identifier.status === 'Available'
+          )?.accessionNumber || 'No available'}
         </p>
       </td>
       <td className='border-b border-gray-200 bg-white px-5 py-5 text-sm'>
