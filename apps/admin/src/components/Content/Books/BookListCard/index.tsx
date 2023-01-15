@@ -3,13 +3,29 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { AlgoBookDoc } from '@lms/types';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
+import { db } from '@lms/db';
+import toast from 'react-hot-toast';
 
 interface BookListCardProps {
   book: AlgoBookDoc;
   // onEdit: () => void;
+  books: AlgoBookDoc[];
+  setAlgoBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
 }
 
-const BookListCard = ({ book }: BookListCardProps) => {
+const BookListCard = ({
+  book,
+  books,
+  setAlgoBooks,
+}: BookListCardProps) => {
   const {
     // id,
     objectID,
@@ -37,6 +53,34 @@ const BookListCard = ({ book }: BookListCardProps) => {
       undefined,
       { shallow: true }
     );
+  };
+
+  const handleDelete = async () => {
+    const bookRef = doc(db, 'books', objectID);
+
+    try {
+      const borrowQuery = query(
+        collection(db, 'borrows'),
+        where('bookId', '==', objectID),
+        where('status', '==', 'Issued')
+      );
+      const borrowSnapshot = await getDocs(borrowQuery);
+
+      if (borrowSnapshot.size > 0) {
+        toast.error('There is an issued book with this book');
+        return;
+      } else {
+        await deleteDoc(bookRef);
+        const filteredBooks = books.filter(
+          (buk) => buk.objectID !== objectID
+        );
+        setAlgoBooks(filteredBooks);
+        toast.success('Book successfully deleted.');
+      }
+    } catch (e) {
+      toast.error("Something wen't wrong.");
+      console.log('error', e);
+    }
   };
 
   return (
@@ -84,7 +128,11 @@ const BookListCard = ({ book }: BookListCardProps) => {
           >
             Edit
           </button>
-          <button type='button' className='font-medium text-red-600'>
+          <button
+            type='button'
+            className='font-medium text-red-600'
+            onClick={handleDelete}
+          >
             Delete
           </button>
         </div>
