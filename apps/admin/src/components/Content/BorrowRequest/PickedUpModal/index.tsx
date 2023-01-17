@@ -7,6 +7,9 @@ import {
   increment,
   addDoc,
   collection,
+  query,
+  where,
+  getDocs,
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { BsArrowLeft } from 'react-icons/bs';
@@ -57,6 +60,20 @@ const PickedUpModal = ({
       nProgress.configure({ showSpinner: true });
       nProgress.start();
       setIsConfirming(true);
+
+      const userBorrowQuery = query(
+        collection(db, 'borrows'),
+        where('status', '==', 'Issued'),
+        where('userId', '==', borrowData.userId)
+      );
+      const borrowQuerySnap = await getDocs(userBorrowQuery);
+
+      if (!borrowQuerySnap.empty && borrowQuerySnap.size >= 5) {
+        toast.error('Only maximun of 5 books can be borrowed at once.');
+        nProgress.done();
+        setIsConfirming(false);
+        return;
+      }
 
       const borrowRef = doc(db, 'borrows', borrowData.objectID);
       const borrowSnap = await getDoc(borrowRef);

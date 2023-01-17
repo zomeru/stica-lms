@@ -3,11 +3,13 @@ import {
   addDoc,
   collection,
   doc,
+  getDocs,
   increment,
   orderBy,
   query,
   serverTimestamp,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
@@ -17,6 +19,7 @@ import { useRouter } from 'next/router';
 import { AlgoBorrowDoc, IBookDoc, Identifier, IUserDoc } from '@lms/types';
 import { useCol } from '@lms/ui';
 import { db } from '@lms/db';
+import { processHoliday } from '@src/utils/processHoliday';
 
 const WalkinRequest = () => {
   const router = useRouter();
@@ -64,11 +67,25 @@ const WalkinRequest = () => {
       nProgress.start();
       setIssuing(true);
 
+      const userBorrowQuery = query(
+        collection(db, 'borrows'),
+        where('status', '==', 'Issued'),
+        where('userId', '==', selectedUser.id)
+      );
+      const borrowQuerySnap = await getDocs(userBorrowQuery);
+
+      if (!borrowQuerySnap.empty && borrowQuerySnap.size >= 5) {
+        toast.error('Only maximun of 5 books can be borrowed at once.');
+        nProgress.done();
+        setIssuing(false);
+        return;
+      }
+
       const bookRef = doc(db, 'books', selectedBook.id);
 
-      const finalDueDateTimestamp = {
+      const finalDueDateTimestamp = await processHoliday({
         category: selectedBook.category.category,
-      } as AlgoBorrowDoc;
+      } as AlgoBorrowDoc);
 
       const newIdentifiers = selectedBook.identifiers.filter(
         (iden) =>
