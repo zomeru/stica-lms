@@ -10,6 +10,7 @@ import { FiBookOpen, FiUsers } from 'react-icons/fi';
 import { RiFileDamageFill } from 'react-icons/ri';
 import { TbReport } from 'react-icons/tb';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
+import { HiOutlineLibrary } from 'react-icons/hi';
 
 export const adminSidebarItems = [
   {
@@ -28,6 +29,10 @@ export const adminSidebarItems = [
     name: 'Send Notifications',
     Icon: MdOutlineNotificationsNone,
   }, */
+  {
+    name: 'Walk-in Request',
+    Icon: HiOutlineLibrary,
+  },
   {
     name: 'Currently Loaned Books',
     Icon: FiBookOpen,
