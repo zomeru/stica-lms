@@ -17,6 +17,7 @@ import {
   RenewalRequest,
   History,
   Messages,
+  WalkinRequest,
   /* SendNotification, */
 } from '@src/components/Content';
 
@@ -156,6 +157,7 @@ const Home: NextPage = () => {
         {page === 'users' && <Users />}
         {/* {page === 'send notifications' && <SendNotification/>} */}
         {page === 'messages' && <Messages />}
+        {page === 'walk-in request' && <WalkinRequest />}
         {page === 'currently loaned books' && <LoanedBooks />}
         {page === 'borrow requests' && <BorrowRequest />}
         {page === 'renewal requests' && <RenewalRequest />}
