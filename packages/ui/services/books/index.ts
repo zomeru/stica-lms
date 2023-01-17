@@ -48,6 +48,20 @@ export const borrowBook = async (
     });
     nProgress.start();
 
+    const userBorrowQuery = query(
+      collection(db, 'borrows'),
+      where('status', '==', 'Issued'),
+      where('userId', '==', user.id)
+    );
+    const borrowQuerySnap = await getDocs(userBorrowQuery);
+
+    if (!borrowQuerySnap.empty && borrowQuerySnap.size >= 5) {
+      toast.error('Only maximun of 5 books can be borrowed at once.');
+      nProgress.done();
+      setLoading(false);
+      return;
+    }
+
     // Delete notification for admin
     const bookRef = doc(db, 'books', book.id || book.objectID);
     const bookSnap = await getDoc(bookRef);
