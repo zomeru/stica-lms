@@ -18,6 +18,7 @@ import {
 import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import toast from 'react-hot-toast';
+import { uniqueAcnCheck } from '@src/utils';
 
 interface ReturnedModalProps {
   isModalOpen: boolean;
@@ -26,6 +27,7 @@ interface ReturnedModalProps {
   setSelectedBorrow: React.Dispatch<React.SetStateAction<string>>;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   borrowData: AlgoBorrowDoc | undefined;
+  allBooks?: IBookDoc[];
 }
 
 Modal.setAppElement('#__next');
@@ -50,6 +52,7 @@ const ReturnedModal = ({
   borrows,
   setBorrows,
   setIsModalOpen,
+  allBooks,
 }: ReturnedModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
@@ -58,16 +61,20 @@ const ReturnedModal = ({
   const [hasBeenReplaced, setHasBeenReplaced] = useState(false);
   const [newISBN, setNewISBN] = useState('');
   const [newAccessionNo, setNewAccessionNo] = useState('');
-  // const
 
   const handleConfirmBookReturn = async () => {
     if (!borrowData) return;
 
     if (hasBeenReplaced) {
-      if (!newISBN) {
-        toast.error("Please enter the replacement book's ISBN");
+      if (!newISBN || !newAccessionNo) {
+        toast.error('Please enter the accession number and ISBN.');
         return;
       }
+    }
+
+    if (!uniqueAcnCheck(allBooks || [], newAccessionNo)) {
+      toast.error('Accession number already exists.');
+      return;
     }
 
     setIsEditingPenalty(false);

@@ -1,3 +1,4 @@
+import { AlgoBorrowDoc, IBookDoc } from '@lms/types';
 import { DayType, MonthType } from '@src/types';
 import Router from 'next/router';
 
@@ -113,5 +114,53 @@ export const copyToClipboard = async (text: string) => {
     await navigator.clipboard.writeText(text);
   } catch (err) {
     console.error('Failed to copy: ', err);
+  }
+};
+
+export const uniqueAcnCheck = (books: IBookDoc[], acn: string) => {
+  let found = 0;
+
+  books.forEach((book) => {
+    book.identifiers.forEach((identifier) => {
+      if (
+        identifier.accessionNumber === acn &&
+        identifier.status !== 'Lost' &&
+        identifier.status !== 'Damaged'
+      ) {
+        found += 1;
+      }
+    });
+  });
+
+  return found === 0;
+};
+
+export const filterBetweenDates = (
+  data: AlgoBorrowDoc[],
+  fromDate?: Date,
+  toDate?: Date
+) => {
+  try {
+    if (!fromDate && !toDate) return data;
+
+    const filteredData = data.filter((item) => {
+      if (!fromDate && toDate) {
+        return new Date(item.updatedAt) <= toDate;
+      }
+
+      if (fromDate && !toDate) {
+        return new Date(item.updatedAt) >= fromDate;
+      }
+
+      return (
+        new Date(item.updatedAt) >= fromDate! &&
+        new Date(item.updatedAt) <= toDate!
+      );
+    });
+
+    return filteredData;
+  } catch (error) {
+    console.log('error while filtering by dates', error);
+    return data;
   }
 };

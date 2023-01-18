@@ -380,7 +380,7 @@ export const Layout = ({
                 className='h-[50px] 2xl:h-[60px]'
                 onClick={authAction}
               >
-                <div className='text-cGray-300 hover:text-primary ease-int-out flex w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300 2xl:hidden'>
+                <div className='text-cGray-300 hover:text-primary ease-int-out flex w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300'>
                   {isAuthenticated ? (
                     <AiOutlineLogout className='mb-[1px] text-lg' />
                   ) : (
@@ -392,23 +392,23 @@ export const Layout = ({
                 </div>
               </motion.button>
             </div>
-            <motion.button
-              variants={menuItemVariants}
-              type='button'
-              className='h-[50px] 2xl:h-[60px]'
-              onClick={authAction}
-            >
-              <div className='text-cGray-300 hover:text-primary ease-int-out hidden  w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300 2xl:flex'>
-                {isAuthenticated ? (
-                  <AiOutlineLogout className='mb-[1px] text-lg' />
-                ) : (
-                  <AiOutlineLogin className='mb-[1px] text-lg' />
-                )}
-                <p className='text-base font-medium'>
-                  {isAuthenticated ? 'Log out' : 'Log in'}
-                </p>
-              </div>
-            </motion.button>
+            {/* <motion.button */}
+            {/*   variants={menuItemVariants} */}
+            {/*   type='button' */}
+            {/*   className='h-[50px] 2xl:h-[60px]' */}
+            {/*   onClick={authAction} */}
+            {/* > */}
+            {/*   <div className='text-cGray-300 hover:text-primary ease-int-out hidden  w-full cursor-pointer items-center space-x-2 pl-6 transition-colors duration-300 2xl:flex'> */}
+            {/*     {isAuthenticated ? ( */}
+            {/*       <AiOutlineLogout className='mb-[1px] text-lg' /> */}
+            {/*     ) : ( */}
+            {/*       <AiOutlineLogin className='mb-[1px] text-lg' /> */}
+            {/*     )} */}
+            {/*     <p className='text-base font-medium'> */}
+            {/*       {isAuthenticated ? 'Log out' : 'Log in'} */}
+            {/*     </p> */}
+            {/*   </div> */}
+            {/* </motion.button> */}
           </div>
         </div>
         {/* Separator */}

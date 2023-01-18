@@ -21,7 +21,8 @@ import {
   removeFromLikedBooks,
   useCol,
   useDoc,
- useNextQuery } from '@lms/ui';
+  useNextQuery,
+} from '@lms/ui';
 import {
   AlgoBookDoc,
   IBookDoc,
@@ -144,7 +145,9 @@ const BookDetails = () => {
               <span className='ml-2 text-neutral-900'>
                 {
                   bookData?.identifiers.find(
-                    (identifier) => identifier.status === 'Available'
+                    (identifier) =>
+                      identifier.status !== 'Damaged' &&
+                      identifier.status !== 'Lost'
                   )?.accessionNumber
                 }
               </span>
@@ -154,7 +157,9 @@ const BookDetails = () => {
               <span className='ml-2 text-neutral-900'>
                 {
                   bookData?.identifiers.find(
-                    (identifier) => identifier.status === 'Available'
+                    (identifier) =>
+                      identifier.status !== 'Damaged' &&
+                      identifier.status !== 'Lost'
                   )?.isbn
                 }
               </span>
