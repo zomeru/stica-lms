@@ -188,7 +188,7 @@ export const historyTableHeaders = [
   // 'Book ID',
   'Student Name',
   'Title',
-  'ISBN',
+  'Accession no.',
   // 'Requested Date',
   'Issued Date',
   'Due Date',
