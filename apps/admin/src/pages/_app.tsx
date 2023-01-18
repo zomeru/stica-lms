@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { SidebarProvider, UserProvider } from '@src/contexts';
 
 import 'nprogress/nprogress.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/globals.css';
 
 // Router.events.on('routeChangeStart', () => {

@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import DatePicker from 'react-datepicker';
 
 import { AlgoBorrowDoc } from '@lms/types';
 import {
@@ -10,7 +11,11 @@ import {
   ITEMS_PER_PAGE,
 } from '@src/constants';
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
-import { formatDate, navigateToBook } from '@src/utils';
+import {
+  filterBetweenDates,
+  formatDate,
+  navigateToBook,
+} from '@src/utils';
 import nProgress from 'nprogress';
 
 const bookSearchQueryName = 'historyBookSearchKey';
@@ -18,6 +23,9 @@ const bookSearchQueryName = 'historyBookSearchKey';
 const History = () => {
   const historyBookSearchKey = useNextQuery(bookSearchQueryName);
   const router = useRouter();
+
+  const [fromDate, setFromDate] = useState<Date | undefined>();
+  const [toDate, setToDate] = useState<Date | undefined>();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [algoHistoryBooks, _, refreshHistoryBooks, historyBooksLoading] =
@@ -52,10 +60,15 @@ const History = () => {
     nProgress.configure({ showSpinner: true });
     nProgress.start();
     refreshHistoryBooks();
+    setFromDate(undefined);
+    setToDate(undefined);
     nProgress.done();
   };
 
   const handleRefresh = () => {
+    setFromDate(undefined);
+    setToDate(undefined);
+
     router.push(
       {
         pathname: '/',
@@ -68,55 +81,108 @@ const History = () => {
     );
   };
 
+  console.log(
+    'filtered data',
+    filterBetweenDates(historyBooks, fromDate, toDate)
+  );
+
   return (
     <section className='h-full w-full'>
       {historyBooks && historyBooks.length > 0 && (
-        <div className='mb-[10px] flex justify-between'>
-          <div className='flex items-center space-x-2'>
-            <button
-              type='button'
-              className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
-              onClick={handleUpdate}
-            >
-              Refresh records
-            </button>
-            <div className='text-sm'>Results: {historyBooks.length}</div>
-          </div>
-          {historyBooks.length / ITEMS_PER_PAGE > 1 && (
-            <div className='flex items-center space-x-3'>
-              <div>
-                {currentPage}/
-                {Math.ceil(historyBooks.length / ITEMS_PER_PAGE)}
-              </div>
-              <div className='space-x-1'>
-                <button
-                  type='button'
-                  disabled={currentPage === 1}
-                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
-                    currentPage === 1 && 'cursor-not-allowed opacity-40'
-                  }`}
-                  onClick={() => prev()}
-                >
-                  {'<'}
-                </button>
-                <button
-                  type='button'
-                  disabled={
-                    currentPage ===
-                    Math.ceil(historyBooks.length / ITEMS_PER_PAGE)
-                  }
-                  className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
-                    currentPage ===
-                      Math.ceil(historyBooks.length / ITEMS_PER_PAGE) &&
-                    'cursor-not-allowed opacity-40'
-                  }`}
-                  onClick={() => next()}
-                >
-                  {'>'}
-                </button>
+        <div>
+          <div className='mb-[10px] flex justify-between'>
+            <div className='flex items-center space-x-2'>
+              <button
+                type='button'
+                className='bg-primary rounded-md px-3 py-1 text-sm text-white duration-200 hover:bg-sky-800'
+                onClick={handleUpdate}
+              >
+                Refresh records
+              </button>
+              <div className='text-sm'>
+                Results:{' '}
+                {filterBetweenDates(historyBooks, fromDate, toDate).length}
               </div>
             </div>
-          )}
+            {filterBetweenDates(historyBooks, fromDate, toDate).length /
+              ITEMS_PER_PAGE >
+              1 && (
+              <div className='flex items-center space-x-3'>
+                <div>
+                  {currentPage}/
+                  {Math.ceil(
+                    filterBetweenDates(historyBooks, fromDate, toDate)
+                      .length / ITEMS_PER_PAGE
+                  )}
+                </div>
+                <div className='space-x-1'>
+                  <button
+                    type='button'
+                    disabled={currentPage === 1}
+                    className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                      currentPage === 1 && 'cursor-not-allowed opacity-40'
+                    }`}
+                    onClick={() => prev()}
+                  >
+                    {'<'}
+                  </button>
+                  <button
+                    type='button'
+                    disabled={
+                      currentPage ===
+                      Math.ceil(
+                        filterBetweenDates(historyBooks, fromDate, toDate)
+                          .length / ITEMS_PER_PAGE
+                      )
+                    }
+                    className={`text-textBlack rounded-md bg-neutral-200 px-[15px] text-xl ${
+                      currentPage ===
+                        Math.ceil(
+                          filterBetweenDates(
+                            historyBooks,
+                            fromDate,
+                            toDate
+                          ).length / ITEMS_PER_PAGE
+                        ) && 'cursor-not-allowed opacity-40'
+                    }`}
+                    onClick={() => next()}
+                  >
+                    {'>'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className='mb-[10px] flex space-x-4'>
+            <div className='flex items-center space-x-2'>
+              <div className='text-sm'>From</div>
+              <button
+                type='button'
+                className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
+              >
+                <DatePicker
+                  className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
+                  selected={fromDate}
+                  placeholderText='Oldest'
+                  onChange={(date: Date) => setFromDate(date)}
+                />
+              </button>
+            </div>
+            <div className='flex items-center space-x-2'>
+              <div className='text-sm'>To</div>
+              <button
+                type='button'
+                className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
+              >
+                <DatePicker
+                  className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
+                  selected={toDate}
+                  placeholderText='Latest'
+                  onChange={(date: Date) => setToDate(date)}
+                />
+              </button>
+            </div>
+          </div>
         </div>
       )}
       <div
@@ -177,97 +243,116 @@ const History = () => {
               </tr>
             </thead>
             <tbody>
-              {currentBorrowHistory.map((history) => {
-                let issuedDate = 'N/A';
-                let dueDate = 'N/A';
-                let returnedDate = 'N/A';
+              {filterBetweenDates(currentBorrowHistory, fromDate, toDate)
+                .length > 0 ? (
+                filterBetweenDates(
+                  currentBorrowHistory,
+                  fromDate,
+                  toDate
+                ).map((history) => {
+                  let issuedDate = 'N/A';
+                  let dueDate = 'N/A';
+                  let returnedDate = 'N/A';
 
-                if (history.issuedDate)
-                  issuedDate = formatDate(history.issuedDate);
-                if (history.dueDate) dueDate = formatDate(history.dueDate);
-                if (history.returnedDate)
-                  returnedDate = formatDate(history.returnedDate);
+                  console.log('issuedDate', new Date(history.issuedDate));
 
-                return (
-                  <React.Fragment key={history.id}>
-                    <ReactTooltip id={history.title} />
+                  if (history.issuedDate)
+                    issuedDate = formatDate(history.issuedDate);
+                  if (history.dueDate)
+                    dueDate = formatDate(history.dueDate);
+                  if (history.returnedDate)
+                    returnedDate = formatDate(history.returnedDate);
 
-                    <tr key={history.id} className='font-medium'>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <button type='button'>
-                          <p className='line-clamp-2 text-primary max-w-[200px] overflow-hidden text-left'>
-                            {history.studentName}
-                          </p>
-                        </button>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <button
-                          type='button'
-                          onClick={() => navigateToBook(history.bookId)}
-                        >
-                          <p
-                            className='line-clamp-2 text-primary max-w-[200px] overflow-hidden text-left'
-                            data-for={history.title}
-                            data-tip={history.title}
+                  return (
+                    <React.Fragment key={history.id}>
+                      <ReactTooltip id={history.title} />
+
+                      <tr key={history.id} className='font-medium'>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <button type='button'>
+                            <p className='line-clamp-2 text-primary max-w-[200px] overflow-hidden text-left'>
+                              {history.studentName}
+                            </p>
+                          </button>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <button
+                            type='button'
+                            onClick={() => navigateToBook(history.bookId)}
                           >
-                            {history.title}
+                            <p
+                              className='line-clamp-2 text-primary max-w-[200px] overflow-hidden text-left'
+                              data-for={history.title}
+                              data-tip={history.title}
+                            >
+                              {history.title}
+                            </p>
+                          </button>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p className='w-max text-gray-900'>
+                            {history.identifiers.isbn}
                           </p>
-                        </button>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='w-max text-gray-900'>
-                          {history.identifiers.isbn}
-                        </p>
-                      </td>
+                        </td>
 
-                      {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
+                        {/* <td className='border-b border-cGray-200 bg-white px-5 py-5 text-sm'>
                 <p className='whitespace-no-wrap text-gray-900'>
                   {issue.requestedDate}
                 </p>
               </td> */}
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='whitespace-no-wrap text-gray-900'>
-                          {issuedDate}
-                        </p>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='whitespace-no-wrap text-gray-900'>
-                          {dueDate}
-                        </p>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p className='whitespace-no-wrap text-gray-900'>
-                          {returnedDate}
-                        </p>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p
-                          className={`whitespace-no-wrap ${
-                            history.penalty > 0
-                              ? 'text-red-600'
-                              : 'text-green-600'
-                          }`}
-                        >
-                          ₱{history.penalty}
-                        </p>
-                      </td>
-                      <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                        <p
-                          className={`whitespace-no-wrap ${
-                            history.status === 'Returned'
-                              ? 'text-sky-600'
-                              : history.status === 'Issued'
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          {history.status}
-                        </p>
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                );
-              })}
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p className='whitespace-no-wrap text-gray-900'>
+                            {issuedDate}
+                          </p>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p className='whitespace-no-wrap text-gray-900'>
+                            {dueDate}
+                          </p>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p className='whitespace-no-wrap text-gray-900'>
+                            {returnedDate}
+                          </p>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p
+                            className={`whitespace-no-wrap ${
+                              history.penalty > 0
+                                ? 'text-red-600'
+                                : 'text-green-600'
+                            }`}
+                          >
+                            ₱{history.penalty}
+                          </p>
+                        </td>
+                        <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
+                          <p
+                            className={`whitespace-no-wrap ${
+                              history.status === 'Returned'
+                                ? 'text-sky-600'
+                                : history.status === 'Issued'
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                          >
+                            {history.status}
+                          </p>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  );
+                })
+              ) : (
+                <td
+                  className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'
+                  colSpan={8}
+                >
+                  <p className='whitespace-no-wrap text-center text-gray-900'>
+                    No data found
+                  </p>
+                </td>
+              )}
             </tbody>
           </table>
         )}
