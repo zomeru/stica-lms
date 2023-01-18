@@ -26,7 +26,7 @@ import {
   Identifier,
   IBookDoc,
 } from '@lms/types';
-import { hasDuplicateString } from '@src/utils';
+import { hasDuplicateString, uniqueAcnCheck } from '@src/utils';
 import { AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 import { useCol } from '@lms/ui';
 import Loader from '@src/components/Loader';
@@ -46,24 +46,6 @@ const modalCustomStyle = {
     overflow: 'auto',
     maxHeight: '100vh',
   },
-};
-
-export const uniqueAcnCheck = (books: IBookDoc[], acn: string) => {
-  let found = 0;
-
-  books.forEach((book) => {
-    book.identifiers.forEach((identifier) => {
-      if (
-        identifier.accessionNumber === acn &&
-        identifier.status !== 'Lost' &&
-        identifier.status !== 'Damaged'
-      ) {
-        found += 1;
-      }
-    });
-  });
-
-  return found === 0;
 };
 
 const ISBNModal = ({

@@ -286,6 +286,11 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       return;
     }
 
+    // if (!uniqueAcnCheck(allBooks || [], newAccessionNo)) {
+    //   toast.error('Accession number already exists.');
+    //   return;
+    // }
+
     const accessionNumbers: string[] = [];
 
     identifiers.forEach((item) => {
@@ -309,8 +314,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
       nProgress.configure({ showSpinner: true });
       nProgress.start();
 
+      let newCategory;
+
       if (isCustomGenre) {
-        const newCategory = {
+        newCategory = {
           active: true,
           category,
           canBeBorrowed:
@@ -340,7 +347,10 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
         // accessionNumber,
         identifiers,
         copyright,
-        category,
+        category: newCategory || {
+          category,
+          canBeBorrowed,
+        },
         genre,
         quantity: increment(quantity - bookDetails.quantity),
         available: increment(quantity - bookDetails.quantity),

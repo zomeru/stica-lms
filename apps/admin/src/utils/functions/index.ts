@@ -1,3 +1,4 @@
+import { IBookDoc } from '@lms/types';
 import { DayType, MonthType } from '@src/types';
 import Router from 'next/router';
 
@@ -114,4 +115,22 @@ export const copyToClipboard = async (text: string) => {
   } catch (err) {
     console.error('Failed to copy: ', err);
   }
+};
+
+export const uniqueAcnCheck = (books: IBookDoc[], acn: string) => {
+  let found = 0;
+
+  books.forEach((book) => {
+    book.identifiers.forEach((identifier) => {
+      if (
+        identifier.accessionNumber === acn &&
+        identifier.status !== 'Lost' &&
+        identifier.status !== 'Damaged'
+      ) {
+        found += 1;
+      }
+    });
+  });
+
+  return found === 0;
 };

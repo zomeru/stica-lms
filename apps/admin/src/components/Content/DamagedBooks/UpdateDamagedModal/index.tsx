@@ -13,11 +13,14 @@ import {
   increment,
   addDoc,
   collection,
+  query,
 } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
-import toast from 'react-hot-toast';
+import { uniqueAcnCheck } from '@src/utils';
+import { useCol } from '@lms/ui';
 
 interface UpdateLostModalProps {
   isModalOpen: boolean;
@@ -55,11 +58,16 @@ const UpdateDamagedModal = ({
   const [newISBN, setNewISBN] = useState('');
   const [newAccessionNo, setNewAccessionNo] = useState('');
 
+  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
+
   const handleConfirmBookReplaced = async () => {
     if (!newISBN.trim() || !newAccessionNo.trim()) {
-      toast.error(
-        "Please enter the replacement book's ISBN and Accession number."
-      );
+      toast.error('Please enter the accession number and ISBN.');
+      return;
+    }
+
+    if (!uniqueAcnCheck(allBooks || [], newAccessionNo)) {
+      toast.error('Accession number already exists.');
       return;
     }
 

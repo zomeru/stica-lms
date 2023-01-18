@@ -3,14 +3,21 @@ import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
+import { collection, query } from 'firebase/firestore';
 
-import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
+import { db } from '@lms/db';
+import {
+  useAlgoData,
+  useClientPagination,
+  useCol,
+  useNextQuery,
+} from '@lms/ui';
 import {
   DEFAULT_SORT_ITEM,
   ITEMS_PER_PAGE,
   loanedBooksTableHeaders,
 } from '@src/constants';
-import { AlgoBorrowDoc } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc } from '@lms/types';
 import { formatDate, navigateToBook } from '@src/utils';
 import ReturnedModal from './ReturnedModal';
 import LostModal from './LostModal';
@@ -32,6 +39,8 @@ const LoanedBooks = () => {
       bookSearchQueryName,
       loanedSearchKey
     );
+
+  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
 
   const issuedBorrows: AlgoBorrowDoc[] = useMemo(
     () => algoBorrows?.filter((borrow) => borrow.status === 'Issued'),
@@ -76,6 +85,7 @@ const LoanedBooks = () => {
         )}
         borrows={algoBorrows}
         setBorrows={setBorrows}
+        allBooks={allBooks}
       />
       <LostModal
         isModalOpen={!!selectedReturnBorrow && isLostModalOpen}
@@ -86,6 +96,7 @@ const LoanedBooks = () => {
         )}
         borrows={algoBorrows}
         setBorrows={setBorrows}
+        allBooks={allBooks}
       />
       {issuedBorrows && issuedBorrows.length > 0 && (
         <div className='mb-[10px] flex justify-between'>
