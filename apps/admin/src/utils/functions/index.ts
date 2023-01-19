@@ -75,14 +75,23 @@ export function formatDate(
 
 export function simpleFormatDate(
   date: Date | number | string,
-  daysToAdd?: number
+  daysToAdd?: number,
+  showTime: boolean = false
 ) {
   const dateObj = new Date(date);
+
+  const hour =
+    dateObj.getHours() % 12 === 0 ? 12 : dateObj.getHours() % 12;
+  const time = `${hour}:${addZero(dateObj.getMinutes())} ${
+    dateObj.getHours() >= 12 ? 'PM' : 'AM'
+  }`;
 
   // 2022-05-01
   const dateStr = `${dateObj.getFullYear()}-${addZero(
     dateObj.getMonth() + 1
-  )}-${addZero(dateObj.getDate() + (daysToAdd || 0))}`;
+  )}-${addZero(dateObj.getDate() + (daysToAdd || 0))}${
+    showTime ? ` ${time}` : ''
+  }`;
 
   return dateStr;
 }

@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
-import { useNextQuery, Layout, NotFound } from '@lms/ui';
+import { useNextQuery, Layout, NotFound, useCol } from '@lms/ui';
 import { useSidebar, useUser } from '@src/contexts';
 import useAuth from '@src/hooks/useAuth';
 import { adminSidebarItems } from '@src/constants';
@@ -20,6 +20,9 @@ import {
   WalkinRequest,
   /* SendNotification, */
 } from '@src/components/Content';
+import { IBookDoc } from '@lms/types';
+import { collection, query } from 'firebase/firestore';
+import { db } from '@lms/db';
 
 const Home: NextPage = () => {
   const { user, loading } = useUser();
@@ -40,6 +43,8 @@ const Home: NextPage = () => {
 
     login(username, password);
   };
+
+  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
 
   const handleAdminSearch = () => {
     if (!searchInputRef.current) return;
@@ -153,16 +158,18 @@ const Home: NextPage = () => {
         {(router.asPath === '/' ||
           router.asPath.includes('/?page=books') ||
           page === 'books' ||
-          !page) && <Books />}
+          !page) && <Books allBooks={allBooks} />}
         {page === 'users' && <Users />}
         {/* {page === 'send notifications' && <SendNotification/>} */}
         {page === 'messages' && <Messages />}
         {page === 'walk-in request' && <WalkinRequest />}
-        {page === 'currently loaned books' && <LoanedBooks />}
+        {page === 'currently loaned books' && (
+          <LoanedBooks allBooks={allBooks} />
+        )}
         {page === 'borrow requests' && <BorrowRequest />}
         {page === 'renewal requests' && <RenewalRequest />}
-        {page === 'lost books' && <LostBooks />}
-        {page === 'damaged books' && <DamagedBooks />}
+        {page === 'lost books' && <LostBooks allBooks={allBooks} />}
+        {page === 'damaged books' && <DamagedBooks allBooks={allBooks} />}
         {page === 'reports' && <History />}
       </>
     );

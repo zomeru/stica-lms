@@ -18,6 +18,7 @@ import ReactTooltip from 'react-tooltip';
 import { AlgoBorrowDoc } from '@lms/types';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
+import { sendEmail } from '@src/utils';
 
 interface RenewalProps {
   isModalOpen: boolean;
@@ -97,6 +98,19 @@ const Renewal = ({
         borrowId: borrowData.objectID,
         bookTitle: borrowData.title,
       });
+
+      const docRef = doc(db, 'users', borrowData.userId);
+      const docSnap = await getDoc(docRef);
+      const userData = docSnap.data()!;
+
+      const sendEmailData = await sendEmail({
+        receiver: userData.email,
+        subjectPurpose: 'Renewal Request Approved',
+        message: `Hello ${userData.givenName} ${userData.surname}, your renewal request for ${borrowData.title} has been approved.`,
+        messageTitle: 'Renewal Request Approved',
+      });
+
+      console.log('sendEmailData renew', sendEmailData);
 
       const newRenewalRequest = borrows.filter(
         (borrow) => borrow.objectID !== borrowData.objectID

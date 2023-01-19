@@ -3,15 +3,8 @@ import Image from 'next/image';
 import ReactTooltip from 'react-tooltip';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
-import { collection, query } from 'firebase/firestore';
 
-import { db } from '@lms/db';
-import {
-  useAlgoData,
-  useClientPagination,
-  useCol,
-  useNextQuery,
-} from '@lms/ui';
+import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
 import {
   DEFAULT_SORT_ITEM,
   ITEMS_PER_PAGE,
@@ -24,7 +17,7 @@ import LostModal from './LostModal';
 
 const bookSearchQueryName = 'loanedSearchKey';
 
-const LoanedBooks = () => {
+const LoanedBooks = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const loanedSearchKey = useNextQuery(bookSearchQueryName);
   const router = useRouter();
 
@@ -39,8 +32,6 @@ const LoanedBooks = () => {
       bookSearchQueryName,
       loanedSearchKey
     );
-
-  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
 
   const issuedBorrows: AlgoBorrowDoc[] = useMemo(
     () => algoBorrows?.filter((borrow) => borrow.status === 'Issued'),

@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import fetch from 'node-fetch-commonjs';
-
+import {send, EmailJSResponseStatus} from '@emailjs/nodejs';
 import { db } from '..';
 
 const timestamp = admin.firestore.Timestamp;
@@ -11,10 +11,58 @@ const deleteField = admin.firestore.FieldValue.delete;
 const regionalFunctions = functions.region('asia-east2');
 
 const FIREBASE_API_KEY = functions.config().fireb.api_key;
+const EMAIL_PUB_KEY = functions.config().config.email_pub_key;
+const EMAIL_PRIVATE_KEY = functions.config().config.email_private_key;
 
 function addZero(num: number) {
   return num < 10 ? `0${num}` : num;
 }
+
+interface MainInput {
+  receiver: string;
+  subjectPurpose: string;
+  message: string;
+}
+
+async function sendEmail({
+  receiver,
+  subjectPurpose,
+  message,
+}: MainInput) {
+  try {
+    await send(
+      'service_qqs3zna',
+      'template_80svd8l',
+      {
+        subject: subjectPurpose,
+        message,
+        receiver
+      },
+      {
+        publicKey: EMAIL_PUB_KEY,
+        privateKey: EMAIL_PRIVATE_KEY, // optional, highly recommended for security reasons
+      },
+    );
+    console.log('SUCCESS!');
+  } catch (error) {
+    if (error instanceof EmailJSResponseStatus) {
+      console.log('EMAILJS FAILED...', error);
+      return;
+    }
+  
+    console.log('ERROR sending email', error);
+  }
+}
+
+const DAYS = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 // .schedule('0 17 * * *') - Every 5:00 PM
 // .schedule('every 1 minutes')
@@ -70,21 +118,56 @@ export const autoCancelBorrows = regionalFunctions.pubsub
     });
   });
 
+export const sendEmailOneDayBeforeDueDate = regionalFunctions.pubsub
+  .schedule('5 17 * * 1-5')
+  .timeZone('Asia/Manila')
+  .onRun(async () => {
+    const today = new Date();
+    const day = DAYS[today.getDay()];
+
+    if (day !== 'Sunday' && day !== 'Saturday') {
+      try {
+        const borrowsRef = db.collection('borrows');
+        const query = borrowsRef.where('status', '==', 'Issued');
+        const borrows = await query.get();
+
+        borrows.forEach(async (borrow: any) => {
+          const data = borrow.data();
+
+          const dueDate = data.dueDate.toDate();
+          const diff = dueDate.getTime() - today.getTime();
+
+          if (
+            diff / 1000 / 60 / 60 / 24 <= 1 &&
+            Number(data.penalty) < 1
+          ) {
+            const userRef = db.collection('users').doc(data.userId);
+            const user = await userRef.get();
+            const userData = user.data();
+
+            const message = `Hi ${userData?.givenName} ${userData?.surname}, you have 24 hours left to return the book ${data.title}. Please return it on time to avoid penalties.`;
+
+
+            await sendEmail({
+              receiver: userData?.email,
+              subjectPurpose: 'Almost Due Date',
+              message,
+            })
+
+         
+          }
+        });
+      } catch (error) {
+        console.log('error email before due date', error);
+      }
+    }
+  });
+
 // add 5 pesos penalty for every day late (5:00 PM)
 export const addPenaltyForLateReturn = regionalFunctions.pubsub
   .schedule('5 17 * * 1-5')
   .timeZone('Asia/Manila')
   .onRun(async () => {
-    const DAYS = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
-
     try {
       const today = new Date();
       const day = DAYS[today.getDay()];
@@ -166,6 +249,23 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
             };
 
             await db.collection('notifications').add(payload);
+
+            const userRef = db.collection('users').doc(data.userId);
+            const user = await userRef.get();
+
+            await sendEmail({
+              receiver: user.data()?.email,
+              subjectPurpose: 'Penalty Added',
+              message: `We have added ${
+                Number(data.penalty) > 1 ? 'another 5' : '5'
+              } pesos penalty for your issued book on ${
+                data.title
+              } because you have not returned it on time.${
+                Number(data.penalty) > 1
+                  ? ` Total penalty is now ${totalPenalty}.`
+                  : ''
+              }`
+            })
           }
         });
       }
@@ -173,3 +273,4 @@ export const addPenaltyForLateReturn = regionalFunctions.pubsub
       console.log('Penalty Error', error.message);
     }
   });
+
