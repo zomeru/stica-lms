@@ -106,6 +106,11 @@
     "@algolia/logger-common" "4.14.2"
     "@algolia/requester-common" "4.14.2"
 
+"@emailjs/nodejs@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@emailjs/nodejs/-/nodejs-2.1.1.tgz#1ef86260bb56b0f453f850137b8ea2667f7b294f"
+  integrity sha512-K0V/XVoH3WC0wRYNZNt6+XJMyp1LE2ai8ITq5Ow/W8+TfZNXTCHTl1XiM8N0yNyA+K3/a2EMQK1fXOVCVvzwFA==
+
 "@fastify/busboy@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-1.1.0.tgz#4472f856e2bb5a9ee34ad64b93891b73b73537ca"

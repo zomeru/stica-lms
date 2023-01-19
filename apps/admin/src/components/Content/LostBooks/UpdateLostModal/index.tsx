@@ -13,14 +13,12 @@ import {
   increment,
   addDoc,
   collection,
-  query,
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
 import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import { uniqueAcnCheck } from '@src/utils';
-import { useCol } from '@lms/ui';
 
 interface UpdateLostModalProps {
   isModalOpen: boolean;
@@ -28,6 +26,7 @@ interface UpdateLostModalProps {
   setLostBooks: React.Dispatch<React.SetStateAction<AlgoBorrowDoc[]>>;
   setSelectedLostBook: React.Dispatch<React.SetStateAction<string>>;
   lostBookData: AlgoBorrowDoc | undefined;
+  allBooks?: IBookDoc[];
 }
 
 Modal.setAppElement('#__next');
@@ -51,14 +50,13 @@ const UpdateLostModal = ({
   lostBookData,
   lostBooks,
   setLostBooks,
+  allBooks,
 }: UpdateLostModalProps) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEditingPenalty, setIsEditingPenalty] = useState(false);
   const [penalty, setPenalty] = useState(lostBookData?.penalty || 0);
   const [newISBN, setNewISBN] = useState('');
   const [newAccessionNo, setNewAccessionNo] = useState('');
-
-  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
 
   const handleConfirmBookPickup = async () => {
     if (!newISBN.trim() || !newAccessionNo.trim()) {

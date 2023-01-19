@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 
-import { AlgoBookDoc } from '@lms/types';
+import { AlgoBookDoc, IBookDoc } from '@lms/types';
 import { ITEMS_PER_PAGE, SORT_ITEMS } from '@src/constants';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
@@ -12,7 +12,7 @@ export type OrderType = 'asc' | 'desc';
 
 const bookSearchQueryName = 'bookSearchKey';
 
-const Books = () => {
+const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const bookSearchKey = useNextQuery(bookSearchQueryName);
   const bookId = useNextQuery('bookId');
 
@@ -91,6 +91,7 @@ const Books = () => {
         setAddBook={setAddBook}
         books={algoBooks}
         setBooks={setAlgoBooks}
+        allBooks={allBooks}
       />
     </div>
   );

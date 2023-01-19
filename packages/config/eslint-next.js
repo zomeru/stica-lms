@@ -41,6 +41,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'react/jsx-no-useless-fragment': 'off',
 
+    'prefer-promise-reject-errors': 'off',
     'import/no-extraneous-dependencies': 'off',
     'arrow-body-style': 'off',
     'import/prefer-default-export': 'off',

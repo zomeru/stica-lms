@@ -10,13 +10,13 @@ import {
   ITEMS_PER_PAGE,
   lostBooksTableHeaders,
 } from '@src/constants';
-import { AlgoBorrowDoc } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import UpdateDamagedModal from './UpdateDamagedModal';
 
 const bookSearchQueryName = 'damagedBookSearchKey';
 
-const DamagedBooks = () => {
+const DamagedBooks = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const damagedBookSearchKey = useNextQuery(bookSearchQueryName);
   const router = useRouter();
 
@@ -69,6 +69,7 @@ const DamagedBooks = () => {
   return (
     <section className='h-full w-full'>
       <UpdateDamagedModal
+        allBooks={allBooks}
         isModalOpen={!!selectedDamagedBook}
         setSelectedDamagedBook={setSelectedDamagedBook}
         damagedBookData={damagedBooks.find(

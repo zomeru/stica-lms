@@ -20,6 +20,7 @@ import ReactTooltip from 'react-tooltip';
 import { AlgoBorrowDoc, IBookDoc, Identifier } from '@lms/types';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
+import { sendEmail, simpleFormatDate } from '@src/utils';
 
 interface PickedUpModalProps {
   isModalOpen: boolean;
@@ -163,6 +164,30 @@ const PickedUpModal = ({
       const newBorrows = borrows.filter(
         (borrow) => borrow.objectID !== borrowData.objectID
       );
+
+      const docRef = doc(db, 'users', borrowData.userId);
+      const docSnap = await getDoc(docRef);
+      const userData = docSnap.data()!;
+
+      const dueDateEmail = finalDueDateTimestamp?.toDate()!;
+
+      const sendEmailData = await sendEmail({
+        receiver: userData.email,
+        subjectPurpose: 'Book Picked Up',
+        message: `Hello ${userData.givenName} ${
+          userData.surname
+        }, you have picked up ${
+          bookData.title
+        }. Please return it on or before ${simpleFormatDate(
+          dueDateEmail,
+          undefined,
+          true
+        )} to avoid penalty. Thank you.`,
+        messageTitle: 'Book Picked Up',
+      });
+
+      console.log('sendEmailData', sendEmailData);
+
       setBorrows(newBorrows);
       toast.success('Book picked up successfully');
       setIsConfirming(false);

@@ -218,7 +218,7 @@ const History = () => {
           <div
             style={{
               height: `calc(100% - ${
-                historyBooks && historyBooks.length > 0 ? 60 : 0
+                historyBooks && historyBooks.length > 0 ? 50 : 0
               }px)`,
             }}
             className={`custom-scrollbar w-full ${
@@ -330,7 +330,7 @@ const History = () => {
                               </button>
                             </td>
                             <td className='border-cGray-200 border-b bg-white px-5 py-5 text-sm'>
-                              <p className='w-max text-gray-900'>
+                              <p className='line-clamp-2  max-w-[200px] text-gray-900'>
                                 {history.identifiers.accessionNumber}
                               </p>
                             </td>

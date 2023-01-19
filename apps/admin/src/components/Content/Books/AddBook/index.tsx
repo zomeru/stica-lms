@@ -184,6 +184,7 @@ interface AddBookProps {
   setAddBook: React.Dispatch<React.SetStateAction<boolean>>;
   books: AlgoBookDoc[];
   setBooks: React.Dispatch<React.SetStateAction<AlgoBookDoc[]>>;
+  allBooks?: IBookDoc[];
 }
 
 const AddBook = ({
@@ -191,6 +192,7 @@ const AddBook = ({
   setAddBook,
   books,
   setBooks,
+  allBooks,
 }: AddBookProps) => {
   const [handleBookImage, bookFile, bookImage, clearImage] =
     useFileHandler();
@@ -223,10 +225,6 @@ const AddBook = ({
   const [categories] = useCol<CategoryDoc>(
     query(collection(db, 'categories'), orderBy('category', 'asc'))
   );
-
-  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
-
-  console.log('allBooks', allBooks);
 
   const textInputs = [
     {

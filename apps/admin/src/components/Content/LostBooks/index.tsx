@@ -10,13 +10,13 @@ import {
   ITEMS_PER_PAGE,
   lostBooksTableHeaders,
 } from '@src/constants';
-import { AlgoBorrowDoc } from '@lms/types';
+import { AlgoBorrowDoc, IBookDoc } from '@lms/types';
 import { navigateToBook } from '@src/utils';
 import UpdateLostModal from './UpdateLostModal';
 
 const bookSearchQueryName = 'lostBookSearchKey';
 
-const LostBooks = () => {
+const LostBooks = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const lostBookSearchKey = useNextQuery(bookSearchQueryName);
   const router = useRouter();
 
@@ -63,6 +63,7 @@ const LostBooks = () => {
   return (
     <section className='h-full w-full'>
       <UpdateLostModal
+        allBooks={allBooks}
         isModalOpen={!!selectedLostBook}
         setSelectedLostBook={setSelectedLostBook}
         lostBookData={lostBooks.find(

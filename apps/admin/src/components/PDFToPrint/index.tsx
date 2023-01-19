@@ -5,7 +5,7 @@ import { historyTableHeaders } from '@src/constants';
 import { formatDate, simpleFormatDate } from '@src/utils';
 
 interface PDFToPrintProps {
-  books?: AlgoBorrowDoc[];
+  books: AlgoBorrowDoc[];
   setViewPdf: React.Dispatch<React.SetStateAction<boolean>>;
   fromDate?: Date;
   toDate?: Date;
@@ -55,7 +55,7 @@ const PDFToPrint = ({
           Print PDF
         </button>
       </div>
-      <div className="h-full w-full" ref={ref}>
+      <div className='h-full w-full' ref={ref}>
         <div
           className={`text-primary flex items-center space-x-2 ${
             isPrinting && 'mb-[20px]'
