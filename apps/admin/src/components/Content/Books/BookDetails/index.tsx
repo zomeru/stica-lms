@@ -176,13 +176,9 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publisher, setPublisher] = useState('');
-  // const [accessionNumber, setAccessionNumber] = useState('');
-  // const [genreType, setGenreType] = useState('');
-  // const [category, setCategory] = useState<Category>({} as Category);
   const [category, setCategory] = useState('');
   const [genre, setGenre] = useState('');
   const [quantity, setQuantity] = useState(1);
-  // const [ISBNs, setISBNs] = useState<string[]>([]);
   const [identifiers, setIdentifiers] = useState<Identifier[]>([]);
   const [image, setImage] = useState('');
   const [copyright, setCopyright] = useState('');
@@ -199,15 +195,16 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
     query(collection(db, 'categories'), orderBy('category', 'asc'))
   );
 
-  console.log(bookDetails);
+  console.log('asd', bookDetails);
+  console.log('genre', genre);
 
   useEffect(() => {
     const setDetails = () => {
       setTitle(bookDetails.title);
       setAuthor(bookDetails.author);
       setPublisher(bookDetails.publisher);
-      setCategory(bookDetails.category.category);
       setGenre(bookDetails.genre);
+      setCategory(bookDetails.category.category);
       setQuantity(bookDetails.quantity);
       setImage(bookDetails.imageCover.url);
       setIdentifiers(bookDetails.identifiers);
@@ -216,7 +213,7 @@ const BookDetails = ({ bookDetails, books, setBooks }: AddBookProps) => {
     };
 
     if (bookDetails) setDetails();
-  }, [bookDetails, bookId]);
+  }, [bookDetails, bookId, allGenres]);
 
   const textInputs = [
     {
