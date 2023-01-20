@@ -79,7 +79,7 @@ const Home: NextPage = () => {
 
     if (
       [
-        'currently loaned books',
+        'currently issued books',
         'borrow requests',
         'renewal requests',
         'lost books',
@@ -87,7 +87,7 @@ const Home: NextPage = () => {
         'reports',
       ].some((el) => el === page)
     ) {
-      if (page === 'currently loaned books') {
+      if (page === 'currently issued books') {
         routerArg.query.loanedSearchKey = encodeURIComponent(
           searchInputRef.current.value
         );
@@ -137,7 +137,7 @@ const Home: NextPage = () => {
     } else if (page === 'users') {
       setSearchPlaceholder('Search for users');
     } else if (
-      ['borrow', 'loaned', 'renew', 'lost', 'reports', 'damaged'].some(
+      ['borrow', 'issued', 'renew', 'lost', 'reports', 'damaged'].some(
         (p) => page.includes(p)
       )
     ) {
@@ -168,7 +168,7 @@ const Home: NextPage = () => {
         {page === 'walk-in issuance' && (
           <WalkinRequest allBooks={allBooks} />
         )}
-        {page === 'currently loaned books' && (
+        {page === 'currently issued books' && (
           <LoanedBooks allBooks={allBooks} />
         )}
         {page === 'borrow requests' && <BorrowRequest />}

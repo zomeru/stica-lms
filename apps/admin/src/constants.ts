@@ -35,7 +35,7 @@ export const adminSidebarItems = [
     Icon: HiOutlineLibrary,
   },
   {
-    name: 'Currently Loaned Books',
+    name: 'Currently Issued Books',
     Icon: FiBookOpen,
   },
   {
