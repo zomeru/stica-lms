@@ -1,7 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction } from 'react';
 
 type FunctionType = () => void;
-type PaginationReturnType<S> = [S[], number, FunctionType, FunctionType];
+type PaginationReturnType<S> = [
+  S[],
+  number,
+  FunctionType,
+  FunctionType,
+  Dispatch<SetStateAction<number>>
+];
 type Sorter = {
   sortBy: string;
   sortOrder: 'asc' | 'desc';
@@ -13,7 +19,7 @@ type Sorter = {
  * @param itemsPerPage the number of items per page
  * @param sorter {sortBy: string, sortOrder: 'asc' | 'desc'} the sorter object
  * @param customCurrentPage custom current page, if provided, next and prev functions will not work
- * @returns [items, currentPage, next, prev]
+ * @returns [items, currentPage, next, prev, setCurrentPage]
  */
 export const useClientPagination = <T>(
   data: T[],
@@ -73,6 +79,7 @@ export const useClientPagination = <T>(
     currentPage,
     next,
     prev,
+    setCurrentPage,
   ];
 
   return returnArray;
