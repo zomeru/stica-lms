@@ -162,34 +162,36 @@ const History = () => {
                   </div>
                 )}
               </div>
-              <div className='mb-[10px] flex space-x-4'>
-                <div className='flex items-center space-x-2'>
-                  <div className='text-sm'>From</div>
-                  <button
-                    type='button'
-                    className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
-                  >
-                    <DatePicker
-                      className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
-                      selected={fromDate}
-                      placeholderText='Oldest'
-                      onChange={(date: Date) => setFromDate(date)}
-                    />
-                  </button>
-                </div>
-                <div className='flex items-center space-x-2'>
-                  <div className='text-sm'>To</div>
-                  <button
-                    type='button'
-                    className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
-                  >
-                    <DatePicker
-                      className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
-                      selected={toDate}
-                      placeholderText='Latest'
-                      onChange={(date: Date) => setToDate(date)}
-                    />
-                  </button>
+              <div className='mb-[10px] flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4'>
+                <div className='flex space-x-4'>
+                  <div className='flex items-center space-x-2'>
+                    <div className='text-sm'>From</div>
+                    <button
+                      type='button'
+                      className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
+                    >
+                      <DatePicker
+                        className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
+                        selected={fromDate}
+                        placeholderText='Oldest'
+                        onChange={(date: Date) => setFromDate(date)}
+                      />
+                    </button>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <div className='text-sm'>To</div>
+                    <button
+                      type='button'
+                      className='bg-primary rounded-md text-sm text-white duration-200 hover:bg-sky-800'
+                    >
+                      <DatePicker
+                        className='bg-primary max-w-[100px] rounded-md px-3 py-1 text-white hover:bg-sky-800'
+                        selected={toDate}
+                        placeholderText='Latest'
+                        onChange={(date: Date) => setToDate(date)}
+                      />
+                    </button>
+                  </div>
                 </div>
                 <div className='flex space-x-2'>
                   <button
@@ -216,15 +218,15 @@ const History = () => {
             </div>
           )}
           <div
-            style={{
-              height: `calc(100% - ${
-                historyBooks && historyBooks.length > 0 ? 50 : 0
-              }px)`,
-            }}
+            // style={{
+            //   height: `calc(100% - ${
+            //     historyBooks && historyBooks.length > 0 ? 50 : 0
+            //   }px)`,
+            // }}
             className={`custom-scrollbar w-full ${
               historyBooks &&
               historyBooks.length > 0 &&
-              'overflow-y-scroll'
+              'h-[calc(calc(100%-85px))] overflow-x-auto overflow-y-scroll sm:h-[calc(100%-50px)]'
             }`}
           >
             {!historyBooksLoading &&

@@ -212,8 +212,8 @@ const Messages = () => {
             }
           />
         ) : (
-          <div className='flex h-full w-[calc(100%-300px)] items-center justify-center text-xl text-neutral-600 lg:w-[calc(100%-400px)]'>
-            Select a char or start a new conversation
+          <div className='flex h-full w-[calc(100%-300px)] items-center justify-center text-center text-xl text-neutral-600 lg:w-[calc(100%-400px)]'>
+            Select a chat or start a new conversation
           </div>
         )}
       </>

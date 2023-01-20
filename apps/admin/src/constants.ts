@@ -30,7 +30,7 @@ export const adminSidebarItems = [
     Icon: MdOutlineNotificationsNone,
   }, */
   {
-    name: 'Walk-in Request',
+    name: 'Walk-in Issuance',
     Icon: HiOutlineLibrary,
   },
   {

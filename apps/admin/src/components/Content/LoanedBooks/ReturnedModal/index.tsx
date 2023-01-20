@@ -303,7 +303,7 @@ const ReturnedModal = ({
                   className='w-[70px] border border-neutral-400 outline-none'
                   type='number'
                   min={0}
-                  value={penalty}
+                  value={penalty || borrowData?.penalty}
                   onChange={(e) => {
                     setPenalty(Number(e.target.value));
                   }}

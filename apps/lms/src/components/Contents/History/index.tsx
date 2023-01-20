@@ -1,25 +1,26 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import Image from 'next/image';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+
 import { formatDate, navigateToBook } from '@src/utils';
 import { historyTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
-import { useCol , useClientPagination } from '@lms/ui';
-import { IBorrowDoc } from '@lms/types';
-import { db } from '@lms/db';
-import { useAuth } from '@src/contexts';
+import { useClientPagination } from '@lms/ui';
+import { BorrowProps } from '../CurrentlyIssuedBooks';
 
-const History = () => {
-  const { user } = useAuth();
+const History = ({
+  borrows: borrowHistory,
+  borrowLoading: historyLoading,
+}: BorrowProps) => {
+  // const { user } = useAuth();
 
-  const [borrowHistory, historyLoading] = useCol<IBorrowDoc>(
-    query(
-      collection(db, 'borrows'),
-      where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Cancelled', 'Lost', 'Returned', 'Damaged']),
-      orderBy('updatedAt', 'desc')
-    )
-  );
+  // const [borrowHistory, historyLoading] = useCol<IBorrowDoc>(
+  //   query(
+  //     collection(db, 'borrows'),
+  //     where('userId', '==', user?.id || ''),
+  //     where('status', 'in', ['Cancelled', 'Lost', 'Returned', 'Damaged']),
+  //     orderBy('updatedAt', 'desc')
+  //   )
+  // );
 
   const [currentBorrowHistory, currentPage, next, prev] =
     useClientPagination(borrowHistory || [], ITEMS_PER_PAGE);

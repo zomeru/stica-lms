@@ -5,33 +5,38 @@ import {
   addDoc,
   collection,
   doc,
-  orderBy,
-  query,
   serverTimestamp,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import nProgress from 'nprogress';
 
 import { formatDate, navigateToBook } from '@src/utils';
 import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
-import { useCol , useClientPagination } from '@lms/ui';
+import { useClientPagination } from '@lms/ui';
 import { IBorrowDoc } from '@lms/types';
 import { useAuth } from '@src/contexts';
 import { db } from '@lms/db';
 
-const CurrentlyIssuedBooks = () => {
+export interface BorrowProps {
+  borrows: IBorrowDoc[];
+  borrowLoading: boolean;
+}
+
+const CurrentlyIssuedBooks = ({
+  borrows: issuedBooks,
+  borrowLoading: issueLoading,
+}: BorrowProps) => {
   const { user } = useAuth();
 
-  const [issuedBooks, issueLoading] = useCol<IBorrowDoc>(
-    query(
-      collection(db, 'borrows'),
-      where('userId', '==', user?.id || ''),
-      where('status', '==', 'Issued'),
-      orderBy('updatedAt', 'desc')
-    )
-  );
+  // const [issuedBooks, issueLoading] = useCol<IBorrowDoc>(
+  //   query(
+  //     collection(db, 'borrows'),
+  //     where('userId', '==', user?.id || ''),
+  //     where('status', '==', 'Issued'),
+  //     orderBy('updatedAt', 'desc')
+  //   )
+  // );
 
   const [currentIssuedBooks, currentPage, next, prev] =
     useClientPagination(issuedBooks || [], ITEMS_PER_PAGE);

@@ -1,26 +1,27 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import { collection, orderBy, query, where } from 'firebase/firestore';
 import Image from 'next/image';
 
 import { navigateToBook } from '@src/utils';
 import { ITEMS_PER_PAGE, lostBooksTableHeaders } from '@src/constants';
-import { useCol , useClientPagination } from '@lms/ui';
-import { IBorrowDoc } from '@lms/types';
-import { db } from '@lms/db';
-import { useAuth } from '@src/contexts';
+import { useClientPagination } from '@lms/ui';
 
-const LostBooks = () => {
-  const { user } = useAuth();
+import { BorrowProps } from '../CurrentlyIssuedBooks';
 
-  const [lostBorrows, borrowLoading] = useCol<IBorrowDoc>(
-    query(
-      collection(db, 'borrows'),
-      where('userId', '==', user?.id || ''),
-      where('status', '==', 'Lost'),
-      orderBy('updatedAt', 'desc')
-    )
-  );
+const LostBooks = ({
+  borrows: lostBorrows,
+  borrowLoading,
+}: BorrowProps) => {
+  // const { user } = useAuth();
+
+  // const [lostBorrows, borrowLoading] = useCol<IBorrowDoc>(
+  //   query(
+  //     collection(db, 'borrows'),
+  //     where('userId', '==', user?.id || ''),
+  //     where('status', '==', 'Lost'),
+  //     orderBy('updatedAt', 'desc')
+  //   )
+  // );
 
   const [currentLostBooks, currentPage, next, prev] = useClientPagination(
     lostBorrows || [],

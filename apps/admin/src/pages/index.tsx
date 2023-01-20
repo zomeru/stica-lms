@@ -21,7 +21,7 @@ import {
   /* SendNotification, */
 } from '@src/components/Content';
 import { IBookDoc } from '@lms/types';
-import { collection, query } from 'firebase/firestore';
+import { collection, orderBy, query } from 'firebase/firestore';
 import { db } from '@lms/db';
 
 const Home: NextPage = () => {
@@ -44,7 +44,9 @@ const Home: NextPage = () => {
     login(username, password);
   };
 
-  const [allBooks] = useCol<IBookDoc>(query(collection(db, 'books')));
+  const [allBooks] = useCol<IBookDoc>(
+    query(collection(db, 'books'), orderBy('title', 'asc'))
+  );
 
   const handleAdminSearch = () => {
     if (!searchInputRef.current) return;
@@ -162,7 +164,9 @@ const Home: NextPage = () => {
         {page === 'users' && <Users />}
         {/* {page === 'send notifications' && <SendNotification/>} */}
         {page === 'messages' && <Messages />}
-        {page === 'walk-in request' && <WalkinRequest />}
+        {page === 'walk-in issuance' && (
+          <WalkinRequest allBooks={allBooks} />
+        )}
         {page === 'currently loaned books' && (
           <LoanedBooks allBooks={allBooks} />
         )}

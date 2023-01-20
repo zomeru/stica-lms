@@ -186,7 +186,7 @@ const PickedUpModal = ({
         messageTitle: 'Book Picked Up',
       });
 
-      console.log('sendEmailData', sendEmailData);
+      console.log('sendEmailData pickup', sendEmailData);
 
       setBorrows(newBorrows);
       toast.success('Book picked up successfully');
