@@ -14,7 +14,7 @@ import {
 import Select from 'react-select';
 import toast from 'react-hot-toast';
 import nProgress from 'nprogress';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 // @ts-ignore
 import DateTimePicker from 'react-datetime-picker/dist/entry.nostyle';
 import 'react-calendar/dist/Calendar.css';
@@ -26,9 +26,10 @@ import { useCol } from '@lms/ui';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
 import { AiOutlineClose } from 'react-icons/ai';
+import { DAYS } from '@src/utils';
 
 const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
-  const router = useRouter();
+  // const router = useRouter();
 
   const [selectedBook, setSelectedBook] = useState<IBookDoc | null>(null);
   const [selectedUser, setSelectedUser] = useState<IUserDoc | null>(null);
@@ -155,18 +156,18 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
       setSelectedIdentifier(null);
       toast.success('Book issued successfully.');
 
-      setTimeout(() => {
-        router.push(
-          {
-            pathname: '/',
-            query: {
-              page: encodeURIComponent('currently loaned books'),
-            },
-          },
-          undefined,
-          { shallow: true }
-        );
-      }, 300);
+      // setTimeout(() => {
+      //   router.push(
+      //     {
+      //       pathname: '/',
+      //       query: {
+      //         page: encodeURIComponent('currently loaned books'),
+      //       },
+      //     },
+      //     undefined,
+      //     { shallow: true }
+      //   );
+      // }, 300);
     } catch (err) {
       console.log('err', err);
       toast.error('Something went wrong! Please try again.');
@@ -177,16 +178,16 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
   };
 
   return (
-    <section className='flex h-full w-full flex-col items-center lg:items-start'>
+    <section className='custom-scrollbar flex h-full w-full flex-col items-center overflow-y-auto lg:items-start'>
       <div className='text-primary mb-3 text-xl font-bold'>
         Walk-in Book Issuance
       </div>
 
       <form
-        className='flex flex-col space-y-2'
+        className='flex flex-col space-y-4 sm:space-y-2'
         onSubmit={handleWalkinRequest}
       >
-        <div className='flex items-center space-x-2'>
+        <div className='flex flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
           {/* <div>Student: </div> */}
           <Select
             className='min-w-[350px]'
@@ -208,7 +209,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
           />{' '}
           <div className='text-neutral-600'> - Student</div>
         </div>
-        <div className='flex items-center space-x-2'>
+        <div className='flex flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
           {/* <div>Book: </div> */}
           <Select
             placeholder='Select book'
@@ -231,7 +232,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
           />
           <div className='text-neutral-600'> - Book</div>
         </div>
-        <div className='flex items-center space-x-2'>
+        <div className='flex flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
           {/* <div>Accession number: </div> */}
           <Select
             isDisabled={!selectedBook}
@@ -265,7 +266,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
           <div className='text-neutral-600'> - Accession no.</div>
         </div>
         {selectedIdentifier && (
-          <div className='flex cursor-not-allowed items-center space-x-2'>
+          <div className='flex cursor-not-allowed flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
             {/* <div>Accession number: </div> */}
             <Select
               isDisabled
@@ -277,7 +278,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
         )}
         {selectedBook && (
           <>
-            <div className='flex cursor-not-allowed items-center space-x-2'>
+            <div className='flex cursor-not-allowed flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
               {/* <div>Accession number: </div> */}
               <Select
                 isDisabled
@@ -286,7 +287,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
               />{' '}
               <div className='text-neutral-600'> - Author</div>
             </div>{' '}
-            <div className='flex cursor-not-allowed items-center space-x-2'>
+            <div className='flex cursor-not-allowed flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
               {/* <div>Accession number: </div> */}
               <Select
                 isDisabled
@@ -295,7 +296,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
               />{' '}
               <div className='text-neutral-600'> - Publisher</div>
             </div>{' '}
-            <div className='flex cursor-not-allowed items-center space-x-2'>
+            <div className='flex cursor-not-allowed flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
               {/* <div>Accession number: </div> */}
               <Select
                 isDisabled
@@ -304,7 +305,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
               />{' '}
               <div className='text-neutral-600'> - Category</div>
             </div>{' '}
-            <div className='flex cursor-not-allowed items-center space-x-2'>
+            <div className='flex cursor-not-allowed flex-col-reverse items-start space-x-2 sm:flex-row sm:items-center'>
               {/* <div>Accession number: </div> */}
               <Select
                 isDisabled
@@ -318,7 +319,7 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
         {!showCustomDate ? (
           <button
             type='button'
-            className="border-primaryLight text-blackText mt-3 place-self-start rounded-md border bg-neutral-200 px-3 py-2"
+            className='border-primaryLight text-blackText mt-3 place-self-start rounded-md border bg-neutral-200 px-3 py-2'
             onClick={() => {
               setShowCustomDate(true);
               // setCustomDate(new Date());
@@ -327,11 +328,19 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
             Add custom issue date
           </button>
         ) : (
-          <div className='flex w-fit items-center space-x-2'>
+          <div className='flex-col-revers flex w-fit items-start space-x-2 sm:flex-row sm:items-center'>
             <DateTimePicker
               className=''
               value={customDate}
-              onChange={setCustomDate}
+              onChange={(date: Date) => {
+                const day = DAYS[date.getDay()];
+                if (day === 'Sunday' || day === 'Saturday') {
+                  toast.error('Cannot issue book on weekends');
+                  setCustomDate(undefined);
+                  return;
+                }
+                setCustomDate(date);
+              }}
               maxDate={new Date()}
               monthPlaceholder='mm'
               dayPlaceholder='dd'
