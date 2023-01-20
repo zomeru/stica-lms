@@ -11,6 +11,7 @@ import { RiFileDamageFill } from 'react-icons/ri';
 import { TbReport } from 'react-icons/tb';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
 import { HiOutlineLibrary } from 'react-icons/hi';
+import { BsArchive } from 'react-icons/bs';
 
 export const adminSidebarItems = [
   {
@@ -52,6 +53,10 @@ export const adminSidebarItems = [
   {
     name: 'Damaged Books',
     Icon: RiFileDamageFill,
+  },
+  {
+    name: 'Archived Books',
+    Icon: BsArchive,
   },
   {
     name: 'Reports',

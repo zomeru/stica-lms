@@ -1,22 +1,18 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { AlgoBookDoc, IBookDoc } from '@lms/types';
+import { AlgoBookDoc } from '@lms/types';
 import { ITEMS_PER_PAGE, SORT_ITEMS } from '@src/constants';
 
 import { useAlgoData, useClientPagination, useNextQuery } from '@lms/ui';
-import AddBook from './AddBook';
-import BookDetails from './BookDetails';
+
 import BookList from './BookList';
 
 export type OrderType = 'asc' | 'desc';
 
 const bookSearchQueryName = 'bookSearchKey';
 
-const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
+const Archived = () => {
   const bookSearchKey = useNextQuery(bookSearchQueryName);
-  const bookId = useNextQuery('bookId');
-
-  const [addBook, setAddBook] = useState(false);
 
   const [sortBy, setSortBy] = useState('updatedAt');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');
@@ -25,11 +21,7 @@ const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const [algoBooks, setAlgoBooks, _, bookLoading] =
     useAlgoData<AlgoBookDoc>('books', bookSearchQueryName, bookSearchKey);
 
-  console.log('algoBooks', algoBooks.length);
-  console.log(
-    'algoBooks ar',
-    algoBooks.filter((book) => book.isArchive !== true).length
-  );
+  console.log('algoBooks archvied', algoBooks);
 
   useEffect(() => {
     const orderIndex = SORT_ITEMS.findIndex(
@@ -53,17 +45,13 @@ const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   }, [sortBy]);
 
   const [currentBooks, currentPage, onNext, onPrev] = useClientPagination(
-    algoBooks.filter((book) => book.isArchive !== true),
+    algoBooks.filter((book) => book.isArchive === true),
     ITEMS_PER_PAGE,
     {
       sortBy,
       sortOrder,
     }
   );
-
-  const selectedBookData = useMemo(() => {
-    return algoBooks.find((book) => book.objectID === bookId);
-  }, [algoBooks, bookId]);
 
   return (
     <div className='relative h-full w-full overflow-hidden'>
@@ -72,35 +60,17 @@ const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
         onNext={onNext}
         onPrev={onPrev}
         currentPage={currentPage}
-        books={algoBooks.filter((book) => book.isArchive !== true)}
+        books={algoBooks.filter((book) => book.isArchive === true)}
         setAlgoBooks={setAlgoBooks}
         currentBooks={currentBooks}
         bookLoading={bookLoading}
-        addBook={addBook}
-        setAddBook={setAddBook}
         setSortBy={setSortBy}
         sortBy={sortBy}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
-
-      {/* Book details */}
-      <BookDetails
-        bookDetails={selectedBookData!}
-        books={algoBooks.filter((book) => book.isArchive !== true)}
-        setBooks={setAlgoBooks}
-      />
-
-      {/* Add book section */}
-      <AddBook
-        addBook={addBook}
-        setAddBook={setAddBook}
-        books={algoBooks.filter((book) => book.isArchive !== true)}
-        setBooks={setAlgoBooks}
-        allBooks={allBooks}
-      />
     </div>
   );
 };
 
-export default Books;
+export default Archived;
