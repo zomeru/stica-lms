@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import { collection, orderBy, query, where } from 'firebase/firestore';
 import Image from 'next/image';
 
 import { formatDate, navigateToBook } from '@src/utils';
@@ -8,22 +7,24 @@ import {
   pendingRequestTableHeaders,
   ITEMS_PER_PAGE,
 } from '@src/constants';
-import { IBorrowDoc } from '@lms/types';
-import { db } from '@lms/db';
-import { useAuth } from '@src/contexts';
-import { cancelBorrowRequest, useClientPagination, useCol } from '@lms/ui';
 
-const PendingRequests = () => {
-  const { user } = useAuth();
+import { cancelBorrowRequest, useClientPagination } from '@lms/ui';
+import { BorrowProps } from '../CurrentlyIssuedBooks';
 
-  const [userBorrows, borrowLoading] = useCol<IBorrowDoc>(
-    query(
-      collection(db, 'borrows'),
-      where('userId', '==', user?.id || ''),
-      where('status', 'in', ['Pending', 'Approved']),
-      orderBy('updatedAt', 'desc')
-    )
-  );
+const PendingRequests = ({
+  borrows: userBorrows,
+  borrowLoading,
+}: BorrowProps) => {
+  // const { user } = useAuth();
+
+  // const [userBorrows, borrowLoading] = useCol<IBorrowDoc>(
+  //   query(
+  //     collection(db, 'borrows'),
+  //     where('userId', '==', user?.id || ''),
+  //     where('status', 'in', ['Pending', 'Approved']),
+  //     orderBy('updatedAt', 'desc')
+  //   )
+  // );
 
   const [currentBorrowedBooks, currentPage, next, prev] =
     useClientPagination(userBorrows || [], ITEMS_PER_PAGE);

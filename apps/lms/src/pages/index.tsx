@@ -2,7 +2,13 @@ import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { Layout, NotFound, useNextQuery, LoaderModal } from '@lms/ui';
+import {
+  Layout,
+  NotFound,
+  useNextQuery,
+  LoaderModal,
+  useCol,
+} from '@lms/ui';
 import {
   loggedInSidebarItems,
   loggedOutSidebarItems,
@@ -26,6 +32,9 @@ import { useAuth } from '@src/contexts';
 import { AnimatePresence, motion } from 'framer-motion';
 import IntroLoader from '@src/components/IntroLoader';
 import LostBooks from '@src/components/Contents/LostBooks';
+import { IBorrowDoc } from '@lms/types';
+import { collection, orderBy, query, where } from 'firebase/firestore';
+import { db } from '@lms/db';
 
 const sidebarItems = loggedInSidebarItems.map((item) =>
   item.name.toLowerCase()
@@ -37,6 +46,19 @@ const Home: NextPage = () => {
   const router = useRouter();
   const { user, login, logout, loading } = useAuth();
   const [isLoading, setIsLoading] = React.useState(true);
+
+  console.log('user', user);
+
+  const [allBorrows, borrowLoading] = useCol<IBorrowDoc>(
+    query(
+      collection(db, 'borrows'),
+      where('userId', '==', user?.id || ''),
+      orderBy('updatedAt', 'desc')
+    )
+  );
+
+  console.log('allBorrows', allBorrows);
+  // console.log('borrowLoading', borrowLoading);
 
   useEffect(() => {
     const authenticatedPages = [
@@ -95,13 +117,46 @@ const Home: NextPage = () => {
         {page === 'search' && !router.query.bookId && <Search />}
         {!!user && page === 'message admin' && <Messages />}
         {!!user && page === 'currently issued books' && (
-          <CurrentlyIssuedBooks />
+          <CurrentlyIssuedBooks
+            borrows={(allBorrows || []).filter(
+              (borrow) => borrow.status === 'Issued'
+            )}
+            borrowLoading={borrowLoading}
+          />
         )}
-        {!!user && page === 'borrow requests' && <PendingRequests />}
-        {!!user && page === 'history' && <History />}
+        {!!user && page === 'borrow requests' && (
+          <PendingRequests
+            borrows={(allBorrows || []).filter(
+              (borrow) => borrow.status === 'Pending'
+            )}
+            borrowLoading={borrowLoading}
+          />
+        )}
+        {!!user && page === 'history' && (
+          <History
+            borrows={(allBorrows || []).filter(
+              (borrow) => borrow.status !== 'Issued'
+            )}
+            borrowLoading={borrowLoading}
+          />
+        )}
         {!!user && page === 'my likes' && <LikedBooks />}
-        {!!user && page === 'lost books' && <LostBooks />}
-        {!!user && page === 'damaged books' && <DamagedBooks />}
+        {!!user && page === 'lost books' && (
+          <LostBooks
+            borrows={(allBorrows || []).filter(
+              (borrow) => borrow.status === 'Lost'
+            )}
+            borrowLoading={borrowLoading}
+          />
+        )}
+        {!!user && page === 'damaged books' && (
+          <DamagedBooks
+            borrows={(allBorrows || []).filter(
+              (borrow) => borrow.status === 'Damaged'
+            )}
+            borrowLoading={borrowLoading}
+          />
+        )}
         {page === 'contact' && <Contact />}
         {page === 'faq' && <FAQ />}
         {page === 'about' && <About />}
