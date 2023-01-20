@@ -91,11 +91,28 @@ const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
       const borrowQuerySnap = await getDocs(userBorrowQuery);
 
       if (!borrowQuerySnap.empty && borrowQuerySnap.size >= 5) {
-        toast.error('Only maximun of 5 books can be borrowed at once.');
+        toast.error('Only maximum of 5 books can be borrowed at once.');
         nProgress.done();
         setIssuing(false);
         return;
       }
+
+      let issueFound = false;
+
+      // check if book is already borrowed
+      borrowQuerySnap.forEach((borrowDoc) => {
+        const borrowData = borrowDoc.data();
+        if (borrowData.bookId === selectedBook.id) {
+          toast.error(
+            `${selectedUser.givenName} has already borrowed this book`
+          );
+          nProgress.done();
+          setIssuing(false);
+          issueFound = true;
+        }
+      });
+
+      if (issueFound) return;
 
       const bookRef = doc(db, 'books', selectedBook.id);
 
