@@ -16,7 +16,7 @@ import nProgress from 'nprogress';
 
 import { formatDate, navigateToBook } from '@src/utils';
 import { issuedBooksTableHeaders, ITEMS_PER_PAGE } from '@src/constants';
-import { useCol , useClientPagination } from '@lms/ui';
+import { useCol, useClientPagination } from '@lms/ui';
 import { IBorrowDoc } from '@lms/types';
 import { useAuth } from '@src/contexts';
 import { db } from '@lms/db';

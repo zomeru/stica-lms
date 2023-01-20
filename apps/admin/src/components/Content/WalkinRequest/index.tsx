@@ -15,13 +15,19 @@ import Select from 'react-select';
 import toast from 'react-hot-toast';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
+// @ts-ignore
+import DateTimePicker from 'react-datetime-picker/dist/entry.nostyle';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
+import 'react-datetime-picker/dist/DateTimePicker.css';
 
 import { AlgoBorrowDoc, IBookDoc, Identifier, IUserDoc } from '@lms/types';
 import { useCol } from '@lms/ui';
 import { db } from '@lms/db';
 import { processHoliday } from '@src/utils/processHoliday';
+import { AiOutlineClose } from 'react-icons/ai';
 
-const WalkinRequest = () => {
+const WalkinRequest = ({ allBooks: books }: { allBooks?: IBookDoc[] }) => {
   const router = useRouter();
 
   const [selectedBook, setSelectedBook] = useState<IBookDoc | null>(null);
@@ -29,12 +35,16 @@ const WalkinRequest = () => {
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<Identifier | null>(null);
   const [issuing, setIssuing] = useState(false);
+  const [customDate, setCustomDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [showCustomDate, setShowCustomDate] = useState(false);
+
+  console.log('customDate', customDate);
+  console.log('books', books);
 
   let acnRef = useRef();
 
-  const [books] = useCol<IBookDoc>(
-    query(collection(db, 'books'), orderBy('title', 'asc'))
-  );
   const [users] = useCol<IUserDoc>(
     query(collection(db, 'users'), orderBy('displayName', 'asc'))
   );
@@ -49,6 +59,11 @@ const WalkinRequest = () => {
 
     if (!selectedBook || !selectedUser || !selectedIdentifier) {
       toast.error('All fields are required.');
+      return;
+    }
+
+    if (showCustomDate && !customDate) {
+      toast.error('Please select or remove custom date.');
       return;
     }
 
@@ -164,7 +179,7 @@ const WalkinRequest = () => {
   return (
     <section className='flex h-full w-full flex-col items-center lg:items-start'>
       <div className='text-primary mb-3 text-xl font-bold'>
-        Add Walk-in Book Request
+        Walk-in Book Issuance
       </div>
 
       <form
@@ -300,6 +315,44 @@ const WalkinRequest = () => {
             </div>
           </>
         )}
+        {!showCustomDate ? (
+          <button
+            type='button'
+            className="border-primaryLight text-blackText mt-3 place-self-start rounded-md border bg-neutral-200 px-3 py-2"
+            onClick={() => {
+              setShowCustomDate(true);
+              // setCustomDate(new Date());
+            }}
+          >
+            Add custom issue date
+          </button>
+        ) : (
+          <div className='flex w-fit items-center space-x-2'>
+            <DateTimePicker
+              className=''
+              value={customDate}
+              onChange={setCustomDate}
+              maxDate={new Date()}
+              monthPlaceholder='mm'
+              dayPlaceholder='dd'
+              yearPlaceholder='yyyy'
+              hourPlaceholder='hh'
+              minutePlaceholder='mm'
+            />
+            <button
+              type='button'
+              className='flex items-center text-red-600'
+              onClick={() => {
+                setShowCustomDate(false);
+                setCustomDate(undefined);
+              }}
+            >
+              <AiOutlineClose className='h-[30px] w-[30px]' />
+              <div className='text-xs'>Remove custom date</div>
+            </button>
+          </div>
+        )}
+
         <button
           disabled={issuing}
           type='submit'

@@ -25,6 +25,8 @@ const Books = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
   const [algoBooks, setAlgoBooks, _, bookLoading] =
     useAlgoData<AlgoBookDoc>('books', bookSearchQueryName, bookSearchKey);
 
+  console.log('algoBooks', algoBooks);
+
   useEffect(() => {
     const orderIndex = SORT_ITEMS.findIndex(
       (el) => el.sort.field === sortBy

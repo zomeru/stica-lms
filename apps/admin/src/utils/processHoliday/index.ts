@@ -4,7 +4,8 @@ import { AlgoBorrowDoc } from '@lms/types';
 import { addDays, DAYS, simpleFormatDate } from '../functions';
 
 export const processHoliday = async (
-  borrow: AlgoBorrowDoc
+  borrow: AlgoBorrowDoc,
+  customDate?: Date
 ): Promise<Timestamp | undefined> => {
   let returnData: Timestamp | undefined;
 
@@ -36,7 +37,7 @@ export const processHoliday = async (
     const timeData = await timeRes.json();
 
     if (timeData) {
-      const date = new Date(timeData.datetime);
+      const date = new Date(customDate ?? timeData.datetime);
 
       const daysToAddToDueDate = borrow?.category === 'Fiction' ? 7 : 3;
 
