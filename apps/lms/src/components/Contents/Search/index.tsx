@@ -25,11 +25,19 @@ const Search = () => {
 
   const { width } = useWindowDimensions();
 
-  const [books] = useAlgoData<AlgoBookDoc>(
+  const [_books] = useAlgoData<AlgoBookDoc>(
     'books',
     bookSearchQueryName,
     searchKeyword
   );
+
+  const books = useMemo(() => {
+    if (_books && _books.length > 0) {
+      return _books.filter((book) => book.isArchive !== true);
+    }
+
+    return [];
+  }, [_books]);
 
   const [sortBy, setSortBy] = useState('views');
   const [sortOrder, setSortOrder] = useState<OrderType>('desc');

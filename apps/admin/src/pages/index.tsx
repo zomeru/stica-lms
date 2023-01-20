@@ -18,6 +18,7 @@ import {
   History,
   Messages,
   WalkinRequest,
+  Archived,
   /* SendNotification, */
 } from '@src/components/Content';
 import { IBookDoc } from '@lms/types';
@@ -174,6 +175,7 @@ const Home: NextPage = () => {
         {page === 'renewal requests' && <RenewalRequest />}
         {page === 'lost books' && <LostBooks allBooks={allBooks} />}
         {page === 'damaged books' && <DamagedBooks allBooks={allBooks} />}
+        {page === 'archived books' && <Archived allBooks={allBooks} />}
         {page === 'reports' && <History />}
       </>
     );

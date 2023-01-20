@@ -9,3 +9,4 @@ export { default as History } from './History';
 export { default as Messages } from './Messages';
 export { default as SendNotification } from './SendNotification';
 export { default as WalkinRequest } from './WalkinRequest';
+export { default as Archived } from './Archived';

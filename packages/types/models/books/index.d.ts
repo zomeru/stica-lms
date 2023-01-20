@@ -36,6 +36,7 @@ export interface IBooks {
   totalBorrow: number;
   createdAt: any;
   updatedAt: any;
+  isArchive?: boolean;
   /* isbns: ISBNType[]; */
   identifiers: Identifier[];
 }

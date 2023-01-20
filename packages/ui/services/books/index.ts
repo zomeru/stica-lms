@@ -28,6 +28,11 @@ export const borrowBook = async (
     return;
   }
 
+  if (book.isArchive) {
+    toast.error('This book is archived.');
+    return;
+  }
+
   if (!book.category.canBeBorrowed) {
     toast.error('This book cannot be borrowed.');
     return;
