@@ -107,7 +107,7 @@ export const FAQS: IFAQs[] = [
     question: 'How do I borrow a book?',
     answer: [
       {
-        text: 'You can borrow a book by clicking on the "Borrow" button on the book card or book details page.',
+        text: 'You can borrow a book by clicking on the "Borrow" button on the book card or book details page. Then you need to go to the library to pick up the book.',
       },
       {
         text: 'You can also borrow a book by directly going to the school library and borrowing it from there.',
@@ -164,7 +164,7 @@ export const FAQS: IFAQs[] = [
     question: 'How many books can I borrow at a time?',
     answer: [
       {
-        text: 'TBD',
+        text: 'You can borrow up to 5 books at a time.',
       },
     ],
   },
