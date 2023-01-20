@@ -165,7 +165,7 @@ const LoanedBooks = ({ allBooks }: { allBooks?: IBookDoc[] }) => {
               <h1 className='text-cGray-300 text-center text-2xl'>
                 {loanedSearchKey
                   ? 'No results found'
-                  : 'There is currently no loaned book.'}
+                  : 'There is currently no issued book.'}
               </h1>
               <button
                 type='button'
