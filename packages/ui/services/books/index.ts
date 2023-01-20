@@ -38,14 +38,6 @@ export const borrowBook = async (
     return;
   }
 
-  // const availableBook = book.identifiers.find(
-  //   (el) => el.status === 'Available'
-  // );
-
-  // if (book.available === 0 || !availableBook) {
-  //   toast.error('No available books, please try again later.');
-  //   return;
-  // }
   try {
     setLoading(true);
     nProgress.configure({
@@ -76,6 +68,20 @@ export const borrowBook = async (
 
       if (bookData.available === 0) {
         toast.error('No available books, please try again later.');
+        setLoading(false);
+        nProgress.done();
+        return;
+      }
+
+      if (bookData.isArchive) {
+        toast.error('This book is archived.');
+        setLoading(false);
+        nProgress.done();
+        return;
+      }
+
+      if (!bookData.category.canBeBorrowed) {
+        toast.error('This book cannot be borrowed.');
         setLoading(false);
         nProgress.done();
         return;
