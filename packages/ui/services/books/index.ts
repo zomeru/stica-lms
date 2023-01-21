@@ -45,6 +45,23 @@ export const borrowBook = async (
     });
     nProgress.start();
 
+    const userRef = doc(db, 'users', user.id);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+      if (userSnap.data()?.terminated) {
+        toast.error('Your account is terminated.');
+        setLoading(false);
+        nProgress.done();
+        return;
+      }
+    } else {
+      toast.error('User not found.');
+      setLoading(false);
+      nProgress.done();
+      return;
+    }
+
     const userBorrowQuery = query(
       collection(db, 'borrows'),
       where('status', '==', 'Issued'),

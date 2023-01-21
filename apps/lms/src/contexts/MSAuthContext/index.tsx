@@ -30,6 +30,7 @@ import {
 } from 'firebase/auth';
 import { blobToFile } from '@src/utils';
 import { useUploadImage } from '@lms/ui/hooks';
+import { toast } from 'react-hot-toast';
 
 export interface MSAuthContextProps {
   user: IUserDoc | null;
@@ -72,7 +73,15 @@ export const MSAuthProvider: FC<MSAuthProviderProps> = ({ children }) => {
             id: querySnapshot.docs[0].id,
             ...querySnapshot.docs[0].data(),
           } as IUserDoc;
-          setUser(userDoc);
+
+          if (userDoc.terminated) {
+            toast.error('Your account has been terminated.');
+            signOut(auth).then(() => {
+              setUser(null);
+            });
+          } else {
+            setUser(userDoc);
+          }
         }
       } else {
         setUser(null);
