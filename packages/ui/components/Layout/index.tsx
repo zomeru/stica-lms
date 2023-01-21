@@ -52,6 +52,7 @@ interface LayoutProps {
   adminInput?: React.ReactNode;
   showNotification?: boolean;
   userId?: string;
+  disabledSidebarItems?: string[];
 }
 
 export const Layout = ({
@@ -70,6 +71,7 @@ export const Layout = ({
   adminInput,
   showNotification,
   userId,
+  disabledSidebarItems = [],
 }: LayoutProps) => {
   const router = useRouter();
   const timeAgo = new TimeAgo('en-US');
@@ -327,6 +329,9 @@ export const Layout = ({
             <div className='custom-scrollbar flex flex-col items-start overflow-y-auto'>
               {sidebarItems &&
                 sidebarItems.map(({ name, Icon }) => {
+                  if (disabledSidebarItems.includes(name.toLowerCase()))
+                    return null;
+
                   const isHome =
                     router.pathname === '/' &&
                     (router.asPath.includes('page=home') ||

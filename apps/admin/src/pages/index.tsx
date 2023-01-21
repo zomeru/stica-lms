@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState, useRef } from 'react';
+import { FormEvent, useEffect, useState, useRef, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -19,6 +19,8 @@ import {
   Messages,
   WalkinRequest,
   Archived,
+  Masters,
+  Terminated,
   /* SendNotification, */
 } from '@src/components/Content';
 import { IBookDoc } from '@lms/types';
@@ -26,11 +28,13 @@ import { collection, orderBy, query } from 'firebase/firestore';
 import { db } from '@lms/db';
 
 const Home: NextPage = () => {
-  const { user, loading } = useUser();
+  const { user, loading, loginWithO356 } = useUser();
   const { login, error, logout } = useAuth();
   const { sidebarOpen, showHideSidebar } = useSidebar();
   const router = useRouter();
   const page = useNextQuery('page');
+
+  console.log('user', user);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -161,39 +165,140 @@ const Home: NextPage = () => {
         {(router.asPath === '/' ||
           router.asPath.includes('/?page=books') ||
           page === 'books' ||
-          !page) && <Books allBooks={allBooks} />}
-        {page === 'users' && <Users />}
+          !page) &&
+          ((user.isAdmin && user.adminPrivileges?.modifyBook) ||
+            user.email.includes('@sticalms.com')) && (
+            <Books allBooks={allBooks} />
+          )}
+        {page === 'users' &&
+          ((user.isAdmin && user.adminPrivileges?.modifyUser) ||
+            user.email.includes('@sticalms.com')) && <Users />}
+        {page === 'masters list' &&
+          ((user.isAdmin && user.adminPrivileges?.modifyUser) ||
+            user.email.includes('@sticalms.com')) && <Masters />}
+        {page === 'terminated users' &&
+          ((user.isAdmin && user.adminPrivileges?.modifyUser) ||
+            user.email.includes('@sticalms.com')) && <Terminated />}
         {/* {page === 'send notifications' && <SendNotification/>} */}
-        {page === 'messages' && <Messages />}
-        {page === 'walk-in issuance' && (
-          <WalkinRequest allBooks={allBooks} />
-        )}
-        {page === 'currently issued books' && (
-          <LoanedBooks allBooks={allBooks} />
-        )}
-        {page === 'borrow requests' && <BorrowRequest />}
-        {page === 'renewal requests' && <RenewalRequest />}
-        {page === 'lost books' && <LostBooks allBooks={allBooks} />}
-        {page === 'damaged books' && <DamagedBooks allBooks={allBooks} />}
-        {page === 'archived books' && <Archived />}
-        {page === 'reports' && <History />}
+        {page === 'messages' &&
+          ((user.isAdmin && user.adminPrivileges?.canMessage) ||
+            user.email.includes('@sticalms.com')) && <Messages />}
+        {page === 'walk-in issuance' &&
+          ((user.isAdmin && user.adminPrivileges?.walkin) ||
+            user.email.includes('@sticalms.com')) && (
+            <WalkinRequest allBooks={allBooks} />
+          )}
+        {page === 'currently issued books' &&
+          ((user.isAdmin && user.adminPrivileges?.issued) ||
+            user.email.includes('@sticalms.com')) && (
+            <LoanedBooks allBooks={allBooks} />
+          )}
+        {page === 'borrow requests' &&
+          ((user.isAdmin && user.adminPrivileges?.borrow) ||
+            user.email.includes('@sticalms.com')) && <BorrowRequest />}
+        {page === 'renewal requests' &&
+          ((user.isAdmin && user.adminPrivileges?.renewal) ||
+            user.email.includes('@sticalms.com')) && <RenewalRequest />}
+        {page === 'lost books' &&
+          ((user.isAdmin && user.adminPrivileges?.lost) ||
+            user.email.includes('@sticalms.com')) && (
+            <LostBooks allBooks={allBooks} />
+          )}
+        {page === 'damaged books' &&
+          ((user.isAdmin && user.adminPrivileges?.damaged) ||
+            user.email.includes('@sticalms.com')) && (
+            <DamagedBooks allBooks={allBooks} />
+          )}
+        {page === 'archived books' &&
+          ((user.isAdmin && user.adminPrivileges?.archive) ||
+            user.email.includes('@sticalms.com')) && <Archived />}
+        {page === 'reports' &&
+          ((user.isAdmin && user.adminPrivileges?.reports) ||
+            user.email.includes('@sticalms.com')) && <History />}
       </>
     );
   };
 
-  if (!loading && user.uid) {
+  const disabledSidebarItems = useMemo(() => {
+    const disabledItems: string[] = [];
+
+    if (user.isAdmin) {
+      if (!user.adminPrivileges?.modifyUser) {
+        disabledItems.push('users');
+      }
+
+      if (!user.adminPrivileges?.modifyBook) {
+        disabledItems.push('books');
+      }
+
+      if (!user.adminPrivileges?.modifyMasterList) {
+        disabledItems.push('masters list');
+      }
+
+      if (!user.adminPrivileges?.modifyTerminatedUsers) {
+        disabledItems.push('terminated users');
+      }
+
+      if (!user.adminPrivileges?.canMessage) {
+        disabledItems.push('messages');
+      }
+
+      if (!user.adminPrivileges?.walkin) {
+        disabledItems.push('walk-in issuance');
+      }
+
+      if (!user.adminPrivileges?.issued) {
+        disabledItems.push('currently issued books');
+      }
+
+      if (!user.adminPrivileges?.borrow) {
+        disabledItems.push('borrow requests');
+      }
+
+      if (!user.adminPrivileges?.renewal) {
+        disabledItems.push('renewal requests');
+      }
+
+      if (!user.adminPrivileges?.lost) {
+        disabledItems.push('lost books');
+      }
+
+      if (!user.adminPrivileges?.damaged) {
+        disabledItems.push('damaged books');
+      }
+
+      if (!user.adminPrivileges?.archive) {
+        disabledItems.push('archived books');
+      }
+
+      if (!user.adminPrivileges?.reports) {
+        disabledItems.push('reports');
+      }
+    }
+
+    return disabledItems;
+  }, [user]);
+
+  if (!loading && (user.uid || user.id)) {
     return (
       <Layout
+        disabledSidebarItems={disabledSidebarItems}
         sidebarOpen={sidebarOpen}
         showHideSidebar={showHideSidebar}
-        isAuthenticated={!!user.uid}
+        isAuthenticated={!!user.id || !!user.uid}
         sidebarItems={adminSidebarItems}
         authAction={logout}
-        username='Admin'
+        username={
+          user.email.includes('@sticalms.com')
+            ? 'Admin'
+            : `${user.givenName} - ${user.adminRole}`
+        }
         onAdminSearch={handleAdminSearch}
         searchPlaceholder={searchPlaceholder}
         user='admin'
-        userPhoto='/assets/images/STI_LOGO.png'
+        userPhoto={
+          user.photo ? user.photo.url : '/assets/images/STI_LOGO.png'
+        }
         showNotification
         userId='admin'
         adminInput={
@@ -243,12 +348,22 @@ const Home: NextPage = () => {
                 setPassword(e.target.value);
               }}
             />
-            <button
-              type='submit'
-              className='text-primary w-full rounded-lg bg-white px-3 py-2 font-medium'
-            >
-              Login
-            </button>
+            <div className='space-y-3'>
+              <button
+                type='submit'
+                className='text-primary w-full rounded-lg bg-white px-3 py-2 font-medium'
+              >
+                Login
+              </button>
+              <div className='text-center text-white'>OR</div>
+              <button
+                type='button'
+                onClick={loginWithO356}
+                className='w-full rounded-lg bg-white px-3 py-2 font-medium text-[#ED4627]'
+              >
+                Login with O365
+              </button>
+            </div>
           </div>
           {error && (
             <div className='text-center text-red-500'>{error}</div>

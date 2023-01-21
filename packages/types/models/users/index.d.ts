@@ -1,3 +1,9 @@
+export type AdminRole =
+  | 'admin'
+  | 'student assistant'
+  | 'custom'
+  | undefined;
+
 export interface IUser {
   displayName: string;
   givenName: string;
@@ -13,6 +19,24 @@ export interface IUser {
   photo: {
     url: string;
     ref: string;
+  };
+  terminated?: boolean;
+  isAdmin?: boolean;
+  adminRole?: AdminRole;
+  adminPrivileges?: {
+    modifyUser?: boolean;
+    modifyTerminatedUsers?: boolean;
+    modifyMasterList?: boolean;
+    modifyBook?: boolean;
+    canMessage?: boolean;
+    walkin?: boolean;
+    issued?: boolean;
+    borrow?: boolean;
+    renewal?: boolean;
+    lost?: boolean;
+    damaged?: boolean;
+    archive?: boolean;
+    reports?: boolean;
   };
 }
 

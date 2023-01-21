@@ -7,11 +7,12 @@ import {
   MdSearchOff,
 } from 'react-icons/md';
 import { FiBookOpen, FiUsers } from 'react-icons/fi';
-import { RiFileDamageFill } from 'react-icons/ri';
+import { RiFileDamageFill, RiAdminLine } from 'react-icons/ri';
 import { TbReport } from 'react-icons/tb';
 import { FictionType, GenreType, NonFictionType } from '@lms/types';
 import { HiOutlineLibrary } from 'react-icons/hi';
 import { BsArchive } from 'react-icons/bs';
+import { FaUsersSlash } from 'react-icons/fa';
 
 export const adminSidebarItems = [
   {
@@ -21,6 +22,14 @@ export const adminSidebarItems = [
   {
     name: 'Users',
     Icon: FiUsers,
+  },
+  {
+    name: 'Masters List',
+    Icon: RiAdminLine,
+  },
+  {
+    name: 'Terminated Users',
+    Icon: FaUsersSlash,
   },
   {
     name: 'Messages',
@@ -177,6 +186,14 @@ export const userTableHeaders = [
   'Renewed',
   'Returned',
   'Lost',
+];
+
+export const masterTableHeaders = [
+  // 'Book ID',
+  'Photo',
+  'Student Name',
+  'Email',
+  'Role',
 ];
 
 export const lostBooksTableHeaders = [
