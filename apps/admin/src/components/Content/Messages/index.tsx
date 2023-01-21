@@ -114,8 +114,10 @@ const Messages = () => {
                         .toDate()
                         .toLocaleString()
                     : new Date();
+
                   const date = new Date(createdAt);
-                  const ago = timeAgo.format(date);
+                  console.log('date', date);
+                  const ago = timeAgo.format(new Date());
                   return (
                     <button
                       key={message.id}

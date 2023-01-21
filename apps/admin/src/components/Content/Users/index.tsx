@@ -251,6 +251,7 @@ const ModifyUserModal = ({
 
       nProgress.done();
       setUpdating(false);
+      setIsModalOpen(false);
       toast.success('User privileges updated successfully.');
     } catch (error) {
       nProgress.done();
@@ -303,9 +304,7 @@ const ModifyUserModal = ({
                 setRole('admin');
               }}
             >
-              <div
-                className="border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border"
-              >
+              <div className='border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border'>
                 {(role === 'admin' ||
                   (selectedUser?.adminRole === 'admin' &&
                     role === undefined)) && <FaCheck />}
@@ -319,9 +318,7 @@ const ModifyUserModal = ({
                 setRole('student assistant');
               }}
             >
-              <div
-                className="border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border"
-              >
+              <div className='border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border'>
                 {(role === 'student assistant' ||
                   (selectedUser?.adminRole === 'student assistant' &&
                     role === undefined)) && <FaCheck />}
@@ -335,9 +332,7 @@ const ModifyUserModal = ({
                 setRole('custom');
               }}
             >
-              <div
-                className="border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border"
-              >
+              <div className='border-primary flex h-[20px] w-[20px] items-center justify-center rounded-sm border'>
                 {(role === 'custom' ||
                   (selectedUser?.adminRole === 'custom' &&
                     role === undefined)) && <FaCheck />}
