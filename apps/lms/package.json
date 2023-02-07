@@ -7,7 +7,7 @@
     "dev:tailwind": "concurrently 'next dev --port 3001 --turbo' 'npm run tailwind --watch'",
     "tailwind": "tailwindcss -i src/styles/globals.css -o src/styles/dist.css",
     "build": "next build",
-    "start": "next start"
+    "start": "next start --port 3001"
   },
   "dependencies": {
     "@azure/msal-browser": "^2.28.3",
